@@ -163,7 +163,14 @@ public class HackinHounds_Mechanum extends LinearOpMode {
 
             //telemetry.addData("Driving Finished", "%f", runtime.milliseconds() - cycleStart);
 
+
             telemetry.addData("Telemtry finished", "%f", runtime.milliseconds() - cycleStart);
+            telemetry.addData("rightBack", "%f", robot.rightBack.getVelocity());
+            telemetry.addData("rightFront", "%f", robot.rightFront.getVelocity());
+            telemetry.addData("leftBack", "%f", robot.leftBack.getVelocity());
+            telemetry.addData("leftFront", "%f", robot.leftFront.getVelocity());
+            telemetry.addData("IMU HEADING:", "%f", robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+
             telemetry.update();
         }
     }
