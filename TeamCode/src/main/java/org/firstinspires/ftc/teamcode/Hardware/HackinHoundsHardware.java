@@ -48,6 +48,9 @@ public class HackinHoundsHardware extends Hardware {
     public static final double MinPower = 0.1;
 
 
+    private  final double think =  5.9;
+
+
 
     /**
      GLOBAL VARIABLES

@@ -37,9 +37,11 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLStatus;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -54,6 +56,8 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
@@ -80,7 +84,7 @@ import java.util.List;
  */
 
 @TeleOp(name="Mechanum", group="Linear OpMode")
-public class HackinHounds_Mechanum extends LinearOpMode {
+public class HackinHounds_Mechanum extends OpMode {
     // Declare OpMode members. aamir dont screw stuff up
     private ElapsedTime runtime = new ElapsedTime();
     private HackinHoundsHardware robot = new HackinHoundsHardware();
@@ -92,28 +96,33 @@ public class HackinHounds_Mechanum extends LinearOpMode {
 
     double cycleStart = 0;
 
+    private Limelight3A limelight;
+
 
 
     @Override
-    public void runOpMode() {
+    public void init() {
         robot.init(hardwareMap);
 
-
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        limelight.pipelineSwitch(0);
 
         telemetry.addData("Status", "Initialized");
         telemetry.setMsTransmissionInterval(50);   // Speed up telemetry updates, Just use for debugging.
         telemetry.setDisplayFormat(Telemetry.DisplayFormat.MONOSPACE);
         telemetry.update();
+    }
 
-
-
-        waitForStart();
+    @Override
+    public void start(){
+        limelight.start();
         runtime.reset();
 
+    }
 
 
-
-        while (opModeIsActive()) {
+        @Override
+        public void loop () {
             cycleStart = runtime.milliseconds();
             //telemetry.addData("Begin Time", "%f", runtime.milliseconds() - cycleStart);
 
@@ -129,7 +138,16 @@ public class HackinHounds_Mechanum extends LinearOpMode {
             }
 
 
+            YawPitchRollAngles orientation = robot.imu.getRobotYawPitchRollAngles();
+            limelight.updateRobotOrientation(orientation.getYaw());
 
+            LLResult llResult = limelight.getLatestResult();
+            if (llResult != null && llResult.isValid()){
+                Pose3D botPose = llResult.getBotpose_MT2();
+                telemetry.addData("Tx", llResult.getTx());
+                telemetry.addData("Ty", llResult.getTy());
+                telemetry.addData("Ta", llResult.getTa());
+            }
 
             // Send data to Dashboard
             TelemetryPacket packet = new TelemetryPacket();
@@ -174,6 +192,3 @@ public class HackinHounds_Mechanum extends LinearOpMode {
             telemetry.update();
         }
     }
-
-}
-
