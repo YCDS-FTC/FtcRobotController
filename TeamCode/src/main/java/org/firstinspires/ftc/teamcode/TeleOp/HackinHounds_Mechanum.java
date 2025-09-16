@@ -106,7 +106,7 @@ public class HackinHounds_Mechanum extends OpMode {
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.pipelineSwitch(0);
-
+//skibidi
         telemetry.addData("Status", "Initialized");
         telemetry.setMsTransmissionInterval(50);   // Speed up telemetry updates, Just use for debugging.
         telemetry.setDisplayFormat(Telemetry.DisplayFormat.MONOSPACE);
