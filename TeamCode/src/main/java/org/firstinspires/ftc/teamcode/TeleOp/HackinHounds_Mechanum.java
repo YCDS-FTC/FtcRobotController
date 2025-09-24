@@ -105,7 +105,7 @@ public class HackinHounds_Mechanum extends OpMode {
         robot.init(hardwareMap);
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.pipelineSwitch(0);
+        limelight.pipelineSwitch(1);
 //skibidi
         telemetry.addData("Status", "Initialized");
         telemetry.setMsTransmissionInterval(50);   // Speed up telemetry updates, Just use for debugging.
@@ -147,7 +147,10 @@ public class HackinHounds_Mechanum extends OpMode {
                 telemetry.addData("Tx", llResult.getTx());
                 telemetry.addData("Ty", llResult.getTy());
                 telemetry.addData("Ta", llResult.getTa());
+                telemetry.addData("Botpose", llResult.getBotpose_MT2());
             }
+
+            // First, tell Limelight which way your robot is facing
 
             // Send data to Dashboard
             TelemetryPacket packet = new TelemetryPacket();
@@ -179,6 +182,16 @@ public class HackinHounds_Mechanum extends OpMode {
             robot.rightBack.setVelocity(3000 * rb * shift);
             robot.rightFront.setVelocity(3000 * rf * shift);
 
+            robot.intake.setPower(-gamepad2.left_stick_y);
+
+            if (gamepad2.a){
+                robot.shooter.setPower(0.7);
+            }
+            if (gamepad2.b){
+                robot.shooter.setPower(0.5);
+            }
+
+
             //telemetry.addData("Driving Finished", "%f", runtime.milliseconds() - cycleStart);
 
 
@@ -187,6 +200,7 @@ public class HackinHounds_Mechanum extends OpMode {
             telemetry.addData("rightFront", "%f", robot.rightFront.getVelocity());
             telemetry.addData("leftBack", "%f", robot.leftBack.getVelocity());
             telemetry.addData("leftFront", "%f", robot.leftFront.getVelocity());
+            telemetry.addData("intake", "%f", robot.intake.getVelocity());
             telemetry.addData("IMU HEADING:", "%f", robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
 
             telemetry.update();

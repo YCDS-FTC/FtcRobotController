@@ -35,6 +35,9 @@ public class HackinHoundsHardware extends Hardware {
     public DcMotorEx  rightBack;
 
 
+    public DcMotorEx intake;
+    public DcMotorEx shooter;
+
     public double lastAngle;
 
     public IMU imu;
@@ -98,6 +101,19 @@ public class HackinHoundsHardware extends Hardware {
 
 
 
+
+        intake = robotMap.get(DcMotorEx.class, "intake");
+        intake.setDirection(DcMotorSimple.Direction.FORWARD);
+        intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+
+        shooter = robotMap.get(DcMotorEx.class, "shooter");
+        shooter.setDirection(DcMotorSimple.Direction.REVERSE);
+        shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooter.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
         //leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
