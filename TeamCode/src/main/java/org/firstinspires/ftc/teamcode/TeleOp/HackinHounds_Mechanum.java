@@ -35,6 +35,7 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
@@ -84,6 +85,7 @@ import java.util.List;
  */
 
 @TeleOp(name="Mechanum", group="Linear OpMode")
+@Configurable
 public class HackinHounds_Mechanum extends OpMode {
     // Declare OpMode members. aamir dont screw stuff up
     private ElapsedTime runtime = new ElapsedTime();
@@ -92,6 +94,7 @@ public class HackinHounds_Mechanum extends OpMode {
 
     double shift = 1;
 
+    public static double shooterPower = 0;
 
 
     double cycleStart = 0;
@@ -136,6 +139,7 @@ public class HackinHounds_Mechanum extends OpMode {
             if (gamepad1.left_stick_button) {
                 shift = 1;
             }
+
 
 
             YawPitchRollAngles orientation = robot.imu.getRobotYawPitchRollAngles();
@@ -184,12 +188,29 @@ public class HackinHounds_Mechanum extends OpMode {
 
             robot.intake.setPower(-gamepad2.left_stick_y);
 
-            if (gamepad2.a){
-                robot.shooter.setPower(0.7);
+            if(gamepad1.back){
+                robot.imu.resetYaw();
             }
-            if (gamepad2.b){
+
+            if (gamepad2.a){
                 robot.shooter.setPower(0.5);
             }
+            if (gamepad2.b){
+                robot.shooter.setPower(0.7);
+            }
+
+            if (gamepad2.y){
+                robot.shooter.setPower(0);
+            }
+
+            if (gamepad1.a){
+                if (llResult.isValid()){
+                    llResult.getTx();
+
+                }
+            }
+
+            robot.shooter.setPower(shooterPower);
 
 
             //telemetry.addData("Driving Finished", "%f", runtime.milliseconds() - cycleStart);
@@ -200,7 +221,8 @@ public class HackinHounds_Mechanum extends OpMode {
             telemetry.addData("rightFront", "%f", robot.rightFront.getVelocity());
             telemetry.addData("leftBack", "%f", robot.leftBack.getVelocity());
             telemetry.addData("leftFront", "%f", robot.leftFront.getVelocity());
-            telemetry.addData("intake", "%f", robot.intake.getVelocity());
+            telemetry.addData("intake", "%f", robot.intake.getPower());
+            telemetry.addData("shooter", "%f", robot.shooter.getPower());
             telemetry.addData("IMU HEADING:", "%f", robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
 
             telemetry.update();
