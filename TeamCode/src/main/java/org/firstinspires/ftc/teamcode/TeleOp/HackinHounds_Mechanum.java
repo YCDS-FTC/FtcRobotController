@@ -65,6 +65,7 @@ import org.firstinspires.ftc.vision.opencv.ColorBlobLocatorProcessor;
 import org.firstinspires.ftc.vision.opencv.ColorRange;
 import org.firstinspires.ftc.vision.opencv.ImageRegion;
 import org.opencv.core.RotatedRect;
+import com.bylazar.configurables.annotations.Configurable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,8 +85,8 @@ import java.util.List;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Mechanum", group="Linear OpMode")
 @Configurable
+@TeleOp(name="Mechanum", group="Linear OpMode")
 public class HackinHounds_Mechanum extends OpMode {
     // Declare OpMode members. aamir dont screw stuff up
     private ElapsedTime runtime = new ElapsedTime();
