@@ -95,7 +95,7 @@ public class HackinHounds_Mechanum extends OpMode {
 
     double shift = 1;
 
-    public static double shooterPower = 0;
+//    public static double shooterPower = 0;
 
 
     double cycleStart = 0;
@@ -117,6 +117,9 @@ public class HackinHounds_Mechanum extends OpMode {
         telemetry.update();
     }
 
+
+    public static double shooterPower = 0;
+
     @Override
     public void start(){
         limelight.start();
@@ -127,6 +130,8 @@ public class HackinHounds_Mechanum extends OpMode {
 
         @Override
         public void loop () {
+
+
             cycleStart = runtime.milliseconds();
             //telemetry.addData("Begin Time", "%f", runtime.milliseconds() - cycleStart);
 
@@ -193,9 +198,14 @@ public class HackinHounds_Mechanum extends OpMode {
                 robot.imu.resetYaw();
             }
 
+            if(gamepad2.x){
+                robot.shooter.setPower(0.2);
+            }
+
             if (gamepad2.a){
                 robot.shooter.setPower(0.5);
             }
+
             if (gamepad2.b){
                 robot.shooter.setPower(0.7);
             }
