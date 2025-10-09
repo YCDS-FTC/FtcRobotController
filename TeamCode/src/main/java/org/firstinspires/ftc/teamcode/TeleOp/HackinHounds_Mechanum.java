@@ -170,27 +170,27 @@ public class HackinHounds_Mechanum extends OpMode {
 
             //telemetry.addData("begining if's finished", "%f", runtime.milliseconds() - cycleStart);
 
-            double facing = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-            double y = -gamepad1.left_stick_y;
-            //double y = 0;
-            double x = gamepad1.left_stick_x;
-            double rx = gamepad1.right_stick_x;
-
-            double rotX = x * Math.cos(-facing) - y * Math.sin(-facing);
-            rotX = rotX * 1.1;
-            double rotY = x * Math.sin(-facing) + y * Math.cos(-facing);
-
-            double d = Math.max(Math.abs(rotX) + Math.abs(rotY) + Math.abs(rx), 1);
-
-            double lf = (rotY + rotX + rx) / d;
-            double lb = (rotY - rotX + rx) / d;
-            double rf = (rotY - rotX - rx) / d;
-            double rb = (rotY + rotX - rx) / d;
-
-            robot.leftBack.setVelocity(3000 * lb * shift);
-            robot.leftFront.setVelocity(3000 * lf * shift);
-            robot.rightBack.setVelocity(3000 * rb * shift);
-            robot.rightFront.setVelocity(3000 * rf * shift);
+                double facing = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+                double y = -gamepad1.left_stick_y;
+                //double y = 0;
+                double x = gamepad1.left_stick_x;
+                double rx = gamepad1.right_stick_x;
+    
+                double rotX = x * Math.cos(-facing) - y * Math.sin(-facing);
+                rotX = rotX * 1.1;
+                double rotY = x * Math.sin(-facing) + y * Math.cos(-facing);
+    
+                double d = Math.max(Math.abs(rotX) + Math.abs(rotY) + Math.abs(rx), 1);
+    
+                double lf = (rotY + rotX + rx) / d;
+                double lb = (rotY - rotX + rx) / d;
+                double rf = (rotY - rotX - rx) / d;
+                double rb = (rotY + rotX - rx) / d;
+    
+                robot.leftBack.setVelocity(3000 * lb * shift);
+                robot.leftFront.setVelocity(3000 * lf * shift);
+                robot.rightBack.setVelocity(3000 * rb * shift);
+                robot.rightFront.setVelocity(3000 * rf * shift);
 
             robot.intake.setPower(-gamepad2.left_stick_y);
 
@@ -228,10 +228,6 @@ public class HackinHounds_Mechanum extends OpMode {
 
 
             telemetry.addData("Telemtry finished", "%f", runtime.milliseconds() - cycleStart);
-            telemetry.addData("rightBack", "%f", robot.rightBack.getVelocity());
-            telemetry.addData("rightFront", "%f", robot.rightFront.getVelocity());
-            telemetry.addData("leftBack", "%f", robot.leftBack.getVelocity());
-            telemetry.addData("leftFront", "%f", robot.leftFront.getVelocity());
             telemetry.addData("intake", "%f", robot.intake.getPower());
             telemetry.addData("shooter", "%f", robot.shooter.getPower());
             telemetry.addData("IMU HEADING:", "%f", robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));

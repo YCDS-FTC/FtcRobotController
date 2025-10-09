@@ -38,6 +38,10 @@ public class HackinHoundsHardware extends Hardware {
     public DcMotorEx intake;
     public DcMotorEx shooter;
 
+
+    public Servo test;
+
+
     public double lastAngle;
 
     public IMU imu;
@@ -73,8 +77,8 @@ public class HackinHoundsHardware extends Hardware {
 
 
         // Define and Initialize Motors for drivetrain
-        leftFront  = robotMap.get(DcMotorEx.class, "left_front");
-        rightFront = robotMap.get(DcMotorEx.class, "right_front");
+        leftFront  = robotMap.get(DcMotorEx.class, "leftFront");
+        rightFront = robotMap.get(DcMotorEx.class, "rightFront");
         leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
         rightFront.setDirection(DcMotorSimple.Direction.FORWARD);
         leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -87,8 +91,8 @@ public class HackinHoundsHardware extends Hardware {
 
         //leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftBack = robotMap.get(DcMotorEx.class, "left_back");
-        rightBack = robotMap.get(DcMotorEx.class, "right_back");
+        leftBack = robotMap.get(DcMotorEx.class, "leftBack");
+        rightBack = robotMap.get(DcMotorEx.class, "rightBack");
         rightBack.setDirection(DcMotorSimple.Direction.FORWARD);
         leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -109,11 +113,8 @@ public class HackinHoundsHardware extends Hardware {
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
-        shooter = robotMap.get(DcMotorEx.class, "shooter");
-        shooter.setDirection(DcMotorSimple.Direction.REVERSE);
-        shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooter.setZeroPowerBehavior(DcMotorEx.ZeroPowerBehavior.BRAKE);
+        test = robotMap.get(Servo.class,"test");
+
         //leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
