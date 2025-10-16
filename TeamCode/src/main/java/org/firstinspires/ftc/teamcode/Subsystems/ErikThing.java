@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode.Subsystems;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -43,6 +44,10 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
+
+import dev.nextftc.hardware.controllable.MotorGroup;
+import dev.nextftc.hardware.impl.MotorEx;
+import dev.nextftc.hardware.powerable.SetPower;
 
 
 
@@ -59,6 +64,8 @@ import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
+
+@Configurable
 @TeleOp(name="ErikIsBalding", group="Linear OpMode")
 //@Disabled
 public class ErikThing extends LinearOpMode {
@@ -70,25 +77,37 @@ public class ErikThing extends LinearOpMode {
     public DcMotorEx right;
     int shift = 1;
 
+    private static double rightPower = 0.5;
+    private static double leftPower = 0.5;
+
 
     @Override
     public void runOpMode() {
         left  = hardwareMap.get(DcMotorEx.class, "left");
         right = hardwareMap.get(DcMotorEx.class, "right");
-        left.setDirection(DcMotorSimple.Direction.FORWARD);
+        left.setDirection(DcMotorSimple.Direction.REVERSE);
         right.setDirection(DcMotorSimple.Direction.FORWARD);
         left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         shift = 0;
+
+
 
         waitForStart();
         while (opModeIsActive()) {
             if (gamepad1.dpad_up) {
-                right.setPower(0.7);
-                left.setPower(0.7);
+                right.setPower(rightPower);
+                left.setPower(leftPower);
             }
+
+            left.setPower(gamepad1.left_trigger);
+
+            right.setPower(gamepad1.right_trigger);
 
             if (gamepad1.x) {
                 shift = 0;
@@ -101,19 +120,24 @@ public class ErikThing extends LinearOpMode {
             }
 
 
-            if (shift == 0) {
-                left.setDirection(DcMotorSimple.Direction.FORWARD);
-                right.setDirection(DcMotorSimple.Direction.FORWARD);
-            } else if (shift == 1) {
-                left.setDirection(DcMotorSimple.Direction.REVERSE);
-                right.setDirection(DcMotorSimple.Direction.FORWARD);
-            } else if (shift == 2) {
-                left.setDirection(DcMotorSimple.Direction.REVERSE);
-                right.setDirection(DcMotorSimple.Direction.REVERSE);
-            } else if (shift == 3) {
-                left.setDirection(DcMotorSimple.Direction.FORWARD);
-                right.setDirection(DcMotorSimple.Direction.REVERSE);
-            }
+//            if (shift == 0) {
+//                left.setDirection(DcMotorSimple.Direction.FORWARD);
+//                right.setDirection(DcMotorSimple.Direction.FORWARD);
+//            } else if (shift == 1) {
+//                left.setDirection(DcMotorSimple.Direction.REVERSE);
+//                right.setDirection(DcMotorSimple.Direction.FORWARD);
+//            } else if (shift == 2) {
+//                left.setDirection(DcMotorSimple.Direction.REVERSE);
+//                right.setDirection(DcMotorSimple.Direction.REVERSE);
+//            } else if (shift == 3) {
+//                left.setDirection(DcMotorSimple.Direction.FORWARD);
+//                right.setDirection(DcMotorSimple.Direction.REVERSE);
+//            }
+
+            telemetry.addData("leftpower", "%f", left.getPower());
+            telemetry.addData("rightpower", "%f", right.getPower());
+            telemetry.update();
+
         }
     }
 }

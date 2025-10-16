@@ -22,7 +22,6 @@ public class Servotesting extends LinearOpMode {
 
 
         while (opModeIsActive()){
-            robot.test.setPosition(Servopos);
         }
     }
 

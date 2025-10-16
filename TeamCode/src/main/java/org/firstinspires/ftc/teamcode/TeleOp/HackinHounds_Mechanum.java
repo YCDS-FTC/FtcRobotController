@@ -55,6 +55,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
@@ -102,6 +104,21 @@ public class HackinHounds_Mechanum extends OpMode {
 
     private Limelight3A limelight;
 
+    private static double Kp = 3;
+    private static double Ki = 0;
+    private static double Kd = 0.05;
+
+    double integralSum = 0;
+    double lastError = 0;
+    ElapsedTime timer = new ElapsedTime();
+
+
+    boolean targetVisible = false;
+
+    private static double tolerance = 2.0;
+    private static double desiredOffset = 0;
+
+    private static double horizontalOffset;
 
 
     @Override
@@ -109,7 +126,7 @@ public class HackinHounds_Mechanum extends OpMode {
         robot.init(hardwareMap);
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.pipelineSwitch(1);
+        limelight.pipelineSwitch(0);
 //skibidi
         telemetry.addData("Status", "Initialized");
         telemetry.setMsTransmissionInterval(50);   // Speed up telemetry updates, Just use for debugging.
@@ -120,6 +137,7 @@ public class HackinHounds_Mechanum extends OpMode {
 
     public static double shooterPower = 0;
 
+    double turnPower = 0;
     @Override
     public void start(){
         limelight.start();
@@ -128,8 +146,8 @@ public class HackinHounds_Mechanum extends OpMode {
     }
 
 
-        @Override
-        public void loop () {
+    @Override
+    public void loop () {
 
 
             cycleStart = runtime.milliseconds();
@@ -160,78 +178,107 @@ public class HackinHounds_Mechanum extends OpMode {
                 telemetry.addData("Botpose", llResult.getBotpose_MT2());
             }
 
-            // First, tell Limelight which way your robot is facing
+            LLResult result = limelight.getLatestResult();
 
-            // Send data to Dashboard
+            /** limelight button to auto align robot **/
+            if (result.isValid()) {
+                // Read tx (in degrees)
+                double tx = result.getTx();
+
+// Get the robot's current heading from IMU (in radians)
+                double currentAngle = robot.imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle;
+
+// Compute the desired *absolute* angle in IMU space
+                double targetAngle = currentAngle + Math.toRadians(tx);
+// PID error becomes how far the robot is from that new target angle
+                turnPower = PIDControl(targetAngle, currentAngle);
+
+            }
+                // Send data to Dashboard
             TelemetryPacket packet = new TelemetryPacket();
 
 
-            /** DRIVING - Perfectly FINE (don't change) **/
+                /** DRIVING - Perfectly FINE (don't change) **/
 
-            //telemetry.addData("begining if's finished", "%f", runtime.milliseconds() - cycleStart);
+                //telemetry.addData("begining if's finished", "%f", runtime.milliseconds() - cycleStart);
 
-                double facing = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-                double y = -gamepad1.left_stick_y;
-                //double y = 0;
-                double x = gamepad1.left_stick_x;
-                double rx = gamepad1.right_stick_x;
-    
-                double rotX = x * Math.cos(-facing) - y * Math.sin(-facing);
-                rotX = rotX * 1.1;
-                double rotY = x * Math.sin(-facing) + y * Math.cos(-facing);
-    
-                double d = Math.max(Math.abs(rotX) + Math.abs(rotY) + Math.abs(rx), 1);
-    
-                double lf = (rotY + rotX + rx) / d;
-                double lb = (rotY - rotX + rx) / d;
-                double rf = (rotY - rotX - rx) / d;
-                double rb = (rotY + rotX - rx) / d;
-    
+            double facing = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+            double y = -gamepad1.left_stick_y;
+            //double y = 0;
+            double x = gamepad1.left_stick_x;
+            double rx = gamepad1.right_stick_x;
+
+            double rotX = x * Math.cos(-facing) - y * Math.sin(-facing);
+            rotX = rotX * 1.1;
+            double rotY = x * Math.sin(-facing) + y * Math.cos(-facing);
+
+            double d = Math.max(Math.abs(rotX) + Math.abs(rotY) + Math.abs(rx), 1);
+
+            double lf = (rotY + rotX + rx) / d;
+            double lb = (rotY - rotX + rx) / d;
+            double rf = (rotY - rotX - rx) / d;
+            double rb = (rotY + rotX - rx) / d;
+
+
+            if (gamepad2.a) {
+                robot.leftFront.setPower(turnPower);
+                robot.leftBack.setPower(turnPower);
+                robot.rightBack.setPower(-turnPower);
+                robot.rightFront.setPower(-turnPower);
+            } else {
                 robot.leftBack.setVelocity(3000 * lb * shift);
                 robot.leftFront.setVelocity(3000 * lf * shift);
                 robot.rightBack.setVelocity(3000 * rb * shift);
                 robot.rightFront.setVelocity(3000 * rf * shift);
+            }
 
-            robot.intake.setPower(-gamepad2.left_stick_y);
-
-            if(gamepad1.back){
+            if (gamepad1.back) {
                 robot.imu.resetYaw();
             }
 
-            if(gamepad2.x){
-                robot.shooter.setPower(0.2);
-            }
 
-            if (gamepad2.a){
-                robot.shooter.setPower(0.5);
-            }
-
-            if (gamepad2.b){
-                robot.shooter.setPower(0.7);
-            }
-
-            if (gamepad2.y){
-                robot.shooter.setPower(0);
-            }
-
-            if (gamepad1.a){
-                if (llResult.isValid()){
-                    llResult.getTx();
-
-                }
-            }
-
-            robot.shooter.setPower(shooterPower);
+                /** intake code prototype **/
+            robot.intake.setPower(-gamepad2.left_stick_y);
 
 
-            //telemetry.addData("Driving Finished", "%f", runtime.milliseconds() - cycleStart);
+                //telemetry.addData("Driving Finished", "%f", runtime.milliseconds() - cycleStart);
 
 
             telemetry.addData("Telemtry finished", "%f", runtime.milliseconds() - cycleStart);
             telemetry.addData("intake", "%f", robot.intake.getPower());
-            telemetry.addData("shooter", "%f", robot.shooter.getPower());
             telemetry.addData("IMU HEADING:", "%f", robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
+            telemetry.addData("turnPower", turnPower);
+        telemetry.addData("rightBack", "%f", robot.rightBack.getVelocity());
+        telemetry.addData("leftFront", "%f", robot.leftFront.getPower());
+        telemetry.addData("leftBack", "%f", robot.leftBack.getPower());
+        telemetry.addData("rightFront", "%f", robot.rightFront.getPower());
 
-            telemetry.update();
-        }
+
+        telemetry.update();
+
     }
+
+
+    double PIDControl(double reference, double state){
+        double error = angleWrap(reference - state);
+
+        integralSum += error * timer.seconds();
+        double derivative = (error - lastError) / timer.seconds();
+        lastError = error;
+        timer.reset();
+
+        double output = (Kp * error) + (Ki * integralSum) + (Kd * derivative);
+        return output;
+    }
+
+
+    double angleWrap ( double radians){
+        while (radians > Math.PI) radians -= 2 * Math.PI;
+        while (radians < -Math.PI) radians += 2 * Math.PI;
+        return radians;
+    }
+}
+
+
+
+

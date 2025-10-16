@@ -20,7 +20,6 @@ public  class shooterTesting extends OpMode {
 
     @Override
     public void loop(){
-        robot.shooter.setPower(shooterPower);
 //        return 0;
     }
 

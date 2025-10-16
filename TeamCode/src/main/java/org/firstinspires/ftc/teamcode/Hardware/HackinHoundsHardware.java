@@ -36,10 +36,8 @@ public class HackinHoundsHardware extends Hardware {
 
 
     public DcMotorEx intake;
-    public DcMotorEx shooter;
 
 
-    public Servo test;
 
 
     public double lastAngle;
@@ -113,7 +111,6 @@ public class HackinHoundsHardware extends Hardware {
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
-        test = robotMap.get(Servo.class,"test");
 
         //leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
