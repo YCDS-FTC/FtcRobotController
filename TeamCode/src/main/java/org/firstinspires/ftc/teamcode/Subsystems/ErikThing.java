@@ -29,7 +29,10 @@
 
 package org.firstinspires.ftc.teamcode.Subsystems;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.bylazar.configurables.annotations.Configurable;
+import com.bylazar.telemetry.PanelsTelemetry;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -38,18 +41,23 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 
+import dev.nextftc.control.feedback.PIDCoefficients;
+import dev.nextftc.control.feedback.PIDController;
 import dev.nextftc.hardware.controllable.MotorGroup;
 import dev.nextftc.hardware.impl.MotorEx;
 import dev.nextftc.hardware.powerable.SetPower;
 
-
+import com.seattlesolvers.solverslib.controller.PController;
+import com.seattlesolvers.solverslib.controller.PIDFController;
 
 /*
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -64,11 +72,13 @@ import dev.nextftc.hardware.powerable.SetPower;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-
+@Config
 @Configurable
 @TeleOp(name="ErikIsBalding", group="Linear OpMode")
 //@Disabled
 public class ErikThing extends LinearOpMode {
+    private PanelsTelemetry panelsTelemetry;
+
     //    public DcMotorEx leftFront;
 //    public DcMotorEx rightFront;
 //    public DcMotorEx leftBack;
@@ -77,8 +87,18 @@ public class ErikThing extends LinearOpMode {
     public DcMotorEx right;
     int shift = 1;
 
-    private static double rightPower = 0.5;
-    private static double leftPower = 0.5;
+    public static double leftPower = 0;
+
+
+    public static double kP = 0, kI = 0, kD = 0, kF = 0;
+    public static double targetVelocity = 0;
+
+
+    PIDController ShooterPIDController;
+
+    public double ticksPerRevolution = 28;
+    public double currentVelocity;
+    public double rpm;
 
 
     @Override
@@ -91,23 +111,46 @@ public class ErikThing extends LinearOpMode {
         right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+
+
+
+        PIDFController shooterController = new PIDFController(kP, kI, kD, kF);
+
+        shooterController.setPIDF(kP,kI,kD,kF);
 
         shift = 0;
 
 
 
+        PanelsTelemetry panelsTelemetry = PanelsTelemetry.INSTANCE;
+
         waitForStart();
         while (opModeIsActive()) {
-            if (gamepad1.dpad_up) {
-                right.setPower(rightPower);
-                left.setPower(leftPower);
+//            if (gamepad1.dpad_up) {
+//                right.setPower(rightPower);
+//                left.setPower(leftPower);
+//            }
+
+
+//            double output = shooterController.calculate(
+//                    left.getVelocity(), targetVelocity
+//            );
+
+            PController pController = new PController(kP);
+
+            while (!pController.atSetPoint()) {
+                double output = pController.calculate(
+                        left.getVelocity()  // the measured value
+                );
+                left.setVelocity(output);
             }
+            left.setPower(0);
 
-            left.setPower(gamepad1.left_trigger);
-
-            right.setPower(gamepad1.right_trigger);
+//            left.setPower(leftPower);
 
             if (gamepad1.x) {
                 shift = 0;
@@ -118,6 +161,12 @@ public class ErikThing extends LinearOpMode {
             } else if (gamepad1.a) {
                 shift = 3;
             }
+
+
+            currentVelocity = left.getVelocity();
+
+            rpm = currentVelocity/ticksPerRevolution * 60;
+
 
 
 //            if (shift == 0) {
@@ -136,7 +185,17 @@ public class ErikThing extends LinearOpMode {
 
             telemetry.addData("leftpower", "%f", left.getPower());
             telemetry.addData("rightpower", "%f", right.getPower());
+            telemetry.addData("rightRPM", "%f", right.getVelocity());
+            telemetry.addData("leftRPM", "%f", left.getVelocity());
+            telemetry.addData("RPM", rpm);
             telemetry.update();
+
+            FtcDashboard dashboard = FtcDashboard.getInstance();
+            Telemetry dashboardTelemetry = dashboard.getTelemetry();
+
+            dashboardTelemetry.addData("rpm", rpm );
+            dashboardTelemetry.addData("")
+            dashboardTelemetry.update();
 
         }
     }

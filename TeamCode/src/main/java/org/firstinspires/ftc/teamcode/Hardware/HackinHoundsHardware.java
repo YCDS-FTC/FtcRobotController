@@ -19,6 +19,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
@@ -35,10 +37,10 @@ public class HackinHoundsHardware extends Hardware {
     public DcMotorEx  rightBack;
 
 
-    public DcMotorEx intake;
+    public CRServo intake;
 
 
-
+    public  VoltageSensor voltageSensor;
 
     public double lastAngle;
 
@@ -54,8 +56,6 @@ public class HackinHoundsHardware extends Hardware {
 
 
     private  final double think =  5.9;
-
-
 
     /**
      GLOBAL VARIABLES
@@ -84,6 +84,8 @@ public class HackinHoundsHardware extends Hardware {
         leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+
+
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -102,20 +104,15 @@ public class HackinHoundsHardware extends Hardware {
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
+        intake = robotMap.get(CRServo.class,"intake");
 
-
-        intake = robotMap.get(DcMotorEx.class, "intake");
-        intake.setDirection(DcMotorSimple.Direction.FORWARD);
-        intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
 
         //leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-
+        voltageSensor = robotMap.get(VoltageSensor.class, "Control Hub");
 
 
         // Defines the REV Hub's internal IMU (Gyro)

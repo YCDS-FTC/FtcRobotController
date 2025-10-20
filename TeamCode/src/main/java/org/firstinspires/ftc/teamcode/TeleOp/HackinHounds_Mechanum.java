@@ -31,6 +31,8 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 import android.util.Size;
 
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -49,6 +51,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -108,6 +111,9 @@ public class HackinHounds_Mechanum extends OpMode {
     private static double Ki = 0;
     private static double Kd = 0.05;
 
+
+    private double currentVoltage;
+
     double integralSum = 0;
     double lastError = 0;
     ElapsedTime timer = new ElapsedTime();
@@ -149,6 +155,7 @@ public class HackinHounds_Mechanum extends OpMode {
     @Override
     public void loop () {
 
+            currentVoltage = robot.voltageSensor.getVoltage();
 
             cycleStart = runtime.milliseconds();
             //telemetry.addData("Begin Time", "%f", runtime.milliseconds() - cycleStart);
@@ -236,23 +243,24 @@ public class HackinHounds_Mechanum extends OpMode {
                 robot.imu.resetYaw();
             }
 
+        if (gamepad1.a) {
+            robot.intake.setPower(1);
+        }
 
                 /** intake code prototype **/
-            robot.intake.setPower(-gamepad2.left_stick_y);
 
 
                 //telemetry.addData("Driving Finished", "%f", runtime.milliseconds() - cycleStart);
 
 
             telemetry.addData("Telemtry finished", "%f", runtime.milliseconds() - cycleStart);
-            telemetry.addData("intake", "%f", robot.intake.getPower());
             telemetry.addData("IMU HEADING:", "%f", robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
             telemetry.addData("turnPower", turnPower);
-        telemetry.addData("rightBack", "%f", robot.rightBack.getVelocity());
-        telemetry.addData("leftFront", "%f", robot.leftFront.getPower());
-        telemetry.addData("leftBack", "%f", robot.leftBack.getPower());
-        telemetry.addData("rightFront", "%f", robot.rightFront.getPower());
-
+//        telemetry.addData("rightBack", "%f", robot.rightBack.getVelocity());
+//        telemetry.addData("leftFront", "%f", robot.leftFront.getPower());
+//        telemetry.addData("leftBack", "%f", robot.leftBack.getPower());
+//        telemetry.addData("rightFront", "%f", robot.rightFront.getPower());
+        telemetry.addData("currentVoltage", "%f", currentVoltage);
 
         telemetry.update();
 
