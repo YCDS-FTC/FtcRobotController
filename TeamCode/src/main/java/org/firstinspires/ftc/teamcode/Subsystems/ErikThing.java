@@ -136,19 +136,21 @@ public class ErikThing extends LinearOpMode {
 //            }
 
 
-//            double output = shooterController.calculate(
-//                    left.getVelocity(), targetVelocity
-//            );
+            double output = shooterController.calculate(
+                    left.getVelocity(), targetVelocity
+            );
+            left.setVelocity(output);
 
-            PController pController = new PController(kP);
 
-            while (!pController.atSetPoint()) {
-                double output = pController.calculate(
-                        left.getVelocity()  // the measured value
-                );
-                left.setVelocity(output);
-            }
-            left.setPower(0);
+
+
+//            while (!pController.atSetPoint()) {
+//                double output = pController.calculate(
+//                        left.getVelocity()  // the measured value
+//                );
+//                left.setVelocity(output);
+//            }
+//            left.setPower(0);
 
 //            left.setPower(leftPower);
 
@@ -169,20 +171,6 @@ public class ErikThing extends LinearOpMode {
 
 
 
-//            if (shift == 0) {
-//                left.setDirection(DcMotorSimple.Direction.FORWARD);
-//                right.setDirection(DcMotorSimple.Direction.FORWARD);
-//            } else if (shift == 1) {
-//                left.setDirection(DcMotorSimple.Direction.REVERSE);
-//                right.setDirection(DcMotorSimple.Direction.FORWARD);
-//            } else if (shift == 2) {
-//                left.setDirection(DcMotorSimple.Direction.REVERSE);
-//                right.setDirection(DcMotorSimple.Direction.REVERSE);
-//            } else if (shift == 3) {
-//                left.setDirection(DcMotorSimple.Direction.FORWARD);
-//                right.setDirection(DcMotorSimple.Direction.REVERSE);
-//            }
-
             telemetry.addData("leftpower", "%f", left.getPower());
             telemetry.addData("rightpower", "%f", right.getPower());
             telemetry.addData("rightRPM", "%f", right.getVelocity());
@@ -194,7 +182,8 @@ public class ErikThing extends LinearOpMode {
             Telemetry dashboardTelemetry = dashboard.getTelemetry();
 
             dashboardTelemetry.addData("rpm", rpm );
-            dashboardTelemetry.addData("")
+            dashboardTelemetry.addData("targetVelocity", targetVelocity);
+            dashboardTelemetry.addData("currentVelocity", left.getVelocity());
             dashboardTelemetry.update();
 
         }
