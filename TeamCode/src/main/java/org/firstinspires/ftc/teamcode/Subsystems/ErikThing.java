@@ -90,7 +90,6 @@ public class ErikThing extends LinearOpMode {
     public static double leftPower = 0;
 
 
-    public static double kP = 0, kI = 0, kD = 0, kF = 0;
     public static double targetVelocity = 0;
 
 
@@ -100,6 +99,13 @@ public class ErikThing extends LinearOpMode {
     public double currentVelocity;
     public double rpm;
 
+    public static double P = 0.00;
+    public static double I = 0.00;
+    public static double D = 0.00;
+    public static double F = 0.000;
+
+
+    private static PIDFController shooterController = new PIDFController(P, I, D, F);
 
     @Override
     public void runOpMode() {
@@ -116,12 +122,6 @@ public class ErikThing extends LinearOpMode {
         right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
-
-
-        PIDFController shooterController = new PIDFController(kP, kI, kD, kF);
-
-        shooterController.setPIDF(kP,kI,kD,kF);
-
         shift = 0;
 
 
@@ -134,6 +134,7 @@ public class ErikThing extends LinearOpMode {
 //                right.setPower(rightPower);
 //                left.setPower(leftPower);
 //            }
+            shooterController.setPIDF(P,I,D,F);
 
 
             double output = shooterController.calculate(
@@ -184,6 +185,7 @@ public class ErikThing extends LinearOpMode {
             dashboardTelemetry.addData("rpm", rpm );
             dashboardTelemetry.addData("targetVelocity", targetVelocity);
             dashboardTelemetry.addData("currentVelocity", left.getVelocity());
+            dashboardTelemetry.addData("output", output);
             dashboardTelemetry.update();
 
         }
