@@ -31,6 +31,11 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 
 import android.util.Size;
 
+import com.bylazar.field.PanelsField;
+import com.bylazar.panels.PanelsConfig;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.ftc.localization.localizers.PinpointLocalizer;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareDevice;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -62,6 +67,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
@@ -71,7 +77,9 @@ import org.firstinspires.ftc.vision.opencv.ColorRange;
 import org.firstinspires.ftc.vision.opencv.ImageRegion;
 import org.opencv.core.RotatedRect;
 import com.bylazar.configurables.annotations.Configurable;
+import com.seattlesolvers.solverslib.geometry.Pose2d;
 
+import org.firstinspires.ftc.teamcode.Hardware.Drawing;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,6 +96,10 @@ import java.util.List;
  *
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
+ *
+ *
+ *
+ * Greetings, Coleman Malcarne Was Here, and if youre seeing this then why are yall still using my old code, make youre own smh
  */
 
 @Configurable
@@ -96,7 +108,6 @@ public class HackinHounds_Mechanum extends OpMode {
     // Declare OpMode members. aamir dont screw stuff up
     private ElapsedTime runtime = new ElapsedTime();
     private HackinHoundsHardware robot = new HackinHoundsHardware();
-
 
     double shift = 1;
 
@@ -133,7 +144,10 @@ public class HackinHounds_Mechanum extends OpMode {
 
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         limelight.pipelineSwitch(0);
-//skibidi
+
+
+
+
         telemetry.addData("Status", "Initialized");
         telemetry.setMsTransmissionInterval(50);   // Speed up telemetry updates, Just use for debugging.
         telemetry.setDisplayFormat(Telemetry.DisplayFormat.MONOSPACE);
@@ -263,6 +277,12 @@ public class HackinHounds_Mechanum extends OpMode {
             telemetry.addData("currentVoltage", "%f", currentVoltage);
 
             telemetry.update();
+
+
+            Pose2D pose2d = robot.pinpoint.getPosition();
+            Pose pose = new Pose(pose2d.getX(DistanceUnit.INCH), pose2d.getY(DistanceUnit.INCH), pose2d.getHeading(AngleUnit.RADIANS));
+            Drawing.drawRobot(pose);
+            Drawing.sendPacket();
 
     }
 

@@ -2,7 +2,9 @@ package org.firstinspires.ftc.teamcode.Hardware;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.pedropathing.ftc.localization.localizers.PinpointLocalizer;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
@@ -39,6 +41,7 @@ public class HackinHoundsHardware extends Hardware {
 
     public Servo intake;
 
+    public GoBildaPinpointDriver pinpoint;
 
     public  VoltageSensor voltageSensor;
 
@@ -107,7 +110,7 @@ public class HackinHoundsHardware extends Hardware {
         intake = robotMap.get(Servo.class,"intake");
 
 
-
+        pinpoint = robotMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
         //leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         //rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
