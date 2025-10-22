@@ -243,9 +243,9 @@ public class HackinHounds_Mechanum extends OpMode {
                 robot.imu.resetYaw();
             }
 
-        if (gamepad1.a) {
-            robot.intake.setPower(1);
-        }
+            if (gamepad1.a) {
+                robot.intake.setPosition(0);
+            }
 
                 /** intake code prototype **/
 
@@ -260,9 +260,9 @@ public class HackinHounds_Mechanum extends OpMode {
 //        telemetry.addData("leftFront", "%f", robot.leftFront.getPower());
 //        telemetry.addData("leftBack", "%f", robot.leftBack.getPower());
 //        telemetry.addData("rightFront", "%f", robot.rightFront.getPower());
-        telemetry.addData("currentVoltage", "%f", currentVoltage);
+            telemetry.addData("currentVoltage", "%f", currentVoltage);
 
-        telemetry.update();
+            telemetry.update();
 
     }
 

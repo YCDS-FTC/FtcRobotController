@@ -37,7 +37,7 @@ public class HackinHoundsHardware extends Hardware {
     public DcMotorEx  rightBack;
 
 
-    public CRServo intake;
+    public Servo intake;
 
 
     public  VoltageSensor voltageSensor;
@@ -104,7 +104,7 @@ public class HackinHoundsHardware extends Hardware {
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
-        intake = robotMap.get(CRServo.class,"intake");
+        intake = robotMap.get(Servo.class,"intake");
 
 
 
