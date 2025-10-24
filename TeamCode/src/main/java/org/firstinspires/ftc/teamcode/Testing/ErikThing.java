@@ -85,10 +85,10 @@ public class ErikThing extends LinearOpMode {
     public double currentVelocity;
     public double rpm;
 
-    public static double P = 0.00;
-    public static double I = 0.00;
+    public static double P = 1;
+    public static double I = 0.04;
     public static double D = 0.00;
-    public static double F = 0.000;
+    public static double F = 1;
 
 
     private static PIDFController shooterController = new PIDFController(P, I, D, F);
