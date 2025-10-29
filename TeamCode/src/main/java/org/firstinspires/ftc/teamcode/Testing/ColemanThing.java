@@ -62,8 +62,7 @@ public class ColemanThing extends LinearOpMode {
 //    public DcMotorEx right;
     public static double shift = 0;
     public Servo flip;
-    public Servo rspin;
-    public Servo lspin;
+    public Servo intake;
     public AnalogInput test1;
     public AnalogInput test2;
     public AnalogInput test3;
@@ -83,9 +82,10 @@ public class ColemanThing extends LinearOpMode {
 //        right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
-        flip = hardwareMap.get(Servo.class, "intake");
-        rspin = hardwareMap.get(Servo.class, "rspin");
-        lspin = hardwareMap.get(Servo.class, "lspin");
+        flip = hardwareMap.get(Servo.class, "flip");
+        intake = hardwareMap.get(Servo.class, "intake");
+//        rspin = hardwareMap.get(Servo.class, "rspin");
+//        lspin = hardwareMap.get(Servo.class, "lspin");
         test1 = hardwareMap.get(AnalogInput.class, "test1");
         test2 = hardwareMap.get(AnalogInput.class, "test2");
         test3 = hardwareMap.get(AnalogInput.class, "test3");
@@ -101,24 +101,32 @@ public class ColemanThing extends LinearOpMode {
 
             if (getDistance(test1) < 7 && getDistance(test2) < 7 && getDistance(test3) < 7) {
                 telemetry.addLine("Thingy is filled fyi");
-
+                intake.setPosition(0.5);
+            } else if (getDistance(test2) < 7 && getDistance(test3) < 7) {
+                telemetry.addLine("Lets continue");
+                intake.setPosition(0);
             }
+
             telemetry.addData("", "%f", getDistance(test1));
             telemetry.addData("", "%f", getDistance(test2));
             telemetry.addData("", "%f", getDistance(test3));
 
-            if (gamepad1.a) {
-                flip.setPosition(0.53);
-                rspin.setPosition(0);
-                lspin.setPosition(1);
-            } else {
-                flip.setPosition(0.49);
-
-                rspin.setPosition(0.5);
-                lspin.setPosition(0.5);
-            }
+//            if (gamepad1.a) {
+//                flip.setPosition(0.53);
+//            } else {
+//                flip.setPosition(0.49);
+//            }
             //intake.setPosition(shift);
             // 0.49 to 0.53
+
+            if (gamepad1.dpad_up) {
+                intake.setPosition(1);
+            } else if (gamepad1.dpad_down) {
+                intake.setPosition(0);
+            } else if (gamepad1.dpad_left) {
+                intake.setPosition(0.5);
+            }
+
             telemetry.update();
         }
     }
