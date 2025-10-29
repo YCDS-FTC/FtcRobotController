@@ -34,6 +34,7 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /*
@@ -59,9 +60,13 @@ public class ColemanThing extends LinearOpMode {
 //
 //    public DcMotorEx left;
 //    public DcMotorEx right;
-    public static int shift = 1;
-    public Servo intake;
-
+    public static double shift = 0;
+    public Servo flip;
+    public Servo rspin;
+    public Servo lspin;
+    public AnalogInput test1;
+    public AnalogInput test2;
+    public AnalogInput test3;
 
     @Override
     public void runOpMode() {
@@ -78,8 +83,13 @@ public class ColemanThing extends LinearOpMode {
 //        right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
-        intake = hardwareMap.get(Servo.class, "intake");
-        shift = 1;
+        flip = hardwareMap.get(Servo.class, "intake");
+        rspin = hardwareMap.get(Servo.class, "rspin");
+        lspin = hardwareMap.get(Servo.class, "lspin");
+        test1 = hardwareMap.get(AnalogInput.class, "test1");
+        test2 = hardwareMap.get(AnalogInput.class, "test2");
+        test3 = hardwareMap.get(AnalogInput.class, "test3");
+        shift = 0;
 
 
 
@@ -88,11 +98,31 @@ public class ColemanThing extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
 
-            if (gamepad1.x) {
-                shift = (shift - 1) * -1;
-            }
-            intake.setPosition(shift);
 
+            if (getDistance(test1) < 7 && getDistance(test2) < 7 && getDistance(test3) < 7) {
+                telemetry.addLine("Thingy is filled fyi");
+
+            }
+            telemetry.addData("", "%f", getDistance(test1));
+            telemetry.addData("", "%f", getDistance(test2));
+            telemetry.addData("", "%f", getDistance(test3));
+
+            if (gamepad1.a) {
+                flip.setPosition(0.53);
+                rspin.setPosition(0);
+                lspin.setPosition(1);
+            } else {
+                flip.setPosition(0.49);
+
+                rspin.setPosition(0.5);
+                lspin.setPosition(0.5);
+            }
+            //intake.setPosition(shift);
+            // 0.49 to 0.53
+            telemetry.update();
         }
+    }
+    public double getDistance (AnalogInput sensor) {
+        return (sensor.getVoltage() * 32.50930976) - 2.6953842;
     }
 }
