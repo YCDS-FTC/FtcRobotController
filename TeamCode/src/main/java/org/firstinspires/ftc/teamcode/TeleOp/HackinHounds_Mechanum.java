@@ -260,6 +260,9 @@ public class HackinHounds_Mechanum extends OpMode {
             if (gamepad1.a) {
                 robot.intake.setPosition(0);
             }
+            if (gamepad1.b){
+                robot.intake.setPosition(1);
+            }
 
                 /** intake code prototype **/
 
