@@ -131,9 +131,9 @@ public class ConceptVisionColorLocator_Circle extends LinearOpMode {
                 .setTargetColorRange(ColorRange.ARTIFACT_PURPLE)
                 .setTargetColorRange(ColorRange.ARTIFACT_GREEN)
                 .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
-                .setRoi(ImageRegion.asUnityCenterCoordinates(-0.75, 0.75, 0.75, -0.75))
+                .setRoi(ImageRegion.entireFrame())
                 .setDrawContours(true)   // Show contours on the Stream Preview
-                .setBoxFitColor(0)       // Disable the drawing of rectangles
+                .setBoxFitColor(0) // Disable the drawing of rectangles
                 .setCircleFitColor(Color.rgb(255, 255, 0)) // Draw a circle
                 .setBlurSize(5)          // Smooth the transitions between different colors in image
 
@@ -158,8 +158,8 @@ public class ConceptVisionColorLocator_Circle extends LinearOpMode {
          */
         VisionPortal portal = new VisionPortal.Builder()
                 .addProcessor(colorLocator)
-                .setCameraResolution(new Size(320, 240))
-                .setCamera(hardwareMap.get(WebcamName.class, "Webcam 1"))
+                .setCameraResolution(new Size(1280, 720))
+                .setCamera(hardwareMap.get(WebcamName.class, "Artifact_camera"))
                 .build();
 
         telemetry.setMsTransmissionInterval(100);   // Speed up telemetry updates for debugging.
