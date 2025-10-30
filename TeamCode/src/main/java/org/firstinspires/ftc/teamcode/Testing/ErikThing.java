@@ -59,11 +59,9 @@ import com.seattlesolvers.solverslib.controller.PIDFController;
  */
 
 @Config
-@Configurable
 @TeleOp(name="ErikIsBalding", group="Linear OpMode")
 //@Disabled
 public class ErikThing extends LinearOpMode {
-    private PanelsTelemetry panelsTelemetry;
 
     //    public DcMotorEx leftFront;
 //    public DcMotorEx rightFront;
@@ -112,7 +110,6 @@ public class ErikThing extends LinearOpMode {
 
 
 
-        PanelsTelemetry panelsTelemetry = PanelsTelemetry.INSTANCE;
 
         waitForStart();
         while (opModeIsActive()) {

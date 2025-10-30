@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
@@ -14,7 +15,7 @@ public class DINGDONG_autonomous extends OpMode {
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
 
-//    private final Pose startPose = new Pose(122, 123,)
+    private final Pose startPose = new Pose(122, 123);
     private final Pose scorePose = new Pose(84, 83, Math.toRadians(45));
     private final Pose pickupOne = new Pose(125,83, Math.toRadians(0));
     private final Pose pickupTwo = new Pose (126,60, Math.toRadians(0));
@@ -25,7 +26,12 @@ public class DINGDONG_autonomous extends OpMode {
 
 
 
-    private Path scorePreload;
+    private Path scorePreload, pickup1, score1, pickup2, score2, pickup3, score3, Move;
+
+    public void buildPaths(){
+        scorePreload = new Path(new BezierLine(startPose, scorePose));
+        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading(), 0.8);
+    }
 
     @Override
     public void loop(){

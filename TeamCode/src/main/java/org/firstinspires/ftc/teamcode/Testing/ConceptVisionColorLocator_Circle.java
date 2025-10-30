@@ -19,12 +19,11 @@
  * SOFTWARE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode.Testing;
 
 import android.graphics.Color;
 import android.util.Size;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -68,7 +67,6 @@ import java.util.List;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Disabled
 @TeleOp(name = "Concept: Vision Color-Locator (Circle)", group = "Concept")
 public class ConceptVisionColorLocator_Circle extends LinearOpMode {
     @Override
@@ -130,7 +128,8 @@ public class ConceptVisionColorLocator_Circle extends LinearOpMode {
          *        CLOSING:    Will Dilate and then Erode which will tend to fill in any small holes in blob edges.
          */
         ColorBlobLocatorProcessor colorLocator = new ColorBlobLocatorProcessor.Builder()
-                .setTargetColorRange(ColorRange.ARTIFACT_PURPLE)   // Use a predefined color match
+                .setTargetColorRange(ColorRange.ARTIFACT_PURPLE)
+                .setTargetColorRange(ColorRange.ARTIFACT_GREEN)
                 .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
                 .setRoi(ImageRegion.asUnityCenterCoordinates(-0.75, 0.75, 0.75, -0.75))
                 .setDrawContours(true)   // Show contours on the Stream Preview
