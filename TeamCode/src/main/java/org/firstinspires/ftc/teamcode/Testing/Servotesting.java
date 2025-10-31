@@ -7,6 +7,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 
+import java.util.HashMap;
+
 @Configurable
 @TeleOp(name="servoTesting", group = "Linear OpMode")
 public class Servotesting extends LinearOpMode {
@@ -14,11 +16,14 @@ public class Servotesting extends LinearOpMode {
 
     private static double Servopos = 0;
 
+    HashMap<Double, Double> DINGDONG = new HashMap<Double,Double>();
+
 
     @Override
     public void runOpMode(){
         robot.init(hardwareMap);
         waitForStart();
+        DINGDONG.put(1.00, 145.2);
 
 
         while (opModeIsActive()){

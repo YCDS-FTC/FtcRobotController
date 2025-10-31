@@ -142,8 +142,8 @@ public class HackinHounds_Mechanum extends OpMode {
     public void init() {
         robot.init(hardwareMap);
 
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
-        limelight.pipelineSwitch(0);
+//        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+//        limelight.pipelineSwitch(0);
 
 
 
@@ -160,7 +160,7 @@ public class HackinHounds_Mechanum extends OpMode {
     double turnPower = 0;
     @Override
     public void start(){
-        limelight.start();
+//        limelight.start();
         runtime.reset();
 
     }
@@ -186,35 +186,35 @@ public class HackinHounds_Mechanum extends OpMode {
             }
 
 
-
-            YawPitchRollAngles orientation = robot.imu.getRobotYawPitchRollAngles();
-            limelight.updateRobotOrientation(orientation.getYaw());
-
-            LLResult llResult = limelight.getLatestResult();
-            if (llResult != null && llResult.isValid()){
-                Pose3D botPose = llResult.getBotpose_MT2();
-                telemetry.addData("Tx", llResult.getTx());
-                telemetry.addData("Ty", llResult.getTy());
-                telemetry.addData("Ta", llResult.getTa());
-                telemetry.addData("Botpose", llResult.getBotpose_MT2());
-            }
-
-            LLResult result = limelight.getLatestResult();
+//
+//            YawPitchRollAngles orientation = robot.imu.getRobotYawPitchRollAngles();
+//            limelight.updateRobotOrientation(orientation.getYaw());
+//
+//            LLResult llResult = limelight.getLatestResult();
+//            if (llResult != null && llResult.isValid()){
+//                Pose3D botPose = llResult.getBotpose_MT2();
+//                telemetry.addData("Tx", llResult.getTx());
+//                telemetry.addData("Ty", llResult.getTy());
+//                telemetry.addData("Ta", llResult.getTa());
+//                telemetry.addData("Botpose", llResult.getBotpose_MT2());
+//            }
+//
+//            LLResult result = limelight.getLatestResult();
 
             /** limelight button to auto align robot **/
-            if (result.isValid()) {
-                // Read tx (in degrees)
-                double tx = result.getTx();
-
-// Get the robot's current heading from IMU (in radians)
-                double currentAngle = robot.imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle;
-
-// Compute the desired *absolute* angle in IMU space
-                double targetAngle = currentAngle + Math.toRadians(tx);
-// PID error becomes how far the robot is from that new target angle
-                turnPower = PIDControl(targetAngle, currentAngle);
-
-            }
+//            if (result.isValid()) {
+//                // Read tx (in degrees)
+//                double tx = result.getTx();
+//
+//// Get the robot's current heading from IMU (in radians)
+//                double currentAngle = robot.imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle;
+//
+//// Compute the desired *absolute* angle in IMU space
+//                double targetAngle = currentAngle + Math.toRadians(tx);
+//// PID error becomes how far the robot is from that new target angle
+//                turnPower = PIDControl(targetAngle, currentAngle);
+//
+//            }
                 // Send data to Dashboard
             TelemetryPacket packet = new TelemetryPacket();
 

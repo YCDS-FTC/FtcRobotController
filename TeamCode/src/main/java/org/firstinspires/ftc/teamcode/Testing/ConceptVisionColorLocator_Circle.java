@@ -129,7 +129,6 @@ public class ConceptVisionColorLocator_Circle extends LinearOpMode {
          */
         ColorBlobLocatorProcessor colorLocator = new ColorBlobLocatorProcessor.Builder()
                 .setTargetColorRange(ColorRange.ARTIFACT_PURPLE)
-                .setTargetColorRange(ColorRange.ARTIFACT_GREEN)
                 .setContourMode(ColorBlobLocatorProcessor.ContourMode.EXTERNAL_ONLY)
                 .setRoi(ImageRegion.entireFrame())
                 .setDrawContours(true)   // Show contours on the Stream Preview
