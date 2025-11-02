@@ -94,16 +94,12 @@ public class ErikThing extends LinearOpMode {
     @Override
     public void runOpMode() {
         left  = hardwareMap.get(DcMotorEx.class, "left");
-        right = hardwareMap.get(DcMotorEx.class, "right");
+//        right = hardwareMap.get(DcMotorEx.class, "right");
         left.setDirection(DcMotorSimple.Direction.REVERSE);
-        right.setDirection(DcMotorSimple.Direction.FORWARD);
         left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
         shift = 0;
@@ -156,8 +152,6 @@ public class ErikThing extends LinearOpMode {
 
 
             telemetry.addData("leftpower", "%f", left.getPower());
-            telemetry.addData("rightpower", "%f", right.getPower());
-            telemetry.addData("rightRPM", "%f", right.getVelocity());
             telemetry.addData("leftRPM", "%f", left.getVelocity());
             telemetry.addData("RPM", rpm);
             telemetry.update();
