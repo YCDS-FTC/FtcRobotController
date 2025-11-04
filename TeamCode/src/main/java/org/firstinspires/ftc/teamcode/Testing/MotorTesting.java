@@ -27,7 +27,7 @@ public class MotorTesting extends LinearOpMode {
 
     public static double flickPower;
 
-    public static int flickTargetPosition = 0;
+    public static int flickTargetPosition = 30;
 
 
     public static double P = 0.015;

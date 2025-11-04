@@ -77,6 +77,7 @@ import org.firstinspires.ftc.vision.opencv.ColorRange;
 import org.firstinspires.ftc.vision.opencv.ImageRegion;
 import org.opencv.core.RotatedRect;
 import com.bylazar.configurables.annotations.Configurable;
+import com.seattlesolvers.solverslib.controller.PIDFController;
 import com.seattlesolvers.solverslib.geometry.Pose2d;
 
 import org.firstinspires.ftc.teamcode.Hardware.Drawing;
@@ -134,6 +135,22 @@ public class HackinHounds_Mechanum extends OpMode {
     private static double desiredOffset = 0;
 
     private static double horizontalOffset;
+
+    boolean wasDetecting = false;
+
+
+    private final ElapsedTime sensorTimer = new ElapsedTime();
+
+    public static int flickTargetPosition = 0;
+
+
+    public static double P = 0.015;
+    public static double I = 0.0001;
+    public static double D = 0.00;
+    public static double F = 0.00006;
+
+    private static PIDFController flickController = new PIDFController(P,I,D,F);
+
 
 
     @Override
@@ -216,6 +233,8 @@ public class HackinHounds_Mechanum extends OpMode {
             TelemetryPacket packet = new TelemetryPacket();
 
 
+
+
                 /** DRIVING - Perfectly FINE (don't change) **/
 
                 //telemetry.addData("begining if's finished", "%f", runtime.milliseconds() - cycleStart);
@@ -260,6 +279,42 @@ public class HackinHounds_Mechanum extends OpMode {
             if (gamepad1.b){
                 robot.intake.setPosition(1);
             }
+
+            double d1 = robot.getDistance(robot.test1), d2 = robot.getDistance(robot.test2), d3 = robot.getDistance(robot.test3);
+            if (d1 < 7 && d2 < 7 && d3 < 7){
+                if(!wasDetecting){
+                    wasDetecting = true;
+                    sensorTimer.reset();
+                }
+                if (sensorTimer.seconds() > 0.1){
+                    telemetry.addLine("Thingy is filled fyi");
+                    robot.intake.setPosition(0.5);
+                    robot.light.setPosition(0.6);
+                    robot.light2.setPosition(0.6);
+                }
+                telemetry.addData("confirming secs", "%.3f", sensorTimer.seconds());
+            }  else if (d2 < 7 && d3 < 7) {
+                wasDetecting = false;
+                telemetry.addLine("Lets continue");
+                robot.light.setPosition(0);
+                robot.light2.setPosition(0);
+                robot.intake.setPosition(0);
+            } else{
+                wasDetecting = false;
+                robot.light.setPosition(0);
+                robot.light2.setPosition(0);
+                sensorTimer.reset();
+            }
+
+            if (gamepad1.x) {
+                flickTargetPosition = 0;
+            }
+            if (gamepad1.y){
+                flickTargetPosition = 30;
+            }
+
+            flickController.setPIDF(P,I,D,F);
+            robot.flick.setPower(flickController.calculate(robot.flick.getCurrentPosition(), flickTargetPosition));
 
                 /** intake code prototype **/
 

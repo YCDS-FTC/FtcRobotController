@@ -36,11 +36,9 @@ public class HackinHoundsHardware extends Hardware {
 
     /** sensors **/
     public Limelight3A limelight;
-    public AnalogInput test1;
-    public AnalogInput test2;
-    public AnalogInput test3;
-    public Servo light;
-    public Servo light2;
+    public AnalogInput test1, test2, test3;
+    public Servo light, light2;
+    public DcMotorEx flick;
 
     /** Drivetrain Members **/
     public DcMotorEx  leftFront;
@@ -138,6 +136,15 @@ public class HackinHoundsHardware extends Hardware {
 
 
         intake = robotMap.get(Servo.class,"intake");
+        test1 = robotMap.get(AnalogInput.class, "test1");
+        test2 = robotMap.get(AnalogInput.class, "test2");
+        test3 = robotMap.get(AnalogInput.class, "test3");
+        light = robotMap.get(Servo.class,"light");
+        light2 = robotMap.get(Servo.class,"light2");
+        flick = robotMap.get(DcMotorEx.class,"flick");
+        flick.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        flick.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flick.setDirection(DcMotorSimple.Direction.FORWARD);
 
 
         pinpoint = robotMap.get(GoBildaPinpointDriver.class, "pinpoint");

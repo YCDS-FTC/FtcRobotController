@@ -70,10 +70,7 @@ public class ColemanThing extends LinearOpMode {
     public AnalogInput test3;
 
 
-    public static double timeSinceTrue;
     boolean wasDetecting = false;
-    private final double confirmTime = 0.1;
-    private final double fullThreshold = 7;
 
 
     private final ElapsedTime sensorTimer = new ElapsedTime();
@@ -114,31 +111,29 @@ public class ColemanThing extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
 
-            double d1 = getDistance(test1);
-            double d2 = getDistance(test2);
-            double d3 = getDistance(test3);
 
-            boolean sensorIsDetecting = d1 < fullThreshold & d2 < fullThreshold & d3 < fullThreshold;
 
-            if (sensorIsDetecting){
+            double d1 = getDistance(test1), d2 = getDistance(test2), d3 = getDistance(test3);
+            if (d1 < 7 && d2 < 7 && d3 < 7){
                 if(!wasDetecting){
                     wasDetecting = true;
                     sensorTimer.reset();
                 }
-
-                if (sensorTimer.seconds() > confirmTime){
+                if (sensorTimer.seconds() > 0.1){
                     telemetry.addLine("Thingy is filled fyi");
                     intake.setPosition(0.5);
-                    light.setPosition(0.444);
-                    light2.setPosition(0.444);
-                } else{
-                    telemetry.addData("confirming secs", "%.3f", sensorTimer.seconds());
+                    light.setPosition(0.6);
+                    light2.setPosition(0.6);
                 }
-
+                telemetry.addData("confirming secs", "%.3f", sensorTimer.seconds());
+            }  else if (d2 < 7 && d3 < 7) {
+                wasDetecting = false;
+                telemetry.addLine("Lets continue");
+                light.setPosition(0);
+                light2.setPosition(0);
+                intake.setPosition(0);
             } else{
-               if(wasDetecting){
-                   wasDetecting = false;
-               }
+               wasDetecting = false;
                light.setPosition(0);
                light2.setPosition(0);
                sensorTimer.reset();
