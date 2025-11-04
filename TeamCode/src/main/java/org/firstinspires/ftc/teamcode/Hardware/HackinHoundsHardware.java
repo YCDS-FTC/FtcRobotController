@@ -34,23 +34,29 @@ import org.openftc.easyopencv.OpenCvCamera;
 public class HackinHoundsHardware extends Hardware {
     public HardwareMap robotMap;
 
-
+    /** sensors **/
     public Limelight3A limelight;
-    // Drivetrain Members
+    public AnalogInput test1;
+    public AnalogInput test2;
+    public AnalogInput test3;
+    public Servo light;
+    public Servo light2;
+
+    /** Drivetrain Members **/
     public DcMotorEx  leftFront;
     public DcMotorEx  rightFront;
     public DcMotorEx  leftBack;
     public DcMotorEx  rightBack;
 
-
+/** intake members **/
     public Servo intake;
+
 
     public GoBildaPinpointDriver pinpoint;
 
     public  VoltageSensor voltageSensor;
 
     public double lastAngle;
-
     public IMU imu;
     public YawPitchRollAngles angles;
 
