@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 /*
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -61,11 +62,21 @@ public class ColemanThing extends LinearOpMode {
 //    public DcMotorEx left;
 //    public DcMotorEx right;
     public static double shift = 0;
-    public Servo flip;
+    public Servo light;
+    public Servo light2;
     public Servo intake;
     public AnalogInput test1;
     public AnalogInput test2;
     public AnalogInput test3;
+
+
+    public static double timeSinceTrue;
+    boolean wasDetecting = false;
+    private final double confirmTime = 0.1;
+    private final double fullThreshold = 7;
+
+
+    private final ElapsedTime sensorTimer = new ElapsedTime();
 
     @Override
     public void runOpMode() {
@@ -82,14 +93,19 @@ public class ColemanThing extends LinearOpMode {
 //        right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
-        flip = hardwareMap.get(Servo.class, "flip");
+
         intake = hardwareMap.get(Servo.class, "intake");
 //        rspin = hardwareMap.get(Servo.class, "rspin");
 //        lspin = hardwareMap.get(Servo.class, "lspin");
         test1 = hardwareMap.get(AnalogInput.class, "test1");
         test2 = hardwareMap.get(AnalogInput.class, "test2");
         test3 = hardwareMap.get(AnalogInput.class, "test3");
+        light = hardwareMap.get(Servo.class,"light");
+        light2 = hardwareMap.get(Servo.class,"light2");
         shift = 0;
+
+
+
 
 
 
@@ -98,18 +114,53 @@ public class ColemanThing extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()) {
 
+            double d1 = getDistance(test1);
+            double d2 = getDistance(test2);
+            double d3 = getDistance(test3);
 
-            if (getDistance(test1) < 7 && getDistance(test2) < 7 && getDistance(test3) < 7) {
-                telemetry.addLine("Thingy is filled fyi");
-                intake.setPosition(0.5);
-            } else if (getDistance(test2) < 7 && getDistance(test3) < 7) {
-                telemetry.addLine("Lets continue");
-                intake.setPosition(0);
+            boolean sensorIsDetecting = d1 < fullThreshold & d2 < fullThreshold & d3 < fullThreshold;
+
+            if (sensorIsDetecting){
+                if(!wasDetecting){
+                    wasDetecting = true;
+                    sensorTimer.reset();
+                }
+
+                if (sensorTimer.seconds() > confirmTime){
+                    telemetry.addLine("Thingy is filled fyi");
+                    intake.setPosition(0.5);
+                    light.setPosition(0.444);
+                    light2.setPosition(0.444);
+                } else{
+                    telemetry.addData("confirming secs", "%.3f", sensorTimer.seconds());
+                }
+
+            } else{
+               if(wasDetecting){
+                   wasDetecting = false;
+               }
+               light.setPosition(0);
+               light2.setPosition(0);
+               sensorTimer.reset();
             }
+
+
+//            if (getDistance(test1) < 7 && getDistance(test2) < 7 && getDistance(test3) < 7) {
+//                telemetry.addLine("Thingy is filled fyi");
+//                intake.setPosition(0.5);
+//                light.setPosition(0.444);
+//                light2.setPosition(0.444);
+//            } else if (getDistance(test2) < 7 && getDistance(test3) < 7) {
+//                telemetry.addLine("Lets continue");
+//                light.setPosition(0);
+//                light2.setPosition(0);
+//                intake.setPosition(0);
+//            }
 
             telemetry.addData("", "%f", getDistance(test1));
             telemetry.addData("", "%f", getDistance(test2));
             telemetry.addData("", "%f", getDistance(test3));
+            telemetry.addData("timer", "%f", sensorTimer.milliseconds());
 
 //            if (gamepad1.a) {
 //                flip.setPosition(0.53);

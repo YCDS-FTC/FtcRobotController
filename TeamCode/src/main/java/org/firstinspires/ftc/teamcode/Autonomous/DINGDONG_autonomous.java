@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
 import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
@@ -26,11 +27,36 @@ public class DINGDONG_autonomous extends OpMode {
 
 
 
-    private Path scorePreload, pickup1, score1, pickup2, score2, pickup3, score3, Move;
+    private Path scorePreload, pickup1, score1, pickup2, score2, pickup3, score3, park;
 
     public void buildPaths(){
         scorePreload = new Path(new BezierLine(startPose, scorePose));
         scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading(), 0.8);
+
+
+        pickup1 = new Path(new BezierLine(scorePose, pickupOne));
+        pickup1.setLinearHeadingInterpolation(scorePose.getHeading(), pickupOne.getHeading(), 0.7);
+
+        score1 = new Path(new BezierLine(pickupOne, scorePose));
+        score1.setLinearHeadingInterpolation(pickupOne.getHeading(), scorePose.getHeading(), 0.9);
+
+        pickup2 = new Path(new BezierCurve(scorePose, curve1, pickupTwo));
+        pickup2.setLinearHeadingInterpolation(scorePose.getHeading(), pickupTwo.getHeading(), 0.7);
+
+        score2 = new Path(new BezierLine(pickupTwo, scorePose));
+        score2.setLinearHeadingInterpolation(pickupTwo.getHeading(), scorePose.getHeading(), 0.8);
+
+        pickup3 = new Path(new BezierCurve(scorePose, curve2, pickupThree));
+        pickup3.setLinearHeadingInterpolation(scorePose.getHeading(), pickupThree.getHeading(), 0.7);
+
+        score3 = new Path(new BezierLine(pickupThree, scorePose));
+        score3.setLinearHeadingInterpolation(pickupThree.getHeading(), scorePose.getHeading());
+
+        park = new Path(new BezierLine(scorePose, move));
+        park.setLinearHeadingInterpolation(scorePose.getHeading(), move.getHeading());
+
+
+
     }
 
     @Override

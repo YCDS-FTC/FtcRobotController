@@ -5,6 +5,7 @@ import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.ftc.localization.localizers.PinpointLocalizer;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
@@ -23,6 +24,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.seattlesolvers.solverslib.util.InterpLUT;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
@@ -32,6 +34,8 @@ import org.openftc.easyopencv.OpenCvCamera;
 public class HackinHoundsHardware extends Hardware {
     public HardwareMap robotMap;
 
+
+    public Limelight3A limelight;
     // Drivetrain Members
     public DcMotorEx  leftFront;
     public DcMotorEx  rightFront;
@@ -60,6 +64,24 @@ public class HackinHoundsHardware extends Hardware {
 
     private  final double think =  5.9;
 
+    InterpLUT getShootPower = new InterpLUT();
+    public static double shooterPower = 0;
+
+    public static double distanceToGoal = 0.00;
+
+
+
+    // how many degrees back isA your limelight rotated from perfectly vertical?
+    public double limelightMountAngleDegrees = 25.0;
+
+    // distance from the center of the Limelight lens to the floor
+    public double limelightLensHeightInches = 20.0;
+
+    // distance from the target to the floor
+    public double goalHeightInches = 30.0;
+
+
+
     /**
      GLOBAL VARIABLES
      **/
@@ -75,6 +97,8 @@ public class HackinHoundsHardware extends Hardware {
 
         // Save reference to Hardware map
         robotMap = hwMap;
+
+//        limelight = robotMap.get(Limelight3A.class, "limelight");
 
 
         // Define and Initialize Motors for drivetrain
@@ -133,7 +157,24 @@ public class HackinHoundsHardware extends Hardware {
         imu.initialize(new IMU.Parameters(orientationOnRobot));
         imu.resetYaw();
         lastAngle = 0;
-                //imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+
+
+
+        getShootPower.add(23, 950);
+        getShootPower.add(28, 990);
+        getShootPower.add(33, 1060);
+        getShootPower.add(38, 1080);
+        getShootPower.add(43, 1100);
+        getShootPower.add(48, 1120);
+        getShootPower.add(53, 1140);
+        getShootPower.add(58, 1160);
+        getShootPower.add(63, 1180);
+        getShootPower.add(68, 1210);
+        getShootPower.add(73, 1240);
+        getShootPower.add(78, 1280);
+
+
+        //imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
     }
 
     public double clamp(double x, double min, double max) {
@@ -156,10 +197,31 @@ public class HackinHoundsHardware extends Hardware {
         lastAngle = angle;
 
         return globalAngle;
+
+
     }
 
     public double getDistance (AnalogInput sensor) {
         return (sensor.getVoltage() * 48.7) - 4.9;
     }
+
+    public double getshooterPower() {
+        getShootPower.createLUT();
+
+        shooterPower = getShootPower.get(distanceToGoal);
+
+        return shooterPower;
+    }
+
+//    public double limelight(double ty){
+//
+//        double targetOffsetAngle_Vertical = ty;
+//         double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
+//
+//        double distanceToGoal = (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
+//
+//        return distanceToGoal;
+//    }
+
 }
 

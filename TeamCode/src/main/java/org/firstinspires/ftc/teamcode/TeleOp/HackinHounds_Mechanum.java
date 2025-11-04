@@ -116,8 +116,6 @@ public class HackinHounds_Mechanum extends OpMode {
 
     double cycleStart = 0;
 
-    private Limelight3A limelight;
-
     private static double Kp = 3;
     private static double Ki = 0;
     private static double Kd = 0.05;
@@ -142,7 +140,6 @@ public class HackinHounds_Mechanum extends OpMode {
     public void init() {
         robot.init(hardwareMap);
 
-//        limelight = hardwareMap.get(Limelight3A.class, "limelight");
 //        limelight.pipelineSwitch(0);
 
 
@@ -155,7 +152,6 @@ public class HackinHounds_Mechanum extends OpMode {
     }
 
 
-    public static double shooterPower = 0;
 
     double turnPower = 0;
     @Override
@@ -187,8 +183,8 @@ public class HackinHounds_Mechanum extends OpMode {
 
 
 //
-//            YawPitchRollAngles orientation = robot.imu.getRobotYawPitchRollAngles();
-//            limelight.updateRobotOrientation(orientation.getYaw());
+            YawPitchRollAngles orientation = robot.imu.getRobotYawPitchRollAngles();
+            robot.limelight.updateRobotOrientation(orientation.getYaw());
 //
 //            LLResult llResult = limelight.getLatestResult();
 //            if (llResult != null && llResult.isValid()){
@@ -215,6 +211,7 @@ public class HackinHounds_Mechanum extends OpMode {
 //                turnPower = PIDControl(targetAngle, currentAngle);
 //
 //            }
+
                 // Send data to Dashboard
             TelemetryPacket packet = new TelemetryPacket();
 
@@ -286,7 +283,7 @@ public class HackinHounds_Mechanum extends OpMode {
             Pose pose = new Pose(pose2d.getX(DistanceUnit.INCH), pose2d.getY(DistanceUnit.INCH), pose2d.getHeading(AngleUnit.RADIANS));
             Drawing.drawRobot(pose);
             Drawing.sendPacket();
-            
+
     }
 
 
