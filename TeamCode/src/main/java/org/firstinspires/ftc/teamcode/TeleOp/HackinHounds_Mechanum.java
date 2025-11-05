@@ -117,9 +117,9 @@ public class HackinHounds_Mechanum extends OpMode {
 
     double cycleStart = 0;
 
-    private static double Kp = 3;
-    private static double Ki = 0;
-    private static double Kd = 0.05;
+    public static double Kp = 3;
+    public static double Ki = 0;
+    public static double Kd = 0.05;
 
 
     private double currentVoltage;
@@ -157,15 +157,12 @@ public class HackinHounds_Mechanum extends OpMode {
     public void init() {
         robot.init(hardwareMap);
 
-//        limelight.pipelineSwitch(0);
-
-
-
-
         telemetry.addData("Status", "Initialized");
         telemetry.setMsTransmissionInterval(50);   // Speed up telemetry updates, Just use for debugging.
         telemetry.setDisplayFormat(Telemetry.DisplayFormat.MONOSPACE);
         telemetry.update();
+        robot.limelight.pipelineSwitch(0);
+
     }
 
 
@@ -173,8 +170,8 @@ public class HackinHounds_Mechanum extends OpMode {
     double turnPower = 0;
     @Override
     public void start(){
-//        limelight.start();
         runtime.reset();
+        robot.limelight.start();
 
     }
 
@@ -182,7 +179,9 @@ public class HackinHounds_Mechanum extends OpMode {
     @Override
     public void loop () {
 
-            currentVoltage = robot.voltageSensor.getVoltage();
+
+
+        currentVoltage = robot.voltageSensor.getVoltage();
 
             cycleStart = runtime.milliseconds();
             //telemetry.addData("Begin Time", "%f", runtime.milliseconds() - cycleStart);
@@ -202,32 +201,41 @@ public class HackinHounds_Mechanum extends OpMode {
 //
             YawPitchRollAngles orientation = robot.imu.getRobotYawPitchRollAngles();
             robot.limelight.updateRobotOrientation(orientation.getYaw());
-//
-//            LLResult llResult = limelight.getLatestResult();
-//            if (llResult != null && llResult.isValid()){
-//                Pose3D botPose = llResult.getBotpose_MT2();
-//                telemetry.addData("Tx", llResult.getTx());
-//                telemetry.addData("Ty", llResult.getTy());
-//                telemetry.addData("Ta", llResult.getTa());
-//                telemetry.addData("Botpose", llResult.getBotpose_MT2());
-//            }
-//
-//            LLResult result = limelight.getLatestResult();
+            LLResult llResult = robot.limelight.getLatestResult();
+            if (llResult != null && llResult.isValid()){
+                Pose3D botPose = llResult.getBotpose_MT2();
+                telemetry.addData("Tx", llResult.getTx());
+                telemetry.addData("Ty", llResult.getTy());
+                telemetry.addData("Ta", llResult.getTa());
+                telemetry.addData("Botpose", llResult.getBotpose_MT2());
+            }
 
-            /** limelight button to auto align robot **/
-//            if (result.isValid()) {
-//                // Read tx (in degrees)
-//                double tx = result.getTx();
-//
+            LLResult result = robot.limelight.getLatestResult();
+
+            double ty = result.getTy();
+            double tx = result.getTx();
+
+        /** limelight button to auto align robot **/
+            if (result.isValid()) {
+//                robot.getshooterPower();
+                // Read tx (in degrees)
+
 //// Get the robot's current heading from IMU (in radians)
-//                double currentAngle = robot.imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle;
+                double currentAngle = robot.imu.getRobotOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.RADIANS).firstAngle;
 //
 //// Compute the desired *absolute* angle in IMU space
-//                double targetAngle = currentAngle + Math.toRadians(tx);
+                double targetAngle = currentAngle + Math.toRadians(tx);
 //// PID error becomes how far the robot is from that new target angle
-//                turnPower = PIDControl(targetAngle, currentAngle);
-//
-//            }
+                //turnPower = PIDControl(targetAngle, currentAngle);
+                double angleError = targetAngle - currentAngle;
+                double turnSign = Math.signum(targetAngle - robot.getAngle());
+                turnPower = Math.min(Math.abs((turnSign*angleError)/45.0), 0.3);
+
+            }
+
+
+
+        double distanceToGoal =  robot.limelight(ty, tx);
 
                 // Send data to Dashboard
             TelemetryPacket packet = new TelemetryPacket();
@@ -257,11 +265,11 @@ public class HackinHounds_Mechanum extends OpMode {
             double rb = (rotY + rotX - rx) / d;
 
 
-            if (gamepad2.a) {
-                robot.leftFront.setPower(turnPower);
-                robot.leftBack.setPower(turnPower);
-                robot.rightBack.setPower(-turnPower);
-                robot.rightFront.setPower(-turnPower);
+            if (gamepad2.y && result.isValid()) {
+                robot.leftFront.setPower(0.7 * lb * shift + turnPower);
+                robot.leftBack.setPower(0.7 * lf * shift + turnPower);
+                robot.rightBack.setPower(0.7 * rb * shift - turnPower);
+                robot.rightFront.setPower(0.7 * rf * shift - turnPower);
             } else {
                 robot.leftBack.setVelocity(3000 * lb * shift);
                 robot.leftFront.setVelocity(3000 * lf * shift);
@@ -273,43 +281,46 @@ public class HackinHounds_Mechanum extends OpMode {
                 robot.imu.resetYaw();
             }
 
-            if (gamepad1.a) {
+            if(gamepad2.x){
+                robot.intake.setPosition(0.5);
+            }
+            if (gamepad2.a) {
                 robot.intake.setPosition(0);
             }
-            if (gamepad1.b){
+            if (gamepad2.b){
                 robot.intake.setPosition(1);
             }
 
-            double d1 = robot.getDistance(robot.test1), d2 = robot.getDistance(robot.test2), d3 = robot.getDistance(robot.test3);
-            if (d1 < 7 && d2 < 7 && d3 < 7){
-                if(!wasDetecting){
-                    wasDetecting = true;
-                    sensorTimer.reset();
-                }
-                if (sensorTimer.seconds() > 0.1){
-                    telemetry.addLine("Thingy is filled fyi");
-                    robot.intake.setPosition(0.5);
-                    robot.light.setPosition(0.6);
-                    robot.light2.setPosition(0.6);
-                }
-                telemetry.addData("confirming secs", "%.3f", sensorTimer.seconds());
-            }  else if (d2 < 7 && d3 < 7) {
-                wasDetecting = false;
-                telemetry.addLine("Lets continue");
-                robot.light.setPosition(0);
-                robot.light2.setPosition(0);
-                robot.intake.setPosition(0);
-            } else{
-                wasDetecting = false;
-                robot.light.setPosition(0);
-                robot.light2.setPosition(0);
-                sensorTimer.reset();
-            }
+//            double d1 = robot.getDistance(robot.test1), d2 = robot.getDistance(robot.test2), d3 = robot.getDistance(robot.test3);
+//            if (d1 < 7 && d2 < 7 && d3 < 7){
+//                if(!wasDetecting){
+//                    wasDetecting = true;
+//                    sensorTimer.reset();
+//                }
+//                if (sensorTimer.seconds() > 0.1){
+//                    telemetry.addLine("Thingy is filled fyi");
+//                    robot.intake.setPosition(0.5);
+//                    robot.light.setPosition(0.6);
+//                    robot.light2.setPosition(0.6);
+//                }
+//                telemetry.addData("confirming secs", "%.3f", sensorTimer.seconds());
+//            }  else if (d2 < 7 && d3 < 7) {
+//                wasDetecting = false;
+//                telemetry.addLine("Lets continue");
+//                robot.light.setPosition(0);
+//                robot.light2.setPosition(0);
+//                robot.intake.setPosition(0);
+//            } else{
+//                wasDetecting = false;
+//                robot.light.setPosition(0);
+//                robot.light2.setPosition(0);
+//                sensorTimer.reset();
+//            }
 
-            if (gamepad1.x) {
+            if (gamepad1.dpad_up) {
                 flickTargetPosition = 0;
             }
-            if (gamepad1.y){
+            if (gamepad1.dpad_down){
                 flickTargetPosition = 30;
             }
 
@@ -326,11 +337,14 @@ public class HackinHounds_Mechanum extends OpMode {
             telemetry.addData("Telemtry finished", "%f", runtime.milliseconds() - cycleStart);
             telemetry.addData("IMU HEADING:", "%f", robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
             telemetry.addData("turnPower", turnPower);
-//        telemetry.addData("rightBack", "%f", robot.rightBack.getVelocity());
-//        telemetry.addData("leftFront", "%f", robot.leftFront.getPower());
-//        telemetry.addData("leftBack", "%f", robot.leftBack.getPower());
-//        telemetry.addData("rightFront", "%f", robot.rightFront.getPower());
             telemetry.addData("currentVoltage", "%f", currentVoltage);
+            telemetry.addData("distanceToGoal", "%f",distanceToGoal);
+
+            telemetry.addData("", "%f", robot.getDistance(robot.test1));
+            telemetry.addData("", "%f", robot.getDistance(robot.test2));
+            telemetry.addData("", "%f", robot.getDistance(robot.test3));
+
+            telemetry.addData("velocity", "%f", robot.leftBack.getVelocity());
 
             telemetry.update();
 
@@ -339,7 +353,6 @@ public class HackinHounds_Mechanum extends OpMode {
             Pose pose = new Pose(pose2d.getX(DistanceUnit.INCH), pose2d.getY(DistanceUnit.INCH), pose2d.getHeading(AngleUnit.RADIANS));
             Drawing.drawRobot(pose);
             Drawing.sendPacket();
-
     }
 
 

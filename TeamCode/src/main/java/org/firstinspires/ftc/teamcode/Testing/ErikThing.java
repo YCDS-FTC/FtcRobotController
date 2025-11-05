@@ -43,6 +43,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 
 import dev.nextftc.control.feedback.PIDController;
 
+import com.qualcomm.robotcore.hardware.Servo;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
 /*
@@ -68,7 +69,7 @@ public class ErikThing extends LinearOpMode {
 //    public DcMotorEx leftBack;
 //    public DcMotorEx rightBack;
     public DcMotorEx left;
-    public DcMotorEx right;
+    public Servo hoodAngler;
     int shift = 1;
 
     public static double leftPower = 0;
@@ -76,8 +77,6 @@ public class ErikThing extends LinearOpMode {
 
     public static double targetVelocity = 0;
 
-
-    PIDController ShooterPIDController;
 
     public double ticksPerRevolution = 28;
     public double currentVelocity;
@@ -88,11 +87,15 @@ public class ErikThing extends LinearOpMode {
     public static double D = 0.00;
     public static double F = 1;
 
+    public static double hoodPosition = 0.00;
+
 
     private static PIDFController shooterController = new PIDFController(P, I, D, F);
 
     @Override
     public void runOpMode() {
+        hoodAngler = hardwareMap.get(Servo.class, "hoodAngle");
+
         left  = hardwareMap.get(DcMotorEx.class, "left");
 //        right = hardwareMap.get(DcMotorEx.class, "right");
         left.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -123,6 +126,7 @@ public class ErikThing extends LinearOpMode {
 
 
 
+            hoodAngler.setPosition(hoodPosition);
 
 //            while (!pController.atSetPoint()) {
 //                double output = pController.calculate(

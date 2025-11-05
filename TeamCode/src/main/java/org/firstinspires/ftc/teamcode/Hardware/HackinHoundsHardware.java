@@ -35,10 +35,9 @@ public class HackinHoundsHardware extends Hardware {
     public HardwareMap robotMap;
 
     /** sensors **/
-    public Limelight3A limelight;
     public AnalogInput test1, test2, test3;
     public Servo light, light2;
-    public DcMotorEx flick;
+    public Limelight3A limelight;
 
     /** Drivetrain Members **/
     public DcMotorEx  leftFront;
@@ -46,8 +45,16 @@ public class HackinHoundsHardware extends Hardware {
     public DcMotorEx  leftBack;
     public DcMotorEx  rightBack;
 
-/** intake members **/
+    /** intake members **/
     public Servo intake;
+    public DcMotorEx flick;
+
+
+
+    /** outake members **/
+    public DcMotorEx shooterMotor;
+    public Servo angleServo;
+
 
 
     public GoBildaPinpointDriver pinpoint;
@@ -71,18 +78,18 @@ public class HackinHoundsHardware extends Hardware {
     InterpLUT getShootPower = new InterpLUT();
     public static double shooterPower = 0;
 
-    public static double distanceToGoal = 0.00;
 
+    public double distancetogoal = 0;
 
 
     // how many degrees back isA your limelight rotated from perfectly vertical?
-    public double limelightMountAngleDegrees = 25.0;
+    public double limelightMountAngleDegrees = 20.0;
 
     // distance from the center of the Limelight lens to the floor
-    public double limelightLensHeightInches = 20.0;
+    public double limelightLensHeightInches =  10.0;
 
     // distance from the target to the floor
-    public double goalHeightInches = 30.0;
+    public double goalHeightInches = 29.5;
 
 
 
@@ -134,7 +141,8 @@ public class HackinHoundsHardware extends Hardware {
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-
+        angleServo = robotMap.get(Servo.class,"angleServo");
+        shooterMotor = robotMap.get(DcMotorEx.class,"shooterMotor");
         intake = robotMap.get(Servo.class,"intake");
         test1 = robotMap.get(AnalogInput.class, "test1");
         test2 = robotMap.get(AnalogInput.class, "test2");
@@ -146,6 +154,7 @@ public class HackinHoundsHardware extends Hardware {
         flick.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         flick.setDirection(DcMotorSimple.Direction.FORWARD);
 
+        limelight = robotMap.get(Limelight3A.class, "limelight");
 
         pinpoint = robotMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
@@ -221,20 +230,24 @@ public class HackinHoundsHardware extends Hardware {
     public double getshooterPower() {
         getShootPower.createLUT();
 
-        shooterPower = getShootPower.get(distanceToGoal);
+        shooterPower = getShootPower.get(distancetogoal);
 
         return shooterPower;
     }
 
-//    public double limelight(double ty){
-//
-//        double targetOffsetAngle_Vertical = ty;
-//         double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
-//
-//        double distanceToGoal = (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians);
-//
-//        return distanceToGoal;
-//    }
+    public double limelight(double ty, double tx){
+
+         double targetOffsetAngle_Vertical = ty;
+         double txToRadians = tx * (3.14159 / 180.0);
+         double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
+         double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
+
+        double distanceToGoal1 = (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians) + 3.3;
+
+
+        double distanceToGoal = (distanceToGoal1) * Math.cos(txToRadians);
+        return distanceToGoal;
+    }
 
 }
 
