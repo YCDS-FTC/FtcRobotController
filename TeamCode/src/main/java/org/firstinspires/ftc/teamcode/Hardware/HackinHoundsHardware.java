@@ -79,9 +79,6 @@ public class HackinHoundsHardware extends Hardware {
     public static double shooterPower = 0;
 
 
-    public double distancetogoal = 0;
-
-
     // how many degrees back isA your limelight rotated from perfectly vertical?
     public double limelightMountAngleDegrees = 20.0;
 
@@ -141,18 +138,27 @@ public class HackinHoundsHardware extends Hardware {
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        angleServo = robotMap.get(Servo.class,"angleServo");
+
         shooterMotor = robotMap.get(DcMotorEx.class,"shooterMotor");
+        shooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        shooterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        angleServo = robotMap.get(Servo.class,"angleServo");
         intake = robotMap.get(Servo.class,"intake");
         test1 = robotMap.get(AnalogInput.class, "test1");
         test2 = robotMap.get(AnalogInput.class, "test2");
         test3 = robotMap.get(AnalogInput.class, "test3");
         light = robotMap.get(Servo.class,"light");
         light2 = robotMap.get(Servo.class,"light2");
+
         flick = robotMap.get(DcMotorEx.class,"flick");
         flick.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         flick.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        flick.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         flick.setDirection(DcMotorSimple.Direction.FORWARD);
+
 
         limelight = robotMap.get(Limelight3A.class, "limelight");
 
@@ -182,18 +188,19 @@ public class HackinHoundsHardware extends Hardware {
 
 
 
-        getShootPower.add(23, 950);
-        getShootPower.add(28, 990);
-        getShootPower.add(33, 1060);
-        getShootPower.add(38, 1080);
-        getShootPower.add(43, 1100);
-        getShootPower.add(48, 1120);
-        getShootPower.add(53, 1140);
-        getShootPower.add(58, 1160);
-        getShootPower.add(63, 1180);
-        getShootPower.add(68, 1210);
-        getShootPower.add(73, 1240);
-        getShootPower.add(78, 1280);
+        getShootPower.add(23, 940);
+        getShootPower.add(28, 980);
+        getShootPower.add(33, 1040);
+        getShootPower.add(38, 1060);
+        getShootPower.add(43, 1080);
+        getShootPower.add(48, 1100);
+        getShootPower.add(53, 1120);
+        getShootPower.add(58, 1140);
+        getShootPower.add(63, 1140);
+        getShootPower.add(68, 1180);
+        getShootPower.add(73, 1220);
+        getShootPower.add(78, 1260);
+        getShootPower.add(83,1280);
 
 
         //imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
@@ -227,10 +234,10 @@ public class HackinHoundsHardware extends Hardware {
         return (sensor.getVoltage() * 48.7) - 4.9;
     }
 
-    public double getshooterPower() {
+    public double getshooterPower(double distanceToGoal) {
         getShootPower.createLUT();
 
-        shooterPower = getShootPower.get(distancetogoal);
+        shooterPower = getShootPower.get(distanceToGoal);
 
         return shooterPower;
     }

@@ -117,7 +117,7 @@ public class HackinHounds_Mechanum extends OpMode {
 
     double cycleStart = 0;
 
-    public static double Kp = 3;
+    public static double Kp = 1;
     public static double Ki = 0;
     public static double Kd = 0.05;
 
@@ -153,6 +153,7 @@ public class HackinHounds_Mechanum extends OpMode {
 
 
 
+
     @Override
     public void init() {
         robot.init(hardwareMap);
@@ -179,6 +180,11 @@ public class HackinHounds_Mechanum extends OpMode {
     @Override
     public void loop () {
 
+        robot.flick.setTargetPosition(flickTargetPosition);
+
+        robot.flick.setPower(1);
+
+        flickController.setPIDF(P,I,D,F);
 
 
         currentVoltage = robot.voltageSensor.getVoltage();
@@ -226,16 +232,17 @@ public class HackinHounds_Mechanum extends OpMode {
 //// Compute the desired *absolute* angle in IMU space
                 double targetAngle = currentAngle + Math.toRadians(tx);
 //// PID error becomes how far the robot is from that new target angle
-                //turnPower = PIDControl(targetAngle, currentAngle);
-                double angleError = targetAngle - currentAngle;
-                double turnSign = Math.signum(targetAngle - robot.getAngle());
-                turnPower = Math.min(Math.abs((turnSign*angleError)/45.0), 0.3);
+                turnPower = PIDControl(targetAngle, currentAngle);
+//                double angleError = targetAngle - currentAngle;
+//                double turnSign = Math.signum(targetAngle - robot.getAngle());
+//                turnPower = Math.min(Math.abs((turnSign*angleError)/45.0), 0.3);
 
             }
 
 
 
         double distanceToGoal =  robot.limelight(ty, tx);
+        double motorPower = robot.getshooterPower(distanceToGoal);
 
                 // Send data to Dashboard
             TelemetryPacket packet = new TelemetryPacket();
@@ -265,16 +272,20 @@ public class HackinHounds_Mechanum extends OpMode {
             double rb = (rotY + rotX - rx) / d;
 
 
-            if (gamepad2.y && result.isValid()) {
-                robot.leftFront.setPower(0.7 * lb * shift + turnPower);
-                robot.leftBack.setPower(0.7 * lf * shift + turnPower);
-                robot.rightBack.setPower(0.7 * rb * shift - turnPower);
-                robot.rightFront.setPower(0.7 * rf * shift - turnPower);
+            if (gamepad2.y) {
+                robot.leftFront.setPower(0.5 * lb * shift + turnPower * 0.5);
+                robot.leftBack.setPower(0.5 * lb * shift + turnPower * 0.5);
+                robot.rightBack.setPower(0.5 * lb * shift - turnPower * 0.5);
+                robot.rightFront.setPower(0.5 * lb * shift - turnPower * 0.5);
+                robot.getshooterPower(distanceToGoal);
+                robot.shooterMotor.setVelocity(motorPower);
+
             } else {
                 robot.leftBack.setVelocity(3000 * lb * shift);
                 robot.leftFront.setVelocity(3000 * lf * shift);
                 robot.rightBack.setVelocity(3000 * rb * shift);
                 robot.rightFront.setVelocity(3000 * rf * shift);
+                robot.shooterMotor.setVelocity(0);
             }
 
             if (gamepad1.back) {
@@ -317,15 +328,19 @@ public class HackinHounds_Mechanum extends OpMode {
 //                sensorTimer.reset();
 //            }
 
-            if (gamepad1.dpad_up) {
-                flickTargetPosition = 0;
-            }
-            if (gamepad1.dpad_down){
-                flickTargetPosition = 30;
-            }
+
 
             flickController.setPIDF(P,I,D,F);
-            robot.flick.setPower(flickController.calculate(robot.flick.getCurrentPosition(), flickTargetPosition));
+//            robot.flick.setPower(flickController.calculate(robot.flick.getCurrentPosition(), flickTargetPosition));
+
+
+
+            if (gamepad2.right_bumper) {
+                flickTargetPosition = -60;
+            }
+            if (gamepad2.left_bumper){
+                flickTargetPosition = 0;
+            }
 
                 /** intake code prototype **/
 
@@ -338,7 +353,9 @@ public class HackinHounds_Mechanum extends OpMode {
             telemetry.addData("IMU HEADING:", "%f", robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES));
             telemetry.addData("turnPower", turnPower);
             telemetry.addData("currentVoltage", "%f", currentVoltage);
+
             telemetry.addData("distanceToGoal", "%f",distanceToGoal);
+            telemetry.addData("shooterPower", "%f", motorPower);
 
             telemetry.addData("", "%f", robot.getDistance(robot.test1));
             telemetry.addData("", "%f", robot.getDistance(robot.test2));
