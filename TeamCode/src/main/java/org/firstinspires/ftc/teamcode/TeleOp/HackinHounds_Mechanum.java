@@ -102,7 +102,7 @@ import java.util.List;
  *
  * Greetings, Coleman Malcarne Was Here, and if youre seeing this then why are yall still using my old code, make youre own smh
  */
-
+@Config
 @Configurable
 @TeleOp(name="Mechanum", group="Linear OpMode")
 public class HackinHounds_Mechanum extends OpMode {
@@ -144,16 +144,6 @@ public class HackinHounds_Mechanum extends OpMode {
     public static int flickTargetPosition = 0;
 
 
-    public static double P = 0.015;
-    public static double I = 0.0001;
-    public static double D = 0.00;
-    public static double F = 0.00006;
-
-    private static PIDFController flickController = new PIDFController(P,I,D,F);
-
-
-
-
     @Override
     public void init() {
         robot.init(hardwareMap);
@@ -184,7 +174,6 @@ public class HackinHounds_Mechanum extends OpMode {
 
         robot.flick.setPower(1);
 
-        flickController.setPIDF(P,I,D,F);
 
 
         currentVoltage = robot.voltageSensor.getVoltage();
@@ -292,7 +281,10 @@ public class HackinHounds_Mechanum extends OpMode {
                 robot.imu.resetYaw();
             }
 
-            if(gamepad2.x){
+
+        /** intake code prototype **/
+
+        if(gamepad2.x){
                 robot.intake.setPosition(0.5);
             }
             if (gamepad2.a) {
@@ -302,37 +294,31 @@ public class HackinHounds_Mechanum extends OpMode {
                 robot.intake.setPosition(1);
             }
 
-//            double d1 = robot.getDistance(robot.test1), d2 = robot.getDistance(robot.test2), d3 = robot.getDistance(robot.test3);
-//            if (d1 < 7 && d2 < 7 && d3 < 7){
-//                if(!wasDetecting){
-//                    wasDetecting = true;
-//                    sensorTimer.reset();
-//                }
-//                if (sensorTimer.seconds() > 0.1){
-//                    telemetry.addLine("Thingy is filled fyi");
-//                    robot.intake.setPosition(0.5);
-//                    robot.light.setPosition(0.6);
-//                    robot.light2.setPosition(0.6);
-//                }
-//                telemetry.addData("confirming secs", "%.3f", sensorTimer.seconds());
-//            }  else if (d2 < 7 && d3 < 7) {
-//                wasDetecting = false;
-//                telemetry.addLine("Lets continue");
-//                robot.light.setPosition(0);
-//                robot.light2.setPosition(0);
-//                robot.intake.setPosition(0);
-//            } else{
-//                wasDetecting = false;
-//                robot.light.setPosition(0);
-//                robot.light2.setPosition(0);
-//                sensorTimer.reset();
-//            }
-
-
-
-            flickController.setPIDF(P,I,D,F);
-//            robot.flick.setPower(flickController.calculate(robot.flick.getCurrentPosition(), flickTargetPosition));
-
+            double d1 = robot.getDistance(robot.test1), d2 = robot.getDistance(robot.test2), d3 = robot.getDistance(robot.test3);
+            if (d1 < 7 && d2 < 7 && d3 < 7){
+                if(!wasDetecting){
+                    wasDetecting = true;
+                    sensorTimer.reset();
+                }
+                if (sensorTimer.seconds() > 0.1){
+                    telemetry.addLine("Thingy is filled fyi");
+                    robot.intake.setPosition(0.5);
+                    robot.light.setPosition(0.6);
+                    robot.light2.setPosition(0.6);
+                }
+                telemetry.addData("confirming secs", "%.3f", sensorTimer.seconds());
+            }  else if (d2 < 7 && d3 < 7) {
+                wasDetecting = false;
+                telemetry.addLine("Lets continue");
+                robot.light.setPosition(0);
+                robot.light2.setPosition(0);
+                robot.intake.setPosition(0);
+            } else{
+                wasDetecting = false;
+                robot.light.setPosition(0);
+                robot.light2.setPosition(0);
+                sensorTimer.reset();
+            }
 
 
             if (gamepad2.right_bumper) {
@@ -341,9 +327,8 @@ public class HackinHounds_Mechanum extends OpMode {
             if (gamepad2.left_bumper){
                 flickTargetPosition = 0;
             }
-
-                /** intake code prototype **/
-
+//
+//
 
 
                 //telemetry.addData("Driving Finished", "%f", runtime.milliseconds() - cycleStart);

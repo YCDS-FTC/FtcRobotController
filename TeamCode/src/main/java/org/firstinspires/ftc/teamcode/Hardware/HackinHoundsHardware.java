@@ -156,7 +156,6 @@ public class HackinHoundsHardware extends Hardware {
         flick = robotMap.get(DcMotorEx.class,"flick");
         flick.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         flick.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        flick.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         flick.setDirection(DcMotorSimple.Direction.FORWARD);
 
 
