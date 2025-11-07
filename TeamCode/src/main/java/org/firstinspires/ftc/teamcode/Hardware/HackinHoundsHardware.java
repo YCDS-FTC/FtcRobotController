@@ -78,6 +78,10 @@ public class HackinHoundsHardware extends Hardware {
     InterpLUT getShootPower = new InterpLUT();
     public static double shooterPower = 0;
 
+    InterpLUT getHoodAngle = new InterpLUT();
+    public static double hoodAngle = 0;
+
+
 
     // how many degrees back isA your limelight rotated from perfectly vertical?
     public double limelightMountAngleDegrees = 20.0;
@@ -156,7 +160,9 @@ public class HackinHoundsHardware extends Hardware {
         flick = robotMap.get(DcMotorEx.class,"flick");
         flick.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         flick.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        flick.setDirection(DcMotorSimple.Direction.FORWARD);
+        flick.setTargetPosition(0);
+        flick.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        flick.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         limelight = robotMap.get(Limelight3A.class, "limelight");
@@ -186,6 +192,13 @@ public class HackinHoundsHardware extends Hardware {
         lastAngle = 0;
 
 
+        getHoodAngle.add(0,0);
+        getHoodAngle.add(117,0.18);
+        getHoodAngle.add(123,0.18);
+        getHoodAngle.add(128, 0.18);
+
+
+
 
         getShootPower.add(23, 940);
         getShootPower.add(28, 980);
@@ -195,11 +208,14 @@ public class HackinHoundsHardware extends Hardware {
         getShootPower.add(48, 1100);
         getShootPower.add(53, 1120);
         getShootPower.add(58, 1140);
-        getShootPower.add(63, 1140);
+        getShootPower.add(63, 1150);
         getShootPower.add(68, 1180);
         getShootPower.add(73, 1220);
         getShootPower.add(78, 1260);
         getShootPower.add(83,1280);
+        getShootPower.add(117,1540);
+        getShootPower.add(123, 1580);
+        getShootPower.add(128, 1620);
 
 
         //imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
@@ -236,9 +252,29 @@ public class HackinHoundsHardware extends Hardware {
     public double getshooterPower(double distanceToGoal) {
         getShootPower.createLUT();
 
-        shooterPower = getShootPower.get(distanceToGoal);
+        if(distanceToGoal > 128){
+            shooterPower = 0;
+        } else {
+            shooterPower = getShootPower.get(distanceToGoal);
+        }
 
         return shooterPower;
+    }
+
+    public double getHoodAngle (double distanceToGoal) {
+        getHoodAngle.createLUT();
+
+        if (distanceToGoal > 128) {
+            hoodAngle = 0;
+        } else if (distanceToGoal < 117) {
+            hoodAngle = 0;
+        } else{
+            hoodAngle = getHoodAngle.get(distanceToGoal);
+
+        }
+
+        return hoodAngle;
+
     }
 
     public double limelight(double ty, double tx){
