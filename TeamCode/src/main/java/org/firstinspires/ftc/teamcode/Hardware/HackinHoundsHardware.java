@@ -47,6 +47,7 @@ public class HackinHoundsHardware extends Hardware {
 
     /** intake members **/
     public Servo intake;
+    public Servo intake2;
     public DcMotorEx flick;
 
 
@@ -151,6 +152,7 @@ public class HackinHoundsHardware extends Hardware {
 
         angleServo = robotMap.get(Servo.class,"angleServo");
         intake = robotMap.get(Servo.class,"intake");
+        intake2 = robotMap.get(Servo.class,"intake2");
         test1 = robotMap.get(AnalogInput.class, "test1");
         test2 = robotMap.get(AnalogInput.class, "test2");
         test3 = robotMap.get(AnalogInput.class, "test3");

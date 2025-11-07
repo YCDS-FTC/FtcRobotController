@@ -289,12 +289,15 @@ public class HackinHounds_Mechanum extends OpMode {
 
             if(gamepad2.x){
                 robot.intake.setPosition(0.5);
+                robot.intake2.setPosition(0.5);
             }
             if (gamepad2.a) {
                 robot.intake.setPosition(0);
+                robot.intake2.setPosition(1);
             }
             if (gamepad2.b){
                 robot.intake.setPosition(1);
+                robot.intake2.setPosition(0);
             }
 
             double d1 = robot.getDistance(robot.test1), d2 = robot.getDistance(robot.test2), d3 = robot.getDistance(robot.test3);
@@ -306,16 +309,18 @@ public class HackinHounds_Mechanum extends OpMode {
                 if (sensorTimer.seconds() > 0.1){
                     telemetry.addLine("Thingy is filled fyi");
                     robot.intake.setPosition(0.5);
+                    robot.intake2.setPosition(0.5);
                     robot.light.setPosition(0.6);
                     robot.light2.setPosition(0.6);
                 }
                 telemetry.addData("confirming secs", "%.3f", sensorTimer.seconds());
-            }  else if (d2 < 7.5 && d3 < 7) {
+            }  else if (d1 < 7.5 && d2 < 7) {
                 wasDetecting = false;
                 telemetry.addLine("Lets continue");
                 robot.light.setPosition(0);
                 robot.light2.setPosition(0);
                 robot.intake.setPosition(0);
+                robot.intake2.setPosition(1);
             } else{
                 wasDetecting = false;
                 robot.light.setPosition(0);
