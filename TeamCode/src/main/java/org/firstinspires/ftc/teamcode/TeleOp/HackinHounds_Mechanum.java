@@ -225,9 +225,9 @@ public class HackinHounds_Mechanum extends OpMode {
             }
 
 
-        double distanceToGoal =  robot.limelight(ty, tx);
-        double motorPower = robot.getshooterPower(distanceToGoal);
-        double hoodAngle = robot.getHoodAngle(distanceToGoal);
+            double distanceToGoal =  robot.limelight(ty, tx);
+            double motorPower = robot.getshooterPower(distanceToGoal);
+            double hoodAngle = robot.getHoodAngle(distanceToGoal);
 
 
                 // Send data to Dashboard
@@ -262,7 +262,7 @@ public class HackinHounds_Mechanum extends OpMode {
             }
 
 
-            if (gamepad2.y) {
+            if (gamepad2.right_trigger > 0.3) {
                 robot.leftFront.setPower(0.5 * lb * shift + turnPower * 0.5);
                 robot.leftBack.setPower(0.5 * lb * shift + turnPower * 0.5);
                 robot.rightBack.setPower(0.5 * lb * shift - turnPower * 0.5);
@@ -285,7 +285,7 @@ public class HackinHounds_Mechanum extends OpMode {
             }
 
 
-        /** intake code prototype **/
+            /** intake code prototype **/
 
             if(gamepad2.x){
                 robot.intake.setPosition(0.5);
@@ -301,7 +301,7 @@ public class HackinHounds_Mechanum extends OpMode {
             }
 
             double d1 = robot.getDistance(robot.test1), d2 = robot.getDistance(robot.test2), d3 = robot.getDistance(robot.test3);
-            if (d1 < 8 && d2 < 7.5 && d3 < 7){
+            if (d1 < 9 && d2 < 10 && d3 < 9){
                 if(!wasDetecting){
                     wasDetecting = true;
                     sensorTimer.reset();
@@ -314,7 +314,7 @@ public class HackinHounds_Mechanum extends OpMode {
                     robot.light2.setPosition(0.6);
                 }
                 telemetry.addData("confirming secs", "%.3f", sensorTimer.seconds());
-            }  else if (d1 < 7.5 && d2 < 7) {
+            }  else if (d2 < 10) {
                 wasDetecting = false;
                 telemetry.addLine("Lets continue");
                 robot.light.setPosition(0);
@@ -328,15 +328,15 @@ public class HackinHounds_Mechanum extends OpMode {
                 sensorTimer.reset();
             }
 
-            if (gamepad2.left_bumper) {
-                robot.flick.setTargetPosition(0);
-            }
+
 
             if (gamepad2.right_bumper) {
                 ErikFlicksUp = timer.seconds();
                 robot.flick.setTargetPosition(50);
                 robot.flick.setPower(1);
-            } else if (robot.flick.getCurrentPosition() >= 49 || timer.seconds() - ErikFlicksUp > 1.2) {
+            } else if (gamepad2.left_bumper) {
+                robot.flick.setTargetPosition(0);
+            } else if (robot.flick.getCurrentPosition() >= 49 || timer.seconds() - ErikFlicksUp > 1) {
                 robot.flick.setTargetPosition(0);
             } else if (robot.flick.getCurrentPosition() <= 1) {
                 robot.flick.setPower(0.1);
@@ -360,6 +360,11 @@ public class HackinHounds_Mechanum extends OpMode {
             telemetry.addData("", "%f", robot.getDistance(robot.test2));
             telemetry.addData("", "%f", robot.getDistance(robot.test3));
 
+//            telemetry.addData("Inch 20DEG 0-0 Mode: ", (robot.test1.getVoltage() * 48.7) - 4.9);
+//            telemetry.addData("Inch 20DEG 0-0 Mode: ", (robot.test1.getVoltage() * 48.7) - 4.9);
+//            telemetry.addData("Inch 20DEG 0-0 Mode: ", (robot.test1.getVoltage() * 48.7) - 4.9);
+
+
             telemetry.addData("velocity", "%f", robot.leftBack.getVelocity());
             telemetry.addData("flickTargetPos", "&d", robot.flick.getTargetPosition());
             telemetry.addData("flickPos", "%d", robot.flick.getCurrentPosition());
@@ -370,7 +375,7 @@ public class HackinHounds_Mechanum extends OpMode {
             telemetry.addData("rightFront", "%f", robot.rightFront.getCurrent(CurrentUnit.AMPS));
 
 
-        telemetry.update();
+            telemetry.update();
 
 
             Pose2D pose2d = robot.pinpoint.getPosition();
