@@ -49,6 +49,7 @@ public class HackinHoundsHardware extends Hardware {
     public Servo intake;
     public Servo intake2;
     public DcMotorEx flick;
+    public Servo block;
 
 
 
@@ -165,6 +166,8 @@ public class HackinHoundsHardware extends Hardware {
         flick.setTargetPosition(0);
         flick.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         flick.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        block = robotMap.get(Servo.class,"stopper");
 
 
         limelight = robotMap.get(Limelight3A.class, "limelight");
