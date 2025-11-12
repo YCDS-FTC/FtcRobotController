@@ -52,6 +52,9 @@ public class HackinHoundsHardware extends Hardware {
     public Servo block;
 
 
+    public DcMotorEx intakeMotor;
+
+
 
     /** outake members **/
     public DcMotorEx shooterMotor;
@@ -178,6 +181,12 @@ public class HackinHoundsHardware extends Hardware {
         //rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         voltageSensor = robotMap.get(VoltageSensor.class, "Control Hub");
+
+
+        intakeMotor = robotMap.get(DcMotorEx.class,"newIntake");
+        intakeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
 
 
         // Defines the REV Hub's internal IMU (Gyro)
