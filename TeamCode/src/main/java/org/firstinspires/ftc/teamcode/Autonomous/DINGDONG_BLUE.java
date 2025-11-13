@@ -10,13 +10,12 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 
-@Autonomous(name = "DING DONG auto", group = "Examples")
-public class DINGDONG_autonomous extends OpMode {
+@Autonomous(name = "DING DONG blue", group = "Examples")
+public class DINGDONG_BLUE extends OpMode {
 
     private HackinHoundsHardware robot = new HackinHoundsHardware();
 
@@ -24,14 +23,14 @@ public class DINGDONG_autonomous extends OpMode {
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
 
-    private final Pose startPose = new Pose(126, 120, Math.toRadians(36));
-    private final Pose scorePose = new Pose(84, 83, Math.toRadians(45));
+    private final Pose startPose = new Pose(19.794642857142858, 122.14285714285714, Math.toRadians(145));
+    private final Pose scorePose = new Pose(59.651785714285715, 84.21428571428572, Math.toRadians(135));
     private final Pose pickupOne = new Pose(125,83, Math.toRadians(0));
     private final Pose pickupTwo = new Pose (126,60, Math.toRadians(0));
     private final Pose curve1 = new Pose(95, 55);
     private final Pose pickupThree = new Pose(125, 35, Math.toRadians(0));
     private final Pose curve2 = new Pose(79, 36);
-    private final Pose move = new Pose (84, 60, Math.toRadians(0));
+    private final Pose move = new Pose (60, 60, Math.toRadians(180));
 
 
 
@@ -80,9 +79,9 @@ public class DINGDONG_autonomous extends OpMode {
             case 0:
                 if(!follower.isBusy()){
 
-                follower.followPath(scorePreload);
+                    follower.followPath(scorePreload);
 
-                setPathState(1);
+                    setPathState(1);
 
                 }
                 break;
@@ -102,34 +101,32 @@ public class DINGDONG_autonomous extends OpMode {
 
 
             case 2:
-                if(pathTimer.getElapsedTimeSeconds() > 5){
+                if(pathTimer.getElapsedTimeSeconds() > 3){
 
                     robot.flick.setTargetPosition(60);
                     robot.flick.setPower(1);
                     robot.block.setPosition(0.14);
+
 //                    if(robot.flick.getCurrentPosition() > 49){
 //                        robot.flick.setTargetPosition(0);
 //                    }
 
                     setPathState(3);
                 }
+                break;
+
+
             case 3:
-                if(pathTimer.getElapsedTimeSeconds() > 7) {
+                if(pathTimer.getElapsedTimeSeconds() > 3) {
                     robot.flick.setTargetPosition(0);
                     robot.flick.setPower(1);
-                    setPathState(4);
+                    robot.block.setPosition(0.1);
+                    setPathState(6);
                 }
                 break;
-
-            case 4:
-                if (pathTimer.getElapsedTimeSeconds() > 10){
-                    follower.followPath(park);
-                    setPathState(10);
-                }
-                break;
-
+//
 //            case 4:
-//                if (pathTimer.getElapsedTimeSeconds() > 9){
+//                if (pathTimer.getElapsedTimeSeconds() > 5){
 //
 //                    robot.intake.setPosition(0);
 //                    robot.intake2.setPosition(1);
@@ -138,24 +135,27 @@ public class DINGDONG_autonomous extends OpMode {
 //                break;
 //
 //            case 5:
-//                if(pathTimer.getElapsedTimeSeconds() > 15){
+//                if(pathTimer.getElapsedTimeSeconds() > 2){
+//                    robot.intake.setPosition(0.5);
+//                    robot.intake2.setPosition(0.5);
 //
-//
-//
-//                    robot.flick.setTargetPosition(50);
+//                    robot.block.setPosition(0.14);
+//                    robot.flick.setTargetPosition(60);
 //                    robot.flick.setPower(1);
 //
-//                    if(robot.flick.getCurrentPosition() > 49){
+//                    if(robot.flick.getCurrentPosition() > 59){
 //                        robot.flick.setTargetPosition(0);
+//                        robot.block.setPosition(0.1);
 //                    }
 //                    setPathState(6);
 //                }
 //                break;
-//            case 6:
-//                if (pathTimer.getElapsedTimeSeconds() > 18){
-//                    follower.followPath(park);
-//                }
-
+            case  6:
+                if (pathTimer.getElapsedTimeSeconds() > 6){
+                    follower.followPath(park);
+                    setPathState(10);
+                }
+                break;
 //            case 2:
 //                if (!follower.isBusy()){
 //                    follower.followPath(score1);
@@ -164,7 +164,7 @@ public class DINGDONG_autonomous extends OpMode {
 //                break;
         }
 
-}
+    }
 
     public void setPathState(int pState) {
         pathState = pState;
@@ -181,6 +181,8 @@ public class DINGDONG_autonomous extends OpMode {
         telemetry.addData("x", follower.getPose().getX());
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
+//        telemetry.addData("flickPos", "%f", robot.flick.getCurrentPosition());
+//        telemetry.addData("blockPos", "%f", robot.block.getPosition());
 
         telemetry.update();
 
