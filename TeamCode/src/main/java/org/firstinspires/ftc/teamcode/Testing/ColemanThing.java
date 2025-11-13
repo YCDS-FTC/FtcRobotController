@@ -32,11 +32,17 @@ package org.firstinspires.ftc.teamcode.Testing;
 import com.acmerobotics.dashboard.config.Config;
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.AnalogInput;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 /*
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -62,13 +68,15 @@ public class ColemanThing extends LinearOpMode {
 //    public DcMotorEx left;
 //    public DcMotorEx right;
     public static double shift = 0;
-    public Servo light;
-    public Servo light2;
-    public Servo intake;
-    public AnalogInput test1;
-    public AnalogInput test2;
-    public AnalogInput test3;
+//    public Servo light;
+//    public Servo light2;
+//    public Servo intake;
+//    public AnalogInput test1;
+//    public AnalogInput test2;
+//    public AnalogInput test3;
 
+    public DcMotorEx turret;
+    public IMU imu;
 
     boolean wasDetecting = false;
 
@@ -91,87 +99,114 @@ public class ColemanThing extends LinearOpMode {
 
 
 
-        intake = hardwareMap.get(Servo.class, "intake");
-//        rspin = hardwareMap.get(Servo.class, "rspin");
-//        lspin = hardwareMap.get(Servo.class, "lspin");
-        test1 = hardwareMap.get(AnalogInput.class, "test1");
-        test2 = hardwareMap.get(AnalogInput.class, "test2");
-        test3 = hardwareMap.get(AnalogInput.class, "test3");
-        light = hardwareMap.get(Servo.class,"light");
-        light2 = hardwareMap.get(Servo.class,"light2");
-        shift = 0;
+//        intake = hardwareMap.get(Servo.class, "intake");
+////        rspin = hardwareMap.get(Servo.class, "rspin");
+////        lspin = hardwareMap.get(Servo.class, "lspin");
+//        test1 = hardwareMap.get(AnalogInput.class, "test1");
+//        test2 = hardwareMap.get(AnalogInput.class, "test2");
+//        test3 = hardwareMap.get(AnalogInput.class, "test3");
+//        light = hardwareMap.get(Servo.class,"light");
+//        light2 = hardwareMap.get(Servo.class,"light2");
+//        shift = 0;
+        turret = hardwareMap.get(DcMotorEx.class, "turret");
+        //turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        imu = hardwareMap.get(IMU.class, "imu");
+
+        RevHubOrientationOnRobot.LogoFacingDirection logo = RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
+        RevHubOrientationOnRobot.UsbFacingDirection usb = RevHubOrientationOnRobot.UsbFacingDirection.UP;
+        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logo, usb);
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
+        imu.resetYaw();
 
 
 
 
-
+        double turret_tPERd = 4.233;
+        double angleWant = 0;
 
         PanelsTelemetry panelsTelemetry = PanelsTelemetry.INSTANCE;
 
         waitForStart();
         while (opModeIsActive()) {
 
+            double turretPos = turret.getCurrentPosition();
+            telemetry.addData("turretPos", "%f", turretPos);
+            double robotHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+            telemetry.addData("robotHeading", "%f", robotHeading);
+            double turretAngle = turretPos/turret_tPERd;
+            turretAngle = normA(turretAngle);
+            telemetry.addData("turretAngle", "%f", turretAngle);
+            double turretTarget = normA(angleWant - robotHeading);
+            telemetry.addData("turretTarget", "%f", turretTarget);
+            double error = normA(turretTarget - turretAngle);
+            telemetry.addData("error", "%f", error);
 
+            double slow = 0.02;
+            double turretPower = clamp(error * slow, -1, 1);
+            telemetry.addData("turretPower", "%f", turretPower);
+            turret.setPower(turretPower);
 
-            double d1 = getDistance(test1), d2 = getDistance(test2), d3 = getDistance(test3);
-            if (d1 < 7 && d2 < 7 && d3 < 7){
-                if(!wasDetecting){
-                    wasDetecting = true;
-                    sensorTimer.reset();
-                }
-                if (sensorTimer.seconds() > 0.1){
-                    telemetry.addLine("Thingy is filled fyi");
-                    intake.setPosition(0.5);
-                    light.setPosition(0.6);
-                    light2.setPosition(0.6);
-                }
-                telemetry.addData("confirming secs", "%.3f", sensorTimer.seconds());
-            }  else if (d2 < 7 && d3 < 7) {
-                wasDetecting = false;
-                telemetry.addLine("Lets continue");
-                light.setPosition(0);
-                light2.setPosition(0);
-                intake.setPosition(0);
-            } else{
-               wasDetecting = false;
-               light.setPosition(0);
-               light2.setPosition(0);
-               sensorTimer.reset();
-            }
-
-
-//            if (getDistance(test1) < 7 && getDistance(test2) < 7 && getDistance(test3) < 7) {
-//                telemetry.addLine("Thingy is filled fyi");
-//                intake.setPosition(0.5);
-//                light.setPosition(0.444);
-//                light2.setPosition(0.444);
-//            } else if (getDistance(test2) < 7 && getDistance(test3) < 7) {
+//            double d1 = getDistance(test1), d2 = getDistance(test2), d3 = getDistance(test3);
+//            if (d1 < 7 && d2 < 7 && d3 < 7){
+//                if(!wasDetecting){
+//                    wasDetecting = true;
+//                    sensorTimer.reset();
+//                }
+//                if (sensorTimer.seconds() > 0.1){
+//                    telemetry.addLine("Thingy is filled fyi");
+//                    intake.setPosition(0.5);
+//                    light.setPosition(0.6);
+//                    light2.setPosition(0.6);
+//                }
+//                telemetry.addData("confirming secs", "%.3f", sensorTimer.seconds());
+//            }  else if (d2 < 7 && d3 < 7) {
+//                wasDetecting = false;
 //                telemetry.addLine("Lets continue");
 //                light.setPosition(0);
 //                light2.setPosition(0);
 //                intake.setPosition(0);
+//            } else{
+//               wasDetecting = false;
+//               light.setPosition(0);
+//               light2.setPosition(0);
+//               sensorTimer.reset();
 //            }
-
-            telemetry.addData("", "%f", getDistance(test1));
-            telemetry.addData("", "%f", getDistance(test2));
-            telemetry.addData("", "%f", getDistance(test3));
-            telemetry.addData("timer", "%f", sensorTimer.milliseconds());
-
-//            if (gamepad1.a) {
-//                flip.setPosition(0.53);
-//            } else {
-//                flip.setPosition(0.49);
+//
+//
+////            if (getDistance(test1) < 7 && getDistance(test2) < 7 && getDistance(test3) < 7) {
+////                telemetry.addLine("Thingy is filled fyi");
+////                intake.setPosition(0.5);
+////                light.setPosition(0.444);
+////                light2.setPosition(0.444);
+////            } else if (getDistance(test2) < 7 && getDistance(test3) < 7) {
+////                telemetry.addLine("Lets continue");
+////                light.setPosition(0);
+////                light2.setPosition(0);
+////                intake.setPosition(0);
+////            }
+//
+//            telemetry.addData("", "%f", getDistance(test1));
+//            telemetry.addData("", "%f", getDistance(test2));
+//            telemetry.addData("", "%f", getDistance(test3));
+//            telemetry.addData("timer", "%f", sensorTimer.milliseconds());
+//
+////            if (gamepad1.a) {
+////                flip.setPosition(0.53);
+////            } else {
+////                flip.setPosition(0.49);
+////            }
+//            //intake.setPosition(shift);
+//            // 0.49 to 0.53
+//
+//            if (gamepad1.dpad_up) {
+//                intake.setPosition(1);
+//            } else if (gamepad1.dpad_down) {
+//                intake.setPosition(0);
+//            } else if (gamepad1.dpad_left) {
+//                intake.setPosition(0.5);
 //            }
-            //intake.setPosition(shift);
-            // 0.49 to 0.53
-
-            if (gamepad1.dpad_up) {
-                intake.setPosition(1);
-            } else if (gamepad1.dpad_down) {
-                intake.setPosition(0);
-            } else if (gamepad1.dpad_left) {
-                intake.setPosition(0.5);
-            }
+//
 
             telemetry.update();
         }
@@ -179,4 +214,8 @@ public class ColemanThing extends LinearOpMode {
     public double getDistance (AnalogInput sensor) {
         return (sensor.getVoltage() * 32.50930976) - 2.6953842;
     }
+    public double clamp(double x, double min, double max) {
+        return Math.max(min,Math.min(max,x));
+    }
+    public double normA(double angle) {angle %= 360; if (angle < -180) angle += 360; else if (angle > 180) angle -= 360;return angle;}
 }

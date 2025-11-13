@@ -361,7 +361,7 @@ public class HackinHounds_Mechanum extends OpMode {
             telemetry.addData("", "%f", robot.getDistance(robot.test3));
 
             telemetry.addData("velocity", "%f", robot.leftBack.getVelocity());
-            telemetry.addData("flickTargetPos", "&d", robot.flick.getTargetPosition());
+            telemetry.addData("flickTargetPos", "%d", robot.flick.getTargetPosition());
             telemetry.addData("flickPos", "%d", robot.flick.getCurrentPosition());
 
             telemetry.addData("leftBack", "%f", robot.leftBack.getCurrent(CurrentUnit.AMPS));
