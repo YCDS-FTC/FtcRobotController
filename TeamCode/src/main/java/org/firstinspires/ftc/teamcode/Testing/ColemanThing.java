@@ -32,6 +32,7 @@ package org.firstinspires.ftc.teamcode.Testing;
 import com.acmerobotics.dashboard.config.Config;
 import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.PanelsTelemetry;
+import com.pedropathing.control.PIDFController;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -41,6 +42,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.seattlesolvers.solverslib.controller.PIDController;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
@@ -80,8 +82,15 @@ public class ColemanThing extends LinearOpMode {
 
     boolean wasDetecting = false;
 
+    public static double angleWant = 0;
+    public static double slow = 0.003;
+
+    public static double p = 0.009, i = 0, d = 0.0012;
+    PIDController AamirsRetarded = new PIDController(p, i, d);
+
 
     private final ElapsedTime sensorTimer = new ElapsedTime();
+
 
     @Override
     public void runOpMode() {
@@ -109,7 +118,8 @@ public class ColemanThing extends LinearOpMode {
 //        light2 = hardwareMap.get(Servo.class,"light2");
 //        shift = 0;
         turret = hardwareMap.get(DcMotorEx.class, "turret");
-        //turret.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         imu = hardwareMap.get(IMU.class, "imu");
 
@@ -123,30 +133,37 @@ public class ColemanThing extends LinearOpMode {
 
 
         double turret_tPERd = 4.233;
-        double angleWant = 0;
+        //1.15
 
         PanelsTelemetry panelsTelemetry = PanelsTelemetry.INSTANCE;
-
         waitForStart();
         while (opModeIsActive()) {
 
-
-            double turretPos = turret.getCurrentPosition();
-            telemetry.addData("turretPos", "%f", turretPos);
+            AamirsRetarded.setPID(p, i, d);
             double robotHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-            telemetry.addData("robotHeading", "%f", robotHeading);
-            double turretAngle = turretPos/turret_tPERd;
-            turretAngle = normA(turretAngle);
-            telemetry.addData("turretAngle", "%f", turretAngle);
-            double turretTarget = normA(angleWant - robotHeading);
-            telemetry.addData("turretTarget", "%f", turretTarget);
-            double error = normA(turretTarget - turretAngle);
-            telemetry.addData("error", "%f", error);
 
-            double slow = 0.02;
+            double turretAngle = turret.getCurrentPosition()/turret_tPERd;
+
+            double target = normA(angleWant - robotHeading);
+
+//            if (target > 135) {
+//                target = 135;
+//            } else if (target < -135) {
+//                target = -135;
+//            }
+
+            double error = target - turretAngle;
+
             double turretPower = clamp(error * slow, -1, 1);
-            telemetry.addData("turretPower", "%f", turretPower);
+            //double turretPower = AamirsRetarded.calculate(turretAngle, target);
             turret.setPower(turretPower);
+
+//            telemetry.addData("turretPos", "%d", turret.getCurrentPosition());
+//            telemetry.addData("robotHeading", "%f", robotHeading);
+//            telemetry.addData("turretAngle", "%f", turretAngle);
+//            telemetry.addData("turretTarget", "%f", target);
+//            telemetry.addData("error", "%f", error);
+//            telemetry.addData("turretPower", "%f", turretPower);
 
 //            double d1 = getDistance(test1), d2 = getDistance(test2), d3 = getDistance(test3);
 //            if (d1 < 7 && d2 < 7 && d3 < 7){
