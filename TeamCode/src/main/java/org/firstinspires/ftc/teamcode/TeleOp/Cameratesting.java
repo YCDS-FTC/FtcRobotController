@@ -36,10 +36,16 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
+import com.qualcomm.hardware.rev.Rev9AxisImuOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
 import java.util.List;
 
@@ -68,84 +74,145 @@ import java.util.List;
 @TeleOp(name = "cameraTesting", group = "Sensor")
 public class Cameratesting extends LinearOpMode {
 
-    private Limelight3A limelight;
+    private DcMotorEx leftBack;
+    private DcMotorEx rightBack;
+    private DcMotorEx leftFront;
+    private DcMotorEx rightFront;
+    private DcMotorEx turret;
+
+
+    public double lastAngle;
+    public IMU imu;
+    public YawPitchRollAngles angles;
+
+    private YawPitchRollAngles lastAngles;
+    private double globalAngle;
+
+
+    private double shift = 1;
 
     @Override
     public void runOpMode() throws InterruptedException
     {
-        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+        leftFront  = hardwareMap.get(DcMotorEx.class, "leftFront");
+        rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
+        leftFront.setDirection(DcMotorEx.Direction.FORWARD);
+        rightFront.setDirection(DcMotorEx.Direction.REVERSE);
+        leftFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        leftFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        //leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        //rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBack = hardwareMap.get(DcMotorEx.class, "leftBack");
+        rightBack = hardwareMap.get(DcMotorEx.class, "rightBack");
+        rightBack.setDirection(DcMotorEx.Direction.REVERSE);
+        leftBack.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        rightBack.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        leftBack.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        rightBack.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        leftBack.setDirection(DcMotorEx.Direction.FORWARD);
+
+        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         int Limelightheight = 6;
-        telemetry.setMsTransmissionInterval(11);
 
+        turret = hardwareMap.get(DcMotorEx.class, "turret");
+        turret.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+
+
+        Rev9AxisImuOrientationOnRobot.I2cPortFacingDirection usb = Rev9AxisImuOrientationOnRobot.I2cPortFacingDirection.LEFT;
+        Rev9AxisImuOrientationOnRobot.LogoFacingDirection logo = Rev9AxisImuOrientationOnRobot.LogoFacingDirection.DOWN;
+
+//        RevHubOrientationOnRobot.LogoFacingDirection logo = RevHubOrientationOnRobot.LogoFacingDirection.DOWN;
+//        RevHubOrientationOnRobot.UsbFacingDirection usb = RevHubOrientationOnRobot.UsbFacingDirection.LEFT;
+//        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logo, usb);
+        Rev9AxisImuOrientationOnRobot orientationOnRobot = new Rev9AxisImuOrientationOnRobot(logo, usb);
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
+        imu.resetYaw();
+        lastAngle = 0;
 //        limelight.pipelineSwitch(0);
 
         /*
          * Starts polling for data.  If you neglect to call start(), getLatestResult() will return null.
          */
-        limelight.start();
 
         telemetry.addData(">", "Robot Ready.  Press Play.");
         telemetry.update();
         waitForStart();
+
+        double turret_tPERd = 4.233;
+        double angleWant = 0;
+        double slow = 0.02;
 
         while (opModeIsActive()) {
 
             /** Pipeline 0: yellow detection
              Pipeline 1: blue detection
              Pipeline 2: red detection **/
-            if(gamepad2.b){
-                limelight.pipelineSwitch(2);
-            } else if (gamepad2.y) {
-                limelight.pipelineSwitch(0);
-            } else if(gamepad2.x){
-                limelight.pipelineSwitch(1);
+
+
+            if (gamepad1.dpad_up) {
+                shift = 1;
+            } else if (gamepad1.dpad_right) {
+                shift = 0.75;
+            } else if (gamepad1.dpad_down) {
+                shift = 0.5;
+            }
+            if (gamepad1.left_stick_button) {
+                shift = 1;
             }
 
-            LLStatus status = limelight.getStatus();
-            telemetry.addData("Name", "%s",
-                    status.getName());
-            telemetry.addData("LL", "Temp: %.1fC, CPU: %.1f%%, FPS: %d",
-                    status.getTemp(), status.getCpu(),(int)status.getFps());
-            telemetry.addData("Pipeline", "Index: %d, Type: %s",
-                    status.getPipelineIndex(), status.getPipelineType());
 
-            LLResult result = limelight.getLatestResult();
-            if (result != null) {
-                // Access general information
-                Pose3D botpose = result.getBotpose();
-                double captureLatency = result.getCaptureLatency();
-                double targetingLatency = result.getTargetingLatency();
-                double parseLatency = result.getParseLatency();
-                telemetry.addData("LL Latency", captureLatency + targetingLatency);
-                telemetry.addData("Parse Latency", parseLatency);
-                telemetry.addData("PythonOutput", java.util.Arrays.toString(result.getPythonOutput()));
+            double facing = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+            double y = -gamepad1.left_stick_y;
+            //double y = 0;
+            double x = gamepad1.left_stick_x;
+            double rx = gamepad1.right_stick_x;
 
-                if (result.isValid()) {
-                    telemetry.addData("tx", result.getTx());
-                    telemetry.addData("txnc", result.getTxNC());
-                    telemetry.addData("ty", result.getTy());
-                    telemetry.addData("tync", result.getTyNC());
-                    telemetry.addData("ID", result.getDetectorResults());
-                    telemetry.addData("ID", result.getClass());
+            double rotX = x * Math.cos(-facing) - y * Math.sin(-facing);
+            rotX = rotX * 1.1;
+            double rotY = x * Math.sin(-facing) + y * Math.cos(-facing);
 
-                    //telemetry.addData("Botpose", botpose.toString());
+            double d = Math.max(Math.abs(rotX) + Math.abs(rotY) + Math.abs(rx), 1);
+
+            double lf = (rotY + rotX + rx) / d;
+            double lb = (rotY - rotX + rx) / d;
+            double rf = (rotY - rotX - rx) / d;
+            double rb = (rotY + rotX - rx) / d;
 
 
+            leftBack.setVelocity(3000 * lb * shift);
+            leftFront.setVelocity(3000 * lf * shift);
+            rightBack.setVelocity(3000 * rb * shift);
+            rightFront.setVelocity(3000 * rf * shift);
 
-                    // Access color results
-                    List<LLResultTypes.ColorResult> colorResults = result.getColorResults();
-                    for (LLResultTypes.ColorResult cr : colorResults) {
-                        telemetry.addData("Color", "X: %.2f, Y: %.2f", cr.getTargetXDegrees(), cr.getTargetYDegrees());
-                    }
-                }
-            } else {
-                telemetry.addData("Limelight", "No data available");
+
+            if (gamepad1.back) {
+                imu.resetYaw();
             }
+
+
+            double robotHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+
+            double turretAngle = turret.getCurrentPosition()/turret_tPERd;
+
+            double target = normA(angleWant - robotHeading);
+            double error = target - turretAngle;
+
+            double turretPower = clamp(error * slow, -1, 1);
+            turret.setPower(turretPower);
 
 
             telemetry.update();
         }
-        limelight.stop();
     }
+    public double normA(double angle) {angle %= 360; if (angle < -180) angle += 360; else if (angle > 180) angle -= 360;return angle;}
+    public double clamp(double x, double min, double max) {return Math.max(min,Math.min(max,x));}
 }

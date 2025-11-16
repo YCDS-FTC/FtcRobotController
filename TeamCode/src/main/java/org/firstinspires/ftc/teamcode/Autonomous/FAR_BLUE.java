@@ -55,6 +55,7 @@ public class FAR_BLUE extends OpMode {
         score2 = new Path(new BezierLine(pickupTwo, scorePose));
         score2.setLinearHeadingInterpolation(pickupTwo.getHeading(), scorePose.getHeading(), 0.8);
 
+
         pickup3 = new Path(new BezierCurve(scorePose, curve2, pickupThree));
         pickup3.setLinearHeadingInterpolation(scorePose.getHeading(), pickupThree.getHeading(), 0.7);
 
@@ -79,6 +80,7 @@ public class FAR_BLUE extends OpMode {
             case 0:
                 if(!follower.isBusy()){
 
+                    follower.setMaxPower(0.7);
                     follower.followPath(scorePreload);
 
                     setPathState(1);
@@ -124,6 +126,7 @@ public class FAR_BLUE extends OpMode {
                     robot.intake.setPosition(0);
                     robot.intake2.setPosition(1);
                     setPathState(4);
+
                 }
                 break;
 

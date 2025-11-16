@@ -83,7 +83,7 @@ public class ColemanThing extends LinearOpMode {
     boolean wasDetecting = false;
 
     public static double angleWant = 0;
-    public static double slow = 0.003;
+    public static double slow = 0.02;
 
     public static double p = 0.009, i = 0, d = 0.0012;
     PIDController AamirsRetarded = new PIDController(p, i, d);
@@ -232,8 +232,6 @@ public class ColemanThing extends LinearOpMode {
     public double getDistance (AnalogInput sensor) {
         return (sensor.getVoltage() * 32.50930976) - 2.6953842;
     }
-    public double clamp(double x, double min, double max) {
-        return Math.max(min,Math.min(max,x));
-    }
+    public double clamp(double x, double min, double max) {return Math.max(min,Math.min(max,x));}
     public double normA(double angle) {angle %= 360; if (angle < -180) angle += 360; else if (angle > 180) angle -= 360;return angle;}
 }
