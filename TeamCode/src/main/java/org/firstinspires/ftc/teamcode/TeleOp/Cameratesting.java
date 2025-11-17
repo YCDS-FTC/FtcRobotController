@@ -32,6 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.acmerobotics.dashboard.config.Config;
+import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
@@ -44,6 +46,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.seattlesolvers.solverslib.controller.PIDFController;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
@@ -73,6 +76,8 @@ import java.util.List;
  *   and the ip address the Limelight device assigned the Control Hub and which is displayed in small text
  *   below the name of the Limelight on the top level configuration screen.
  */
+@Configurable
+@Config
 @TeleOp(name = "cameraTesting", group = "Sensor")
 public class Cameratesting extends LinearOpMode {
 
@@ -82,6 +87,7 @@ public class Cameratesting extends LinearOpMode {
     private DcMotorEx rightFront;
     private DcMotorEx turret;
 
+    private Limelight3A limelight;
 
     public double lastAngle;
     public IMU imu;
@@ -93,6 +99,13 @@ public class Cameratesting extends LinearOpMode {
 
     private double shift = 1;
 
+
+    private static double p = 0;
+    private static double i = 0;
+    private static double d = 0;
+    private static double f = 0;
+
+    PIDFController turretController = new PIDFController(p,i,d,f);
     @Override
     public void runOpMode() throws InterruptedException
     {
@@ -130,6 +143,8 @@ public class Cameratesting extends LinearOpMode {
 
         imu = hardwareMap.get(IMU.class, "imu");
 
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+
 //        Rev9AxisImuOrientationOnRobot.I2cPortFacingDirection usb = Rev9AxisImuOrientationOnRobot.I2cPortFacingDirection.LEFT;
 //        Rev9AxisImuOrientationOnRobot.LogoFacingDirection logo = Rev9AxisImuOrientationOnRobot.LogoFacingDirection.DOWN;
 
@@ -155,6 +170,15 @@ public class Cameratesting extends LinearOpMode {
         double slow = 0.02;
 
         while (opModeIsActive()) {
+
+
+//            turretController.setPIDF(p,i,d,f);
+
+
+            LLResult result = limelight.getLatestResult();
+
+            double tx = result.getTx();
+
 
             /** Pipeline 0: yellow detection
              Pipeline 1: blue detection
@@ -206,7 +230,7 @@ public class Cameratesting extends LinearOpMode {
 
             double robotHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
             double turretAngle = turret.getCurrentPosition()/turret_tPERd;
-            double target = normA(angleWant - robotHeading);
+            double target = normA(tx + turretAngle);
             if (target > 135) {target = 135;} else if (target < -135) {target = -135;}
             double error = target - turretAngle;
             double turretPower = clamp(error * slow, -1, 1);
