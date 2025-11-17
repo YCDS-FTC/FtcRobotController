@@ -174,10 +174,10 @@ public class Cameratesting extends LinearOpMode {
 
 
             double facing = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
-            double y = -gamepad1.left_stick_y;
+            double y = gamepad1.left_stick_y;
             //double y = 0;
-            double x = gamepad1.left_stick_x;
-            double rx = gamepad1.right_stick_x;
+            double x = -gamepad1.left_stick_x;
+            double rx = -gamepad1.right_stick_x;
 
             double rotX = x * Math.cos(-facing) - y * Math.sin(-facing);
             rotX = rotX * 1.1;
