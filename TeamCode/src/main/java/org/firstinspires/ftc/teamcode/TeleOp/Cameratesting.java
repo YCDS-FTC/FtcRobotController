@@ -173,6 +173,8 @@ public class Cameratesting extends LinearOpMode {
             }
 
 
+
+
             double facing = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
             double y = gamepad1.left_stick_y;
             //double y = 0;
@@ -203,12 +205,10 @@ public class Cameratesting extends LinearOpMode {
 
 
             double robotHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-
             double turretAngle = turret.getCurrentPosition()/turret_tPERd;
-
             double target = normA(angleWant - robotHeading);
+            if (target > 135) {target = 135;} else if (target < -135) {target = -135;}
             double error = target - turretAngle;
-
             double turretPower = clamp(error * slow, -1, 1);
             turret.setPower(turretPower);
 
