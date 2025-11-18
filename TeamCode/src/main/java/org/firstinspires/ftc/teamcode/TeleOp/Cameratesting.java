@@ -101,9 +101,9 @@ public class Cameratesting extends OpMode {
     private double shift = 1;
 
 
-    double turret_tPERd = 4.233;
-    double angleWant = 0;
-    double slow = 0.02;
+    private static double turret_tPERd = 4.233;
+    private static double angleWant = 0;
+    private static double slow = 0.01;
 
     private static double p = 0;
     private static double i = 0;
@@ -192,6 +192,7 @@ public class Cameratesting extends OpMode {
             double tx = result.getTx();
 
 
+
             /** Pipeline 0: yellow detection
              Pipeline 1: blue detection
              Pipeline 2: red detection **/
@@ -242,16 +243,23 @@ public class Cameratesting extends OpMode {
 
             double robotHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
             double turretAngle = turret.getCurrentPosition()/turret_tPERd;
-            double target = normA(turretAngle - tx);
+            angleWant = -tx;
+
+            double target = normA(angleWant - robotHeading);
+            telemetry.addData("bf tar", "%f", target);
             if (target > 135) {target = 135;} else if (target < -135) {target = -135;}
             double error = target - turretAngle;
             double turretPower = clamp(error * slow, -1, 1);
             turret.setPower(turretPower);
 
 
-
-            telemetry.addData("turretAngle", turretAngle);
-            telemetry.addData("target", target);
+            telemetry.addData("turretPos", "%d", turret.getCurrentPosition());
+            telemetry.addData("robotHeading", "%f", robotHeading);
+            telemetry.addData("turretAngle", "%f", turretAngle);
+            telemetry.addData("turretTarget", "%f", target);
+            telemetry.addData("error", "%f", error);
+            telemetry.addData("turretPower", "%f", turretPower);
+            telemetry.addData("tx", tx);
             telemetry.update();
         }
 
@@ -260,7 +268,7 @@ public class Cameratesting extends OpMode {
         limelight.stop();
         }
 
-    public double normA(double angle) {angle %= 360; if (angle > 133) angle = -134; else if (angle > -133) angle -= 134;return angle;}
+    public double normA(double angle) {angle %= 360; if (angle < -180) angle += 360; else if (angle > 180) angle -= 360;return angle;}
     public double clamp(double x, double min, double max) {return Math.max(min,Math.min(max,x));}
     }
 
