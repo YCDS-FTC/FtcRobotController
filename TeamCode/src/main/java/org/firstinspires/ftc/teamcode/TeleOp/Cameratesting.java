@@ -242,11 +242,11 @@ public class Cameratesting extends OpMode {
 
             double robotHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
             double turretAngle = turret.getCurrentPosition()/turret_tPERd;
-            double target = normA(tx + turretAngle);
+            double target = normA(turretAngle - tx);
             if (target > 135) {target = 135;} else if (target < -135) {target = -135;}
             double error = target - turretAngle;
             double turretPower = clamp(error * slow, -1, 1);
-            turret.setPower(-turretPower);
+            turret.setPower(turretPower);
 
 
 
@@ -260,7 +260,7 @@ public class Cameratesting extends OpMode {
         limelight.stop();
         }
 
-    public double normA(double angle) {angle %= 360; if (angle < -180) angle += 360; else if (angle > 180) angle -= 360;return angle;}
+    public double normA(double angle) {angle %= 360; if (angle > 133) angle = -134; else if (angle > -133) angle -= 134;return angle;}
     public double clamp(double x, double min, double max) {return Math.max(min,Math.min(max,x));}
     }
 
