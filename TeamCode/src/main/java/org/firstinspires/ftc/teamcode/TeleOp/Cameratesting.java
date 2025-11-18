@@ -103,7 +103,7 @@ public class Cameratesting extends OpMode {
 
     private static double turret_tPERd = 4.233;
     private static double angleWant = 0;
-    private static double slow = 0.01;
+    private static double slow = 0.02;
 
     private static double p = 0;
     private static double i = 0;
@@ -243,14 +243,12 @@ public class Cameratesting extends OpMode {
 
             double robotHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
             double turretAngle = turret.getCurrentPosition()/turret_tPERd;
-            angleWant = -tx;
-
-            double target = normA(angleWant - robotHeading);
+            double target = normA(angleWant - robotHeading - tx);
             telemetry.addData("bf tar", "%f", target);
             if (target > 135) {target = 135;} else if (target < -135) {target = -135;}
             double error = target - turretAngle;
             double turretPower = clamp(error * slow, -1, 1);
-            turret.setPower(turretPower);
+            turret.setPower(-turretController.calculate(turretAngle, target));
 
 
             telemetry.addData("turretPos", "%d", turret.getCurrentPosition());
