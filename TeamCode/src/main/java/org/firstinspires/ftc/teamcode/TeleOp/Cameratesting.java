@@ -41,6 +41,7 @@ import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.hardware.rev.Rev9AxisImuOrientationOnRobot;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -79,7 +80,7 @@ import java.util.List;
 @Configurable
 @Config
 @TeleOp(name = "cameraTesting", group = "Sensor")
-public class Cameratesting extends LinearOpMode {
+public class Cameratesting extends OpMode {
 
     private DcMotorEx leftBack;
     private DcMotorEx rightBack;
@@ -100,16 +101,20 @@ public class Cameratesting extends LinearOpMode {
     private double shift = 1;
 
 
+    double turret_tPERd = 4.233;
+    double angleWant = 0;
+    double slow = 0.02;
+
     private static double p = 0;
     private static double i = 0;
     private static double d = 0;
     private static double f = 0;
 
     PIDFController turretController = new PIDFController(p,i,d,f);
+
     @Override
-    public void runOpMode() throws InterruptedException
-    {
-        leftFront  = hardwareMap.get(DcMotorEx.class, "leftFront");
+    public void init() {
+        leftFront = hardwareMap.get(DcMotorEx.class, "leftFront");
         rightFront = hardwareMap.get(DcMotorEx.class, "rightFront");
         leftFront.setDirection(DcMotorEx.Direction.REVERSE);
         rightFront.setDirection(DcMotorEx.Direction.FORWARD);
@@ -155,7 +160,9 @@ public class Cameratesting extends LinearOpMode {
         imu.initialize(new IMU.Parameters(orientationOnRobot));
         imu.resetYaw();
         lastAngle = 0;
-//        limelight.pipelineSwitch(0);
+        limelight.pipelineSwitch(0);
+
+
 
         /*
          * Starts polling for data.  If you neglect to call start(), getLatestResult() will return null.
@@ -163,16 +170,21 @@ public class Cameratesting extends LinearOpMode {
 
         telemetry.addData(">", "Robot Ready.  Press Play.");
         telemetry.update();
-        waitForStart();
 
-        double turret_tPERd = 4.233;
-        double angleWant = 0;
-        double slow = 0.02;
+    }
 
-        while (opModeIsActive()) {
+        @Override
+        public void start(){
+            limelight.start();
+        }
 
 
-//            turretController.setPIDF(p,i,d,f);
+
+
+        @Override
+        public void loop(){
+
+            turretController.setPIDF(p,i,d,f);
 
 
             LLResult result = limelight.getLatestResult();
@@ -234,12 +246,22 @@ public class Cameratesting extends LinearOpMode {
             if (target > 135) {target = 135;} else if (target < -135) {target = -135;}
             double error = target - turretAngle;
             double turretPower = clamp(error * slow, -1, 1);
-            turret.setPower(turretPower);
+            turret.setPower(-turretPower);
 
 
+
+            telemetry.addData("turretAngle", turretAngle);
+            telemetry.addData("target", target);
             telemetry.update();
         }
-    }
+
+        @Override
+        public void stop(){
+        limelight.stop();
+        }
+
     public double normA(double angle) {angle %= 360; if (angle < -180) angle += 360; else if (angle > 180) angle -= 360;return angle;}
     public double clamp(double x, double min, double max) {return Math.max(min,Math.min(max,x));}
-}
+    }
+
+
