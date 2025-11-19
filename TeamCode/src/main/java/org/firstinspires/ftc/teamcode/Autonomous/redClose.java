@@ -5,18 +5,16 @@ import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
-import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 
 @Autonomous(name = "DING DONG auto", group = "Examples")
-public class DINGDONG_autonomous extends OpMode {
+public class redClose extends OpMode {
 
     private HackinHoundsHardware robot = new HackinHoundsHardware();
 
@@ -24,7 +22,7 @@ public class DINGDONG_autonomous extends OpMode {
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
 
-    private final Pose startPose = new Pose(126, 120, Math.toRadians(36));
+    private final Pose startPose = new Pose(125.625, 119.53846153846153, Math.toRadians(36));
     private final Pose scorePose = new Pose(84, 83, Math.toRadians(45));
     private final Pose pickupOne = new Pose(125,83, Math.toRadians(0));
     private final Pose pickupTwo = new Pose (126,60, Math.toRadians(0));
@@ -64,6 +62,7 @@ public class DINGDONG_autonomous extends OpMode {
 
         park = new Path(new BezierLine(scorePose, move));
         park.setLinearHeadingInterpolation(scorePose.getHeading(), move.getHeading());
+
 
 
 

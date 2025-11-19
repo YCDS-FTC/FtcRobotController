@@ -47,6 +47,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.seattlesolvers.solverslib.controller.PIDController;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -108,9 +109,8 @@ public class Cameratesting extends OpMode {
     private static double p = 0;
     private static double i = 0;
     private static double d = 0;
-    private static double f = 0;
 
-    PIDFController turretController = new PIDFController(p,i,d,f);
+    PIDController turretController = new PIDController(p,i,d);
 
     @Override
     public void init() {
@@ -184,7 +184,7 @@ public class Cameratesting extends OpMode {
         @Override
         public void loop(){
 
-            turretController.setPIDF(p,i,d,f);
+            turretController.setPID(p,i,d);
 
 
             LLResult result = limelight.getLatestResult();
@@ -192,6 +192,7 @@ public class Cameratesting extends OpMode {
             double tx = result.getTx();
 
 
+            double feedforward = imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate / 650;
 
             /** Pipeline 0: yellow detection
              Pipeline 1: blue detection
@@ -241,22 +242,30 @@ public class Cameratesting extends OpMode {
             }
 
 
+
+
+
             double robotHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
             double turretAngle = turret.getCurrentPosition()/turret_tPERd;
             double target = normA(angleWant - robotHeading - tx);
             telemetry.addData("bf tar", "%f", target);
             if (target > 135) {target = 135;} else if (target < -135) {target = -135;}
             double error = target - turretAngle;
-            double turretPower = clamp(error * slow, -1, 1);
-            turret.setPower(-turretController.calculate(turretAngle, target));
+//            double turretPower = clamp(error * slow, -1, 1);
+//            turret.setPower(turretController.calculate(turretAngle, target));
+            double output = clamp(turretController.calculate(turretAngle,target) + feedforward, -1, 1);
+            turret.setPower(output);
 
+//            imu.getRobotAngularVelocity(AngleUnit.DEGREES);
 
             telemetry.addData("turretPos", "%d", turret.getCurrentPosition());
             telemetry.addData("robotHeading", "%f", robotHeading);
             telemetry.addData("turretAngle", "%f", turretAngle);
             telemetry.addData("turretTarget", "%f", target);
             telemetry.addData("error", "%f", error);
-            telemetry.addData("turretPower", "%f", turretPower);
+            telemetry.addData("angular velocity", imu.getRobotAngularVelocity(AngleUnit.DEGREES));
+
+//            telemetry.addData("turretPower", "%f", turretPower);
             telemetry.addData("tx", tx);
             telemetry.update();
         }
