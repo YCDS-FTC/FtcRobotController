@@ -103,11 +103,11 @@ public class Cameratesting extends OpMode {
 
     private static double turret_tPERd = 4.233;
     private static double angleWant = 0;
-    private static double slow = 0.02;
+    private static double slow = 1;
 
     private static double p = 0.02;
-    private static double i = 0.005;
-    private static double d = 0;
+    private static double i = 0.002;
+    private static double d = 0.0005;
     private static double f = 0;
 
     PIDFController turretController = new PIDFController(p,i,d,f);
@@ -242,13 +242,16 @@ public class Cameratesting extends OpMode {
 
 
             double robotHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+            if (gamepad1.right_trigger > 0.1) {robotHeading=0;}
             double turretAngle = turret.getCurrentPosition()/turret_tPERd;
-            double target = normA(angleWant - robotHeading); // - tx
-            telemetry.addData("bf tar", "%f", target);
-            //if (target > 135) {target = 135;} else if (target < -135) {target = -135;}
+            double target = normA(angleWant - robotHeading - tx);
+            if (target > 135) {target = 135;} else if (target < -135) {target = -135;}
             double error = target - turretAngle;
             double turretPower = clamp(error * slow, -1, 1);
-            turret.setPower(turretController.calculate(turretAngle, target));
+//            turret.setPower(turretController.calculate(turretAngle, target));
+            turret.setVelocity(turretController.calculate(turretAngle, target) * 1400 - imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * turret_tPERd);
+
+            //turret.setVelocity(-imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * turret_tPERd * slow);
 
 
             telemetry.addData("turretPos", "%d", turret.getCurrentPosition());
@@ -256,7 +259,7 @@ public class Cameratesting extends OpMode {
             telemetry.addData("turretAngle", "%f", turretAngle);
             telemetry.addData("turretTarget", "%f", target);
             telemetry.addData("error", "%f", error);
-            telemetry.addData("turretPower", "%f", turretPower);
+            telemetry.addData("turretPower", "%f", turret.getVelocity());
             telemetry.addData("tx", tx);
             telemetry.update();
         }
