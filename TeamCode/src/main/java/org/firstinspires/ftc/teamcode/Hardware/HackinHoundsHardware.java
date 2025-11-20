@@ -35,8 +35,8 @@ public class HackinHoundsHardware extends Hardware {
     public HardwareMap robotMap;
 
     /** sensors **/
-    public AnalogInput test1, test2, test3;
-    public Servo light, light2;
+//    public AnalogInput test1, test2, test3;
+//    public Servo light, light2;
     public Limelight3A limelight;
 
     /** Drivetrain Members **/
@@ -46,19 +46,15 @@ public class HackinHoundsHardware extends Hardware {
     public DcMotorEx  rightBack;
 
     /** intake members **/
-    public Servo intake;
-    public Servo intake2;
-    public DcMotorEx flick;
-    public Servo block;
-
-
-    public DcMotorEx intakeMotor;
+    public DcMotorEx intake;
+    public DcMotorEx intake2;
 
 
 
     /** outake members **/
     public DcMotorEx shooterMotor;
     public Servo angleServo;
+    public DcMotorEx turret;
 
 
 
@@ -148,29 +144,18 @@ public class HackinHoundsHardware extends Hardware {
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
-        shooterMotor = robotMap.get(DcMotorEx.class,"shooterMotor");
-        shooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        shooterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        shooterMotor = robotMap.get(DcMotorEx.class,"shooterMotor");
+//        shooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+//        shooterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+//        shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        angleServo = robotMap.get(Servo.class,"angleServo");
-        intake = robotMap.get(Servo.class,"intake");
-        intake2 = robotMap.get(Servo.class,"intake2");
-        test1 = robotMap.get(AnalogInput.class, "test1");
-        test2 = robotMap.get(AnalogInput.class, "test2");
-        test3 = robotMap.get(AnalogInput.class, "test3");
-        light = robotMap.get(Servo.class,"light");
-        light2 = robotMap.get(Servo.class,"light2");
 
-        flick = robotMap.get(DcMotorEx.class,"flick");
-        flick.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        flick.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        flick.setTargetPosition(0);
-        flick.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        flick.setDirection(DcMotorSimple.Direction.REVERSE);
+        turret = robotMap.get(DcMotorEx.class, "turret");
+        turret.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
-        block = robotMap.get(Servo.class,"stopper");
+
 
 
         limelight = robotMap.get(Limelight3A.class, "limelight");
@@ -183,9 +168,14 @@ public class HackinHoundsHardware extends Hardware {
         voltageSensor = robotMap.get(VoltageSensor.class, "Control Hub");
 
 
-        intakeMotor = robotMap.get(DcMotorEx.class,"newIntake");
-        intakeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        intake = robotMap.get(DcMotorEx.class,"intake");
+        intake.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        intake2 = robotMap.get(DcMotorEx.class,"intake2");
+        intake2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        intake2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
 
 
 

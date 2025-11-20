@@ -105,8 +105,7 @@ public class FAR_BLUE extends OpMode {
             case 2:
                 if(pathTimer.getElapsedTimeSeconds() > 5){
 
-                    robot.flick.setTargetPosition(50);
-                    robot.flick.setPower(1);
+
 
 //                    if(robot.flick.getCurrentPosition() > 49){
 //                        robot.flick.setTargetPosition(0);
@@ -115,16 +114,14 @@ public class FAR_BLUE extends OpMode {
                     setPathState(3);
                 }
                 if(pathTimer.getElapsedTimeSeconds() > 6) {
-                    robot.flick.setTargetPosition(0);
-                    robot.flick.setPower(1);
+
                 }
                 break;
 
             case 3:
                 if (pathTimer.getElapsedTimeSeconds() > 8){
 
-                    robot.intake.setPosition(0);
-                    robot.intake2.setPosition(1);
+
                     setPathState(4);
 
                 }
@@ -135,12 +132,7 @@ public class FAR_BLUE extends OpMode {
 
 
 
-                    robot.flick.setTargetPosition(50);
-                    robot.flick.setPower(1);
 
-                    if(robot.flick.getCurrentPosition() > 49){
-                        robot.flick.setTargetPosition(0);
-                    }
                     setPathState(10);
                 }
                 break;

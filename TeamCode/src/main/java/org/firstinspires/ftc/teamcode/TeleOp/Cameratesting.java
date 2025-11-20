@@ -241,8 +241,10 @@ public class Cameratesting extends OpMode {
             }
 
 
+
+
             double robotHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-            if (gamepad1.right_trigger > 0.1) {robotHeading=0;}
+            if (gamepad1.right_trigger > 0.1) {imu.resetYaw();}
             double turretAngle = turret.getCurrentPosition()/turret_tPERd;
             double target = normA(angleWant - robotHeading - tx);
             if (target > 135) {target = 135;} else if (target < -135) {target = -135;}

@@ -103,9 +103,7 @@ public class redClose extends OpMode {
             case 2:
                 if(pathTimer.getElapsedTimeSeconds() > 5){
 
-                    robot.flick.setTargetPosition(60);
-                    robot.flick.setPower(1);
-                    robot.block.setPosition(0.14);
+
 //                    if(robot.flick.getCurrentPosition() > 49){
 //                        robot.flick.setTargetPosition(0);
 //                    }
@@ -114,8 +112,7 @@ public class redClose extends OpMode {
                 }
             case 3:
                 if(pathTimer.getElapsedTimeSeconds() > 7) {
-                    robot.flick.setTargetPosition(0);
-                    robot.flick.setPower(1);
+
                     setPathState(4);
                 }
                 break;

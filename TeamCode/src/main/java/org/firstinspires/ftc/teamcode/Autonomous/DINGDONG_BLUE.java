@@ -103,9 +103,6 @@ public class DINGDONG_BLUE extends OpMode {
             case 2:
                 if(pathTimer.getElapsedTimeSeconds() > 3){
 
-                    robot.flick.setTargetPosition(60);
-                    robot.flick.setPower(1);
-                    robot.block.setPosition(0.14);
 
 //                    if(robot.flick.getCurrentPosition() > 49){
 //                        robot.flick.setTargetPosition(0);
@@ -118,10 +115,6 @@ public class DINGDONG_BLUE extends OpMode {
 
             case 3:
                 if(pathTimer.getElapsedTimeSeconds() > 3) {
-                    robot.flick.setTargetPosition(0);
-                    robot.flick.setPower(1);
-                    robot.block.setPosition(0.1);
-                    setPathState(6);
                 }
                 break;
 //
