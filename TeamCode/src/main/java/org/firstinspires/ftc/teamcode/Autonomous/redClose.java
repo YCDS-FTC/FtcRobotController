@@ -189,7 +189,6 @@ public class redClose extends OpMode {
         double motorPower = robot.getshooterPower(distanceToGoal);
         double hoodAngle = robot.getHoodAngle(distanceToGoal);
 
-        robot.shooterMotor.setVelocity(1160);
 
 
 

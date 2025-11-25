@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.rev.Rev9AxisImuOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -14,6 +16,7 @@ import com.seattlesolvers.solverslib.controller.PIDFController;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 
@@ -27,6 +30,7 @@ public class HackinHounds_Mechanum extends OpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private HackinHoundsHardware robot = new HackinHoundsHardware();
 
+    private FtcDashboard dashboard;
 
     double shift = 1;
 
@@ -50,9 +54,20 @@ public class HackinHounds_Mechanum extends OpMode {
 
     PIDFController turretController = new PIDFController(p,i,d,f);
 
+
+    public static double hoodAngle = 0;
+    public static double stopperPosition = 0;
+    //position is 0.85 for stopping and 0.63 for neutral
+
+    public static double shooterPower = 0;
+
     @Override
     public void init(){
         robot.init(hardwareMap);
+
+
+        dashboard = FtcDashboard.getInstance();
+        dashboard.setTelemetryTransmissionInterval(25);
 
         telemetry.addData("Status", "Initialized");
         telemetry.setMsTransmissionInterval(50);   // Speed up telemetry updates, Just use for debugging.
@@ -121,23 +136,28 @@ public class HackinHounds_Mechanum extends OpMode {
 
 
 
-        double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
-        double target = normA( turretAngle - tx);
-        if (target > 135) {target = 135;} else if (target < -135) {target = -135;}
-        double error = target - turretAngle;
-        double turretPower = clamp(error * slow, -1, 1);
-//            turret.setPower(turretController.calculate(turretAngle, target));
-        double output = (turretController.calculate(turretAngle, target));
+//        double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
+//        double target = normA( turretAngle - tx);
+//        if (target > 135) {target = 135;} else if (target < -135) {target = -135;}
+//        double error = target - turretAngle;
+//        double turretPower = clamp(error * slow, -1, 1);
+////            turret.setPower(turretController.calculate(turretAngle, target));
+//        double output = (turretController.calculate(turretAngle, target));
+//
+//        robot.turret.setPower(output);
+//
+//        telemetry.addData("turretPos", "%d", robot.turret.getCurrentPosition());
+//        telemetry.addData("turretAngle", "%f", turretAngle);
+//        telemetry.addData("turretTarget", "%f", target);
+//        telemetry.addData("error", "%f", error);
+//        telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
+//        telemetry.addData("Tx", "%f", tx);
+//        telemetry.update();
 
-        robot.turret.setPower(output);
 
-        telemetry.addData("turretPos", "%d", robot.turret.getCurrentPosition());
-        telemetry.addData("turretAngle", "%f", turretAngle);
-        telemetry.addData("turretTarget", "%f", target);
-        telemetry.addData("error", "%f", error);
-        telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
-        telemetry.addData("Tx", "%f", tx);
-        telemetry.update();
+        robot.stopper.setPosition(stopperPosition);
+        robot.angleServo.setPosition(hoodAngle);
+        robot.shooter.setVelocity(shooterPower);
 
 
 //        else{
@@ -174,7 +194,15 @@ public class HackinHounds_Mechanum extends OpMode {
         telemetry.addData("tx", tx);
         telemetry.addData("front:", "%f", robot.intake.getPower());
         telemetry.addData("back:", "%f", robot.intake2.getPower());
+
         telemetry.update();
+
+        TelemetryPacket packet = new TelemetryPacket();
+
+        packet.put("shooterVelocity", robot.shooter.getVelocity());
+        packet.put("shooterRPM", (robot.shooter.getVelocity() / 28.0) * 60.0);
+
+        dashboard.sendTelemetryPacket(packet);
 
     }
 
@@ -187,7 +215,7 @@ public class HackinHounds_Mechanum extends OpMode {
 
     }
 
-    public double normA(double angle) {angle %= 360; if (angle < -180) angle += 360; else if (angle > 180) angle -= 360;return angle;}
+    public double normA(double angle) {angle %= 360; if (angle < -134) angle += 360; else if (angle > 134) angle -= 360;return angle;}
     public double clamp(double x, double min, double max) {return Math.max(min,Math.min(max,x));}
 
 }

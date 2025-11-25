@@ -52,8 +52,9 @@ public class HackinHoundsHardware extends Hardware {
 
 
     /** outake members **/
-    public DcMotorEx shooterMotor;
+    public DcMotorEx shooter;
     public Servo angleServo;
+    public Servo stopper;
     public DcMotorEx turret;
 
 
@@ -144,17 +145,19 @@ public class HackinHoundsHardware extends Hardware {
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
-//        shooterMotor = robotMap.get(DcMotorEx.class,"shooterMotor");
-//        shooterMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-//        shooterMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        shooterMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        shooterMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        shooter = robotMap.get(DcMotorEx.class,"shooter");
+        shooter.setDirection(DcMotorSimple.Direction.FORWARD);
+        shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         turret = robotMap.get(DcMotorEx.class, "turret");
         turret.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
+        stopper = robotMap.get(Servo.class,"stopper");
+        angleServo = robotMap.get(Servo.class,"angleServo");
 
 
 

@@ -10,18 +10,26 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.seattlesolvers.solverslib.command.CommandOpMode;
+import com.seattlesolvers.solverslib.command.InstantCommand;
+import org.firstinspires.ftc.teamcode.finalizedSubsystems.intakeSubSystem;
 
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 
 @Autonomous(name = "DING DONG blue", group = "Examples")
-public class DINGDONG_BLUE extends OpMode {
+public class DINGDONG_BLUE extends CommandOpMode {
 
     private HackinHoundsHardware robot = new HackinHoundsHardware();
 
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
+
+
+    private intakeSubSystem intakeSubsystem;
+
 
     private final Pose startPose = new Pose(19.794642857142858, 122.14285714285714, Math.toRadians(145));
     private final Pose scorePose = new Pose(59.651785714285715, 84.21428571428572, Math.toRadians(135));
@@ -63,9 +71,12 @@ public class DINGDONG_BLUE extends OpMode {
 
         park = new Path(new BezierLine(scorePose, move));
         park.setLinearHeadingInterpolation(scorePose.getHeading(), move.getHeading());
+    }
 
-
-
+    private InstantCommand intakeOn(){
+        return new InstantCommand(() ->{
+            intakeSubsystem.intakeOn();
+        });
     }
 
 
@@ -74,87 +85,10 @@ public class DINGDONG_BLUE extends OpMode {
 
 
     public void autonomousPathUpdate(){
-        switch (pathState){
-
-            case 0:
-                if(!follower.isBusy()){
-
-                    follower.followPath(scorePreload);
-
-                    setPathState(1);
-
-                }
-                break;
-
-            case 1:
-                if (pathTimer.getElapsedTimeSeconds() > 3.0){
-
-                    LLResult result = robot.limelight.getLatestResult();
-
-                    double ty = result.getTy();
-                    double tx = result.getTx();
-
-                    double distanceToGoal =  robot.limelight(ty, tx);
-                    setPathState(2);
-                }
-                break;
+        switch (pathState) {
 
 
-            case 2:
-                if(pathTimer.getElapsedTimeSeconds() > 3){
 
-
-//                    if(robot.flick.getCurrentPosition() > 49){
-//                        robot.flick.setTargetPosition(0);
-//                    }
-
-                    setPathState(3);
-                }
-                break;
-
-
-            case 3:
-                if(pathTimer.getElapsedTimeSeconds() > 3) {
-                }
-                break;
-//
-//            case 4:
-//                if (pathTimer.getElapsedTimeSeconds() > 5){
-//
-//                    robot.intake.setPosition(0);
-//                    robot.intake2.setPosition(1);
-//                    setPathState(5);
-//                }
-//                break;
-//
-//            case 5:
-//                if(pathTimer.getElapsedTimeSeconds() > 2){
-//                    robot.intake.setPosition(0.5);
-//                    robot.intake2.setPosition(0.5);
-//
-//                    robot.block.setPosition(0.14);
-//                    robot.flick.setTargetPosition(60);
-//                    robot.flick.setPower(1);
-//
-//                    if(robot.flick.getCurrentPosition() > 59){
-//                        robot.flick.setTargetPosition(0);
-//                        robot.block.setPosition(0.1);
-//                    }
-//                    setPathState(6);
-//                }
-//                break;
-            case  6:
-                if (pathTimer.getElapsedTimeSeconds() > 6){
-                    follower.followPath(park);
-                    setPathState(10);
-                }
-                break;
-//            case 2:
-//                if (!follower.isBusy()){
-//                    follower.followPath(score1);
-//                    setPathState(10);
-//                }
-//                break;
         }
 
     }
@@ -164,48 +98,18 @@ public class DINGDONG_BLUE extends OpMode {
         pathTimer.resetTimer();
     }
 
+
     @Override
-    public void loop(){
-        follower.update();
-        autonomousPathUpdate();
+    public void initialize(){
 
-        // Feedback to Driver Hub
-        telemetry.addData("path state", pathState);
-        telemetry.addData("x", follower.getPose().getX());
-        telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("heading", follower.getPose().getHeading());
-//        telemetry.addData("flickPos", "%f", robot.flick.getCurrentPosition());
-//        telemetry.addData("blockPos", "%f", robot.block.getPosition());
-
-        telemetry.update();
-
-        LLResult result = robot.limelight.getLatestResult();
-
-        double ty = result.getTy();
-        double tx = result.getTx();
-
-        double distanceToGoal =  robot.limelight(ty, tx);
-        double motorPower = robot.getshooterPower(distanceToGoal);
-        double hoodAngle = robot.getHoodAngle(distanceToGoal);
-
-        robot.shooterMotor.setVelocity(1160);
-
-
-
-
-    }
-    @Override
-    public void init(){
-        robot.init(hardwareMap);
 
 
         robot.limelight.pipelineSwitch(0);
 
 
 
-        pathTimer = new Timer();
-        opmodeTimer = new Timer();
-        opmodeTimer.resetTimer();
+        intakeSubsystem  = new intakeSubSystem(hardwareMap, "intake");
+
 
         follower = Constants.createFollower(hardwareMap);
         buildPaths();
@@ -214,26 +118,9 @@ public class DINGDONG_BLUE extends OpMode {
 
     }
 
-
-
     @Override
-    public void init_loop(){
+    public void run(){
 
     }
 
-    @Override
-    public void start(){
-        robot.limelight.start();
-        opmodeTimer.resetTimer();
-        setPathState(0);
-
-    }
-
-
-
-
-    @Override
-    public void stop(){
-
-    }
 }
