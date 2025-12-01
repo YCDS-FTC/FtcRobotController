@@ -30,19 +30,50 @@ public class ColorIndexing extends LinearOpMode {
         waitForStart();
         while (opModeIsActive()){
 
-            if (color2.green() > 150) {
-                light2.setPosition(0.5);
-            }
+
+            light1.setPosition(mapColor(color1.red(), color1.green(), color1.blue()));
+
+
+            light2.setPosition(mapColor(color2.getNormalizedColors().red, color2.getNormalizedColors().green, color2.getNormalizedColors().blue));
+
 
             telemetry.addData("", "%d", color1.red());
             telemetry.addData("", "%d", color1.green());
             telemetry.addData("", "%d", color1.blue());
-            telemetry.addData("", "%d", color2.red());
-            telemetry.addData("", "%d", color2.green());
-            telemetry.addData("", "%d", color2.blue());
+            telemetry.addData("", "%f", color2.getNormalizedColors().red);
+            telemetry.addData("", "%f", color2.getNormalizedColors().green);
+            telemetry.addData("", "%f", color2.getNormalizedColors().blue);
+            telemetry.addData("", color1.getNormalizedColors().toColor());
             telemetry.update();
         }
     }
 
+    double mapColor(double r, double g, double b) {
+
+        // Normalize (required)
+        double max = Math.max(r, Math.max(g, b));
+        if (max > 0) {
+            r /= max;
+            g /= max;
+            b /= max;
+        }
+
+        // Determine dominant channel
+        boolean blueMax = b >= g && b >= r;
+        boolean greenMax = g >= b && g >= r;
+
+        // PURPLE: Blue is highest
+        if (blueMax) {
+            return 0.722; // violet
+        }
+
+        // GREEN: Green is highest
+        if (greenMax) {
+            return 0.500; // green
+        }
+
+        // Neither
+        return 0.000;
+    }
 
 }

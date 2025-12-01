@@ -211,7 +211,6 @@ public class HackinHounds_Mechanum extends OpMode {
 
 
 
-        double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
 
 //
 //
@@ -226,7 +225,7 @@ public class HackinHounds_Mechanum extends OpMode {
 //// 1. Calculate the raw target angle the turret is commanded to go to (relative to robot)
 //// This is the simplest tracking: current turret angle plus the error.
 //
-        robot.turret.setPower(turretController.calculate(turretAngle, target));
+//        robot.turret.setPower(turretController.calculate(turretAngle, target));
 //
 //        double correctedOutput  = rawOutput * -1.0;
 //        robot.turret.setPower(correctedOutput);
@@ -284,6 +283,28 @@ public class HackinHounds_Mechanum extends OpMode {
         a_pressed_previous = gamepad1.a;
 
 //        robot.shooter.setVelocity(motorPower);
+
+
+
+        double robotHeading = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+        //if (gamepad1.right_trigger > 0.1) {angleWant = robotHeading;}
+        double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
+        double target = normA(angleWant - robotHeading - tx);
+        if (target > 135) {target = 135;} else if (target < -135) {target = -135;}
+        double error = target - turretAngle;
+        double turretPower = clamp(error * slow, -1, 1);
+        robot.turret.setVelocity(turretController.calculate(turretAngle, target) * 1400 - robot.imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * turret_tPERd);
+
+
+
+        telemetry.addData("imu", "%f", robotHeading);
+
+        telemetry.addData("turretPos", "%d", robot.turret.getCurrentPosition());
+        telemetry.addData("turretAngle", "%f", turretAngle);
+        telemetry.addData("turretTarget", "%f", target);
+        telemetry.addData("error", "%f", error);
+        telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
+        telemetry.addData("Tx", "%f", tx);
 
 
 
