@@ -2,14 +2,15 @@ package org.firstinspires.ftc.teamcode.Commands;
 
 import com.seattlesolvers.solverslib.command.CommandBase;
 
-import org.firstinspires.ftc.teamcode.finalizedSubsystems.intakeSubSystem;
+import org.firstinspires.ftc.teamcode.finalizedSubsystems.stopperSubsystem;
+import org.firstinspires.ftc.teamcode.finalizedSubsystems.transferSubsystem;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class intakeLow extends CommandBase {
+public class stopperOn extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-    private final intakeSubSystem intakeSubSystem;
+    private final stopperSubsystem stopperSubsystem;
 
     /**
      * Creates a new ExampleCommand.
@@ -17,8 +18,8 @@ public class intakeLow extends CommandBase {
      * @param subsystem The subsystem used by this command.
      **/
 
-    public intakeLow(intakeSubSystem subsystem) {
-        intakeSubSystem = subsystem;
+    public stopperOn(stopperSubsystem subsystem) {
+        stopperSubsystem = subsystem;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(subsystem);
     }
@@ -31,13 +32,14 @@ public class intakeLow extends CommandBase {
 
     @Override
     public void execute(){
-        intakeSubSystem.intakeLow();
+        stopperSubsystem.stopperOn();
     }
+
 
 
     @Override
     public boolean isFinished(){
-        if (intakeSubSystem.getIntakePower() == .3){
+        if (stopperSubsystem.getStopperPosition() == 67){
             return true;
         } else{
             return false;

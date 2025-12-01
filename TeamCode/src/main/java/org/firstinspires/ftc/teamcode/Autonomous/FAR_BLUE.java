@@ -174,9 +174,6 @@ public class FAR_BLUE extends OpMode {
         double hoodAngle = robot.getHoodAngle(distanceToGoal);
 
 
-
-
-
     }
     @Override
     public void init(){

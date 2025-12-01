@@ -4,28 +4,19 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.rev.Rev9AxisImuOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
-
-import java.lang.annotation.Native;
 
 
 @Config
-@TeleOp(name = "Mechanum", group = "Linear OpMode")
-public class HackinHounds_Mechanum extends OpMode {
+@TeleOp(name = "Ethan", group = "Linear OpMode")
+public class Ethan_Mecanum extends OpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
     private ElapsedTime timer = new ElapsedTime();
@@ -55,16 +46,16 @@ public class HackinHounds_Mechanum extends OpMode {
 
     public static double p = 0.02;
     public static double i = 0.002;
-    public static double d = 0.004;
+    public static double d = 0.0005;
     public static double f = 0;
 
     PIDFController turretController = new PIDFController(p,i,d,f);
 
 
-     public static double kp = 11;
-     public static double ki = 0;
-     public static double kd = 0.8;
-     public static double kf = 0;
+    public static double kp = 0.02;
+    public static double ki = 0.002;
+    public static double kd = 0.0005;
+    public static double kf = 0;
 
     PIDFController shooterController = new PIDFController(kp, ki, kd, kf);
 
@@ -72,20 +63,19 @@ public class HackinHounds_Mechanum extends OpMode {
     public static double stopperPosition = .47;
     //position is 0.44 for stopping and 0.63 for neutral
 
-    public static double shootertarget = 0;
+    public static double shooterPower = 0;
 
-    public static double target = 0;
 
     boolean isBlockerClosed = true;
 
     boolean a_pressed_previous = false;
-
-    private ElapsedTime stopperTimer = new ElapsedTime();
-    private boolean isStopperTimedOpen = false;
     @Override
     public void init(){
+
+
         robot.init(hardwareMap);
 
+        robot.stopper.setPosition(0.67);
 
         dashboard = FtcDashboard.getInstance();
         dashboard.setTelemetryTransmissionInterval(25);
@@ -95,6 +85,8 @@ public class HackinHounds_Mechanum extends OpMode {
         telemetry.setDisplayFormat(Telemetry.DisplayFormat.MONOSPACE);
         telemetry.update();
         robot.limelight.pipelineSwitch(0);
+
+
     }
 
     @Override
@@ -152,102 +144,87 @@ public class HackinHounds_Mechanum extends OpMode {
 //        robot.intake.setPower(intakePower);
 //        robot.intake2.setPower(transferPower);
 
-        if (gamepad1.back) {
-            robot.imu.resetYaw();
-        }
 
-
-        if(gamepad2.b){
-            robot.intake.setPower(0.7);
-            robot.intake2.setPower(-0.7);
-        }
-
-        if(gamepad2.y){
+        if(gamepad1.right_trigger > Math.abs(0.1)){
+            robot.intake.setPower(0.5);
+        } else{
             robot.intake.setPower(0);
+        }
+
+
+        if(gamepad1.left_trigger > Math.abs(0.1)){
+            robot.intake2.setPower(-0.7);
+        } else{
             robot.intake2.setPower(0);
         }
 
-        if(gamepad2.right_trigger > Math.abs(0.1)) {
-            robot.intake.setPower(-0.7);
-            robot.intake2.setPower(0.7);
+        if(gamepad1.right_bumper){
+            robot.shooter.setVelocity(1240);
         }
 
+        if(gamepad1.rightBumperWasReleased()){
+            robot.shooter.setVelocity(0);
+        }
 
-        // --- Stopper Control Logic ---
+//
+//        if(gamepad1.a){
+//            robot.stopper.setPosition(0.47);
+//            isBlockerClosed = false;
+//        } else if(gamepad1.a && !isBlockerClosed){
+//            robot.stopper.setPosition(.67);
+//            isBlockerClosed = true;
+//        }
 
-        // Check for 'A' press on gamepad2 (assuming gamepad2 for shooter controls)
-        if (gamepad2.a && !a_pressed_previous) {
+        if (gamepad1.a && !a_pressed_previous) {
             // This block executes ONLY on the moment 'A' is pressed down
-
             if (isBlockerClosed) {
-                // Stopper is currently closed -> Open it and start the timer
-                robot.stopper.setPosition(0.47); // Open position
+                // Stopper is currently closed -> Open it
+                robot.stopper.setPosition(0.47);
                 isBlockerClosed = false;
-                isStopperTimedOpen = true; // Signal that we are waiting for a close event
-                stopperTimer.reset(); // Start the 1-second countdown
-
             } else {
-                // Stopper is currently open -> Close it manually (if desired)
-                robot.stopper.setPosition(0.67); // Closed position
+                // Stopper is currently open -> Close it
+                robot.stopper.setPosition(0.67);
                 isBlockerClosed = true;
-                isStopperTimedOpen = false; // Cancel any active timer wait
             }
         }
 
-        // --- Automatic Close Check ---
-        // If the stopper was opened by the timer logic AND 1.0 seconds have passed:
-        if (isStopperTimedOpen && stopperTimer.seconds() >= 1.0) {
-            // Close the stopper
-            robot.stopper.setPosition(0.67); // Closed position
-            isBlockerClosed = true;
-            isStopperTimedOpen = false; // Stop checking the timer until the next press
+
+
+
+        if (gamepad1.back) {
+            robot.imu.resetYaw();
         }
-
-        // Update the previous state for the next loop
-        a_pressed_previous = gamepad2.a;
-
 
 
 
 
 
         double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
-
-//
-//
-//        double target = normA( turretAngle + tx);
-//        if (target > 135) {target = 135;} else if (target < -135) {target = -135;}
-////        robot.turret.setPower(-turretController.calculate(turretAngle, target));
-//
-//
-
-//        double robotYaw = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-//
-//// 1. Calculate the raw target angle the turret is commanded to go to (relative to robot)
-//// This is the simplest tracking: current turret angle plus the error.
-//
+        double target = normA( turretAngle + tx);
+        if (target > 135) {target = 135;} else if (target < -135) {target = -135;}
+        double error = target - turretAngle;
+        double turretPower = clamp(error * slow, -1, 1);
         robot.turret.setPower(turretController.calculate(turretAngle, target));
-//
-//        double correctedOutput  = rawOutput * -1.0;
-//        robot.turret.setPower(correctedOutput);
 
 
 
-//        robot.angleServo.setPosition(hoodAngle);
-//        if (gamepad2.right_bumper) {
-//            startTime = timer.milliseconds();
-//            robot.shooter.setVelocity(shooterPower);
-//            stopped = false;
-//        }
-//        telemetry.addData("Since click", timer.milliseconds() - startTime);
-//        if (robot.shooter.getVelocity() > shooterPower - 10 && !stopped) {
-//            stopped = true;
-//            finaltime = timer.milliseconds() - startTime;
-//        } else {
-//            telemetry.addData("time to spin up", finaltime);
-//        }
-//
-//        if (gamepad2.left_bumper){stopped = false;}
+
+
+        robot.angleServo.setPosition(hoodAngle);
+        if (gamepad2.right_bumper) {
+            startTime = timer.milliseconds();
+            robot.shooter.setVelocity(shooterPower);
+            stopped = false;
+        }
+        telemetry.addData("Since click", timer.milliseconds() - startTime);
+        if (robot.shooter.getVelocity() > shooterPower - 10 && !stopped) {
+            stopped = true;
+            finaltime = timer.milliseconds() - startTime;
+        } else {
+            telemetry.addData("time to spin up", finaltime);
+        }
+
+        if (gamepad2.left_bumper){stopped = false;}
 
 
 
@@ -274,18 +251,8 @@ public class HackinHounds_Mechanum extends OpMode {
         double hoodAngle = robot.getHoodAngle(distanceToGoal);
 
 
-        double shooterVelocity = robot.shooter.getVelocity();
-
-        double output = shooterController.calculate(shooterVelocity, motorPower);
-
-        robot.shooter.setVelocity(motorPower);
-
 
         a_pressed_previous = gamepad1.a;
-
-//        robot.shooter.setVelocity(motorPower);
-
-
 
 
         telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
@@ -293,10 +260,11 @@ public class HackinHounds_Mechanum extends OpMode {
         telemetry.addData("front:", "%f", robot.intake.getPower());
         telemetry.addData("back:", "%f", robot.intake2.getPower());
         telemetry.addData("turretPos", "%f", robot.turret.getCurrentPosition()/4.233);
-        telemetry.addData("turretTarget", "%f", target);
+//        telemetry.addData("turretAngle", "%f", turretAngle);
+//        telemetry.addData("turretTarget", "%f", target);
 //        telemetry.addData("error", "%f", error);
         telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
-        telemetry.addData("distancetogoal", distanceToGoal);
+        telemetry.addData("shooterPower", "%f", robot.shooter.getVelocity());
 
         telemetry.update();
 
@@ -304,8 +272,6 @@ public class HackinHounds_Mechanum extends OpMode {
 
         packet.put("shooterVelocity", robot.shooter.getVelocity());
         packet.put("shooterRPM", (robot.shooter.getVelocity() / 28.0) * 60.0);
-        packet.put("shootertarget", shootertarget);
-        packet.put("turretTarget",  target);
 
         dashboard.sendTelemetryPacket(packet);
 

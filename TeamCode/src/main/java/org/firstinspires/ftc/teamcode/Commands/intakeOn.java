@@ -26,14 +26,23 @@ public class intakeOn extends CommandBase {
 
     @Override
     public void initialize(){
+
+    }
+
+
+    @Override
+    public void execute(){
         intakeSubSystem.intakeOn();
     }
 
 
     @Override
     public boolean isFinished(){
-        return true;
-    }
+        if (intakeSubSystem.getIntakePower() == 1){
+            return true;
+        } else{
+            return false;
+        }    }
 
 
 }

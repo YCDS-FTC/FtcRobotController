@@ -17,16 +17,21 @@ public class intakeSubSystem extends SubsystemBase {
     }
 
 
+    public double getIntakePower(){
+        double intakePower = intake.getPower();
+        return intakePower;
+    }
+
     public void intakeOff(){
         intake.setPower(0);
     }
 
     public void intakeOn(){
-        intake.setPower(0.6);
+        intake.setPower(1);
     }
 
     public void intakeLow(){
-        intake.setPower(0.1);
+        intake.setPower(0.3);
     }
 
 }

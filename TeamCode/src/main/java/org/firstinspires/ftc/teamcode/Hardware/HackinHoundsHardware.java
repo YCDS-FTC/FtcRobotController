@@ -89,7 +89,7 @@ public class HackinHoundsHardware extends Hardware {
     public double limelightMountAngleDegrees = 20.0;
 
     // distance from the center of the Limelight lens to the floor
-    public double limelightLensHeightInches =  10.0;
+    public double limelightLensHeightInches =  14.0;
 
     // distance from the target to the floor
     public double goalHeightInches = 29.5;
@@ -207,17 +207,18 @@ public class HackinHoundsHardware extends Hardware {
 
 
 
-        getShootPower.add(23, 940);
-        getShootPower.add(28, 980);
-        getShootPower.add(33, 1040);
-        getShootPower.add(38, 1060);
-        getShootPower.add(43, 1080);
-        getShootPower.add(48, 1100);
-        getShootPower.add(53, 1120);
-        getShootPower.add(58, 1140);
-        getShootPower.add(63, 1150);
-        getShootPower.add(68, 1180);
-        getShootPower.add(73, 1220);
+
+        getShootPower.add(23, 1220);
+        getShootPower.add(28, 1240);
+        getShootPower.add(33, 1280);
+        getShootPower.add(38, 1260);
+        getShootPower.add(43, 1260);
+        getShootPower.add(48, 1260);
+        getShootPower.add(53, 1280);
+        getShootPower.add(58, 1300);
+        getShootPower.add(63, 1320);
+        getShootPower.add(68, 1350);
+        getShootPower.add(73, 1360);
         getShootPower.add(78, 1260);
         getShootPower.add(83,1280);
         getShootPower.add(117,1540);

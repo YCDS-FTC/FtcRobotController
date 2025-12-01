@@ -26,14 +26,22 @@ public class intakeOff extends CommandBase {
 
     @Override
     public void initialize(){
-        intakeSubSystem.intakeOff();
+
     }
 
 
     @Override
-    public boolean isFinished(){
-        return true;
+    public void execute(){
+        intakeSubSystem.intakeOff();
     }
+
+    @Override
+    public boolean isFinished(){
+        if (intakeSubSystem.getIntakePower() == 0){
+            return true;
+        } else{
+            return false;
+        }    }
 
 
 }

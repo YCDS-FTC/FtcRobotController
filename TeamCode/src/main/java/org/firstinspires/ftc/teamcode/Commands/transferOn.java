@@ -3,13 +3,14 @@ package org.firstinspires.ftc.teamcode.Commands;
 import com.seattlesolvers.solverslib.command.CommandBase;
 
 import org.firstinspires.ftc.teamcode.finalizedSubsystems.intakeSubSystem;
+import org.firstinspires.ftc.teamcode.finalizedSubsystems.transferSubsystem;
 
 /**
  * An example command that uses an example subsystem.
  */
-public class intakeLow extends CommandBase {
+public class transferOn extends CommandBase {
     @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-    private final intakeSubSystem intakeSubSystem;
+    private final transferSubsystem transferSubsystem;
 
     /**
      * Creates a new ExampleCommand.
@@ -17,8 +18,8 @@ public class intakeLow extends CommandBase {
      * @param subsystem The subsystem used by this command.
      **/
 
-    public intakeLow(intakeSubSystem subsystem) {
-        intakeSubSystem = subsystem;
+    public transferOn(transferSubsystem subsystem) {
+        transferSubsystem = subsystem;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(subsystem);
     }
@@ -29,15 +30,16 @@ public class intakeLow extends CommandBase {
 
     }
 
+
+
     @Override
     public void execute(){
-        intakeSubSystem.intakeLow();
+        transferSubsystem.transferOn();
     }
-
 
     @Override
     public boolean isFinished(){
-        if (intakeSubSystem.getIntakePower() == .3){
+        if (transferSubsystem.getTransferPower() == -0.7){
             return true;
         } else{
             return false;

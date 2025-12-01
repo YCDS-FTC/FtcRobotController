@@ -8,15 +8,35 @@ import com.pedropathing.paths.Path;
 import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
 import com.qualcomm.hardware.limelightvision.LLResult;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
+import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
+import com.seattlesolvers.solverslib.command.PerpetualCommand;
+import com.seattlesolvers.solverslib.command.RunCommand;
+import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
+import com.seattlesolvers.solverslib.command.WaitCommand;
+import com.seattlesolvers.solverslib.command.WaitUntilCommand;
+import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
+
+import org.firstinspires.ftc.teamcode.Commands.intakeLow;
+import org.firstinspires.ftc.teamcode.Commands.intakeOn;
+import org.firstinspires.ftc.teamcode.Commands.shooterOn;
+import org.firstinspires.ftc.teamcode.Commands.stopperOn;
+import org.firstinspires.ftc.teamcode.Commands.transferLow;
+import org.firstinspires.ftc.teamcode.Commands.turretScore;
+import org.firstinspires.ftc.teamcode.Commands.turretZero;
 import org.firstinspires.ftc.teamcode.finalizedSubsystems.intakeSubSystem;
 
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.finalizedSubsystems.shooterSubsystem;
+import org.firstinspires.ftc.teamcode.finalizedSubsystems.stopperSubsystem;
+import org.firstinspires.ftc.teamcode.finalizedSubsystems.transferSubsystem;
+import org.firstinspires.ftc.teamcode.finalizedSubsystems.turretSubsystem;
 
 @Autonomous(name = "DING DONG blue", group = "Examples")
 public class DINGDONG_BLUE extends CommandOpMode {
@@ -27,17 +47,22 @@ public class DINGDONG_BLUE extends CommandOpMode {
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
 
+    private Limelight3A limelight;
 
     private intakeSubSystem intakeSubsystem;
+    private turretSubsystem turretSubsystem;
+    private transferSubsystem transferSubsystem;
+    private stopperSubsystem stopperSubsystem;
+    private shooterSubsystem shooterSubsystem;
 
 
-    private final Pose startPose = new Pose(19.794642857142858, 122.14285714285714, Math.toRadians(145));
-    private final Pose scorePose = new Pose(59.651785714285715, 84.21428571428572, Math.toRadians(135));
-    private final Pose pickupOne = new Pose(125,83, Math.toRadians(0));
-    private final Pose pickupTwo = new Pose (126,60, Math.toRadians(0));
-    private final Pose curve1 = new Pose(95, 55);
-    private final Pose pickupThree = new Pose(125, 35, Math.toRadians(0));
-    private final Pose curve2 = new Pose(79, 36);
+    private final Pose startPose = new Pose(17.6580310880829, 121.3678756476684, Math.toRadians(235));
+    private final Pose scorePose = new Pose(59.651785714285715, 84.21428571428572, Math.toRadians(186));
+    private final Pose pickupOne = new Pose(15,83, Math.toRadians(180));
+    private final Pose pickupTwo = new Pose (17,60, Math.toRadians(180));
+    private final Pose curve1 = new Pose(80, 55);
+    private final Pose pickupThree = new Pose(17, 32, Math.toRadians(180));
+    private final Pose curve2 = new Pose(70, 36);
     private final Pose move = new Pose (60, 60, Math.toRadians(180));
 
 
@@ -79,6 +104,64 @@ public class DINGDONG_BLUE extends CommandOpMode {
         });
     }
 
+    private InstantCommand intakeOff(){
+        return new InstantCommand(() ->{
+            intakeSubsystem.intakeOff();
+        });
+    }
+
+    private InstantCommand intakeLow(){
+        return new InstantCommand(() ->{
+            intakeSubsystem.intakeLow();
+        });
+    }
+
+    private InstantCommand transferOn(){
+        return new InstantCommand(() ->{
+            transferSubsystem.transferOn();
+        });
+    }
+
+    private InstantCommand transferOff(){
+        return new InstantCommand(() ->{
+            transferSubsystem.transferOff();
+        });
+    }
+
+    private InstantCommand transferLow(){
+        return new InstantCommand(() ->{
+            transferSubsystem.transferLow();
+        });
+    }
+
+    private InstantCommand stopperOn(){
+        return new InstantCommand(() ->{
+            stopperSubsystem.stopperOn();
+        });
+    }
+
+    private InstantCommand stopperOff(){
+        return new InstantCommand(() ->{
+            stopperSubsystem.stopperOff();
+        });
+    }
+
+    private InstantCommand shooterOff(){
+        return new InstantCommand(() ->{
+            shooterSubsystem.shooterOff();
+        });
+    }
+
+    private RunCommand shooterOn() {
+        return new RunCommand(() -> {
+            shooterSubsystem.periodic();
+        });
+    }
+
+
+
+
+
 
 
 
@@ -101,25 +184,164 @@ public class DINGDONG_BLUE extends CommandOpMode {
 
     @Override
     public void initialize(){
+        super.reset();
 
-
-
-        robot.limelight.pipelineSwitch(0);
-
-
+        robot.init(hardwareMap);
 
         intakeSubsystem  = new intakeSubSystem(hardwareMap, "intake");
+        transferSubsystem = new transferSubsystem(hardwareMap, "intake2");
+        stopperSubsystem  = new stopperSubsystem(hardwareMap,"stopper");
+        turretSubsystem = new turretSubsystem(hardwareMap, "turret");
+        shooterSubsystem = new shooterSubsystem(hardwareMap, "shooter");
+        limelight = hardwareMap.get(Limelight3A.class, "limelight");
+
+        limelight.pipelineSwitch(0);
+        turretScore turretScore = new turretScore(turretSubsystem);
+        turretZero turretZero = new turretZero(turretSubsystem);
+        shooterOn shooterOn = new shooterOn(shooterSubsystem);
+        intakeLow intakeLow = new intakeLow(intakeSubsystem);
+        transferLow transferLow = new transferLow(transferSubsystem);
+        stopperOn stopperOn = new stopperOn(stopperSubsystem);
+
 
 
         follower = Constants.createFollower(hardwareMap);
-        buildPaths();
         follower.setStartingPose(startPose);
+        follower.update();
+        buildPaths();
+
+
+
+
+        SequentialCommandGroup BlueClose = new SequentialCommandGroup(
+
+                // ----------------------------------------------------------------------
+                // STEP 1: START (Run continuous commands in parallel with the main sequence)
+                // ----------------------------------------------------------------------
+                // Runs until interrupted by turretZero
+
+                        // This SequentialCommandGroup contains ALL of your time-limited pathing/intake steps.
+                        // Once this inner group finishes, the outer ParallelCommandGroup is done.
+
+                                // 1. Score Preload Movement/Setup
+                                new ParallelCommandGroup(
+                                        new FollowPathCommand(follower, scorePreload)
+
+
+                                ),
+
+                                // 2. Score Preload Sequence
+                                new ParallelCommandGroup(
+                                        intakeLow(),
+                                        transferLow(),
+                                        stopperOn()
+                                ),
+                                intakeOn(),
+                                transferOn(),
+                                stopperOff(),
+                                new WaitCommand(2000), // Time to fire
+
+                                // 3. Pickup 1 Movement
+                                new ParallelCommandGroup(
+                                        stopperOn(),
+                                        new FollowPathCommand(follower, pickup1).setGlobalMaxPower(0.3)
+                                ),
+
+                                // 4. Score 1 Movement/Setup
+                                new ParallelCommandGroup(
+                                        intakeLow(),
+                                        transferLow(),
+                                        new FollowPathCommand(follower, score1).setGlobalMaxPower(1)
+                                ),
+
+                                // 5. Score 1 Sequence
+                                new ParallelCommandGroup(
+                                        intakeOn(),
+                                        transferOn()
+                                ),
+                                stopperOff(),
+                                new WaitCommand(2000), // Time to fire
+
+                                // 6. Pickup 2 Movement
+                                new ParallelCommandGroup(
+                                        stopperOn(),
+                                        intakeOn(),
+                                        transferOn(),
+                                        new FollowPathCommand(follower, pickup2).setGlobalMaxPower(0.3)
+                                ),
+
+                                // 7. Score 2 Movement/Setup
+                                new ParallelCommandGroup(
+                                        intakeLow(),
+                                        transferLow(),
+                                        new FollowPathCommand(follower, score2).setGlobalMaxPower(1)
+                                ),
+
+                                // 8. Score 2 Sequence
+                                new ParallelCommandGroup(
+                                        intakeOn(),
+                                        transferOn()
+                                ),
+
+                                stopperOff(),
+                                new WaitCommand(2000),
+
+                                new ParallelCommandGroup(
+                                       stopperOn(),
+                                       intakeOn(),
+                                       transferOn(),
+                                        new FollowPathCommand(follower, pickup3).setGlobalMaxPower(0.3)
+                                ),
+
+                                new ParallelCommandGroup(
+                                        intakeLow(),
+                                        transferLow(),
+                                        new FollowPathCommand(follower, score3)
+                                ),
+
+                                new ParallelCommandGroup(
+                                        intakeOn(),
+                                        transferOn()
+                                ),
+
+                                stopperOff(),
+                                new WaitCommand(2000),
+
+                                new FollowPathCommand(follower, park),
+
+                // ----------------------------------------------------------------------
+                // STEP 2: STOP (This interrupts the perpetual commands from Step 1)
+                // ----------------------------------------------------------------------
+                                new ParallelCommandGroup(
+                                        intakeOff(),
+                                        stopperOn(),
+                                        transferOff(),
+                                        turretZero,      // Interrupts turretScore
+                                        shooterOff()     // Interrupts shooterOn
+                                )
+        );
+
+
+
+        schedule (new ParallelCommandGroup(
+                BlueClose
+        ));
 
 
     }
 
     @Override
     public void run(){
+
+        follower.update();
+        super.run();
+
+
+        telemetry.addData("X", follower.getPose().getPose());
+        telemetry.addData("intakePower", intakeSubsystem.getCurrentCommand());
+        telemetry.addData("turret", turretSubsystem.getCurrentCommand());
+        telemetry.update();
+
 
     }
 
