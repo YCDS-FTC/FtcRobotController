@@ -80,8 +80,11 @@ public class HackinHounds_Mechanum extends OpMode {
 
     boolean a_pressed_previous = false;
 
+    boolean x_pressed_previous = false;
+
     private ElapsedTime stopperTimer = new ElapsedTime();
     private boolean isStopperTimedOpen = false;
+    private boolean isSingleStopperTimedOpen = false;
     @Override
     public void init(){
         robot.init(hardwareMap);
@@ -173,10 +176,35 @@ public class HackinHounds_Mechanum extends OpMode {
         }
 
 
-        // --- Stopper Control Logic ---
+        //Stopper logic for ONE BY ONE
+        if(gamepad2.xWasPressed() && !x_pressed_previous) {
+            if (isBlockerClosed) {
+                robot.stopper.setPosition(0.47);
+                isBlockerClosed = false;
+                isSingleStopperTimedOpen = true;
+                timer.reset();
+            } else {
+                robot.stopper.setPosition(0.67);
+                isBlockerClosed = true;
+                isSingleStopperTimedOpen = false;
+
+
+            }
+        }
+
+            if(isSingleStopperTimedOpen && timer.seconds() > 0.2){
+                robot.stopper.setPosition(0.67);
+                isBlockerClosed = true;
+                isSingleStopperTimedOpen = false;
+            }
+
+
+
+
+        // --- Stopper Control Logic to shoot ALL THREE
 
         // Check for 'A' press on gamepad2 (assuming gamepad2 for shooter controls)
-        if (gamepad2.a && !a_pressed_previous) {
+        if (gamepad2.aWasPressed() && !a_pressed_previous) {
             // This block executes ONLY on the moment 'A' is pressed down
 
             if (isBlockerClosed) {
@@ -196,7 +224,7 @@ public class HackinHounds_Mechanum extends OpMode {
 
         // --- Automatic Close Check ---
         // If the stopper was opened by the timer logic AND 1.0 seconds have passed:
-        if (isStopperTimedOpen && stopperTimer.seconds() >= 1.0) {
+        if (isStopperTimedOpen && stopperTimer.seconds() >= 1) {
             // Close the stopper
             robot.stopper.setPosition(0.67); // Closed position
             isBlockerClosed = true;
@@ -205,6 +233,9 @@ public class HackinHounds_Mechanum extends OpMode {
 
         // Update the previous state for the next loop
         a_pressed_previous = gamepad2.a;
+        x_pressed_previous = gamepad2.x;
+
+
 
 
 

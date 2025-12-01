@@ -5,25 +5,18 @@ import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
-import com.pedropathing.paths.PathChain;
 import com.pedropathing.util.Timer;
-import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.seattlesolvers.solverslib.command.CommandOpMode;
 import com.seattlesolvers.solverslib.command.InstantCommand;
 import com.seattlesolvers.solverslib.command.ParallelCommandGroup;
-import com.seattlesolvers.solverslib.command.PerpetualCommand;
 import com.seattlesolvers.solverslib.command.RunCommand;
 import com.seattlesolvers.solverslib.command.SequentialCommandGroup;
 import com.seattlesolvers.solverslib.command.WaitCommand;
-import com.seattlesolvers.solverslib.command.WaitUntilCommand;
 import com.seattlesolvers.solverslib.pedroCommand.FollowPathCommand;
 
 import org.firstinspires.ftc.teamcode.Commands.intakeLow;
-import org.firstinspires.ftc.teamcode.Commands.intakeOn;
 import org.firstinspires.ftc.teamcode.Commands.shooterOn;
 import org.firstinspires.ftc.teamcode.Commands.stopperOn;
 import org.firstinspires.ftc.teamcode.Commands.transferLow;
@@ -39,7 +32,7 @@ import org.firstinspires.ftc.teamcode.finalizedSubsystems.transferSubsystem;
 import org.firstinspires.ftc.teamcode.finalizedSubsystems.turretSubsystem;
 
 @Autonomous(name = "DING DONG blue", group = "Examples")
-public class DINGDONG_BLUE extends CommandOpMode {
+public class old_auto_bad extends CommandOpMode {
 
     private HackinHoundsHardware robot = new HackinHoundsHardware();
 
