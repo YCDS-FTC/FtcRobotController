@@ -320,10 +320,11 @@ public class HackinHounds_Mechanum extends OpMode {
         double robotHeading = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
         //if (gamepad1.right_trigger > 0.1) {angleWant = robotHeading;}
         double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
-        double target = normA(angleWant - robotHeading - tx);
+        if (result.isValid()) {angleWant = (robotHeading + turretAngle) + tx;}
+        double target = normA(angleWant - robotHeading);
         if (target > 135) {target = 135;} else if (target < -135) {target = -135;}
-        double error = target - turretAngle;
-        double turretPower = clamp(error * slow, -1, 1);
+//        double error = target - turretAngle;
+//        double turretPower = clamp(error * slow, -1, 1);
         robot.turret.setVelocity(turretController.calculate(turretAngle, target) * 1400 - robot.imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * turret_tPERd);
 
 
@@ -333,7 +334,7 @@ public class HackinHounds_Mechanum extends OpMode {
         telemetry.addData("turretPos", "%d", robot.turret.getCurrentPosition());
         telemetry.addData("turretAngle", "%f", turretAngle);
         telemetry.addData("turretTarget", "%f", target);
-        telemetry.addData("error", "%f", error);
+//        telemetry.addData("error", "%f", error);
         telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
         telemetry.addData("Tx", "%f", tx);
 
