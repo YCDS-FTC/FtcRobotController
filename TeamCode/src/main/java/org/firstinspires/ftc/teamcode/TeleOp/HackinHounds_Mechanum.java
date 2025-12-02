@@ -224,7 +224,7 @@ public class HackinHounds_Mechanum extends OpMode {
 
         // --- Automatic Close Check ---
         // If the stopper was opened by the timer logic AND 1.0 seconds have passed:
-        if (isStopperTimedOpen && stopperTimer.seconds() >= 1) {
+        if (isStopperTimedOpen && stopperTimer.seconds() >= 1.5) {
             // Close the stopper
             robot.stopper.setPosition(0.67); // Closed position
             isBlockerClosed = true;
@@ -306,9 +306,9 @@ public class HackinHounds_Mechanum extends OpMode {
 
         double shooterVelocity = robot.shooter.getVelocity();
 
-        double output = shooterController.calculate(shooterVelocity, motorPower);
+        double output = shooterController.calculate(shooterVelocity, shootertarget);
 
-        robot.shooter.setVelocity(motorPower);
+        robot.shooter.setVelocity(shootertarget);
 
 
         a_pressed_previous = gamepad1.a;

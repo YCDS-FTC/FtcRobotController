@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
@@ -23,26 +25,27 @@ public class Blue_Close extends OpMode {
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
 
-    private final Pose startPose = new Pose(17.6580310880829, 121.3678756476684, Math.toRadians(235));
-    private final Pose scorePose = new Pose(59.651785714285715, 84.21428571428572, Math.toRadians(180));
-    private final Pose pickupOne = new Pose(15,83, Math.toRadians(180));
-    private final Pose pickupTwo = new Pose (17,60, Math.toRadians(180));
-    private final Pose curve1 = new Pose(80, 55);
-    private final Pose pickupThree = new Pose(17, 32, Math.toRadians(180));
-    private final Pose curve2 = new Pose(70, 36);
-    private final Pose move = new Pose (60, 60, Math.toRadians(180));
+    private final Pose startPose = new Pose(17.6580310880829, 121.3678756476684, Math.toRadians(55));
+    private final Pose scorePose = new Pose(45, 90, Math.toRadians(180));
+    private final Pose pickupOne = new Pose(7,92, Math.toRadians(180));
+    private final Pose pickupTwo = new Pose (15,70, Math.toRadians(180));
+    private final Pose curve1 = new Pose(62, 55);
+    private final Pose pickupThree = new Pose(15, 48, Math.toRadians(180));
+    private final Pose curve2 = new Pose(60, 25);
+    private final Pose move = new Pose (28, 72.3, Math.toRadians(180));
 
 
     public double p = 0.025, i = 0, d = 0.0004, f = 0;
 
     public PIDFController turretController = new PIDFController(p, i, d, f);
-    double target = 134;
+    double target = 135;
 
 
+    private FtcDashboard dashboard;
 
     public double P = 11, I = 0, D = 0, F = 0.8;
     public PIDFController shooterController = new PIDFController(P, I, D, F);
-    double shooterTarget = 1180;
+    double shooterTarget = 1220;
 
     public double ticksPerDegree = 4.233;
 
@@ -101,8 +104,8 @@ public class Blue_Close extends OpMode {
                     robot.stopper.setPosition(0.67);
                     follower.setMaxPower(0.7);
                     follower.followPath(scorePreload);
-                    robot.intake.setPower(0.3);
-                    robot.intake2.setPower(0.3);
+                    robot.intake.setPower(0.5);
+                    robot.intake2.setPower(-0.3);
 
                     setPathState(1);
 
@@ -132,7 +135,7 @@ public class Blue_Close extends OpMode {
             case 3:
                 if (pathTimer.getElapsedTimeSeconds() > 1.5) {
 
-                    follower.setMaxPower(0.3);
+                    follower.setMaxPower(0.5);
                     follower.followPath(pickup1);
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
@@ -164,8 +167,8 @@ public class Blue_Close extends OpMode {
                 break;
 
             case 6:
-                if(pathTimer.getElapsedTimeSeconds() > 1.5){
-                    follower.setMaxPower(0.3);
+                if(pathTimer.getElapsedTimeSeconds() > 2){
+                    follower.setMaxPower(0.4);
                     follower.followPath(pickup2);
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
@@ -237,7 +240,7 @@ public class Blue_Close extends OpMode {
 
 
             case 12:
-                if(pathTimer.getElapsedTimeSeconds() > 1.5){
+                if(pathTimer.getElapsedTimeSeconds() > 2.4){
                     robot.stopper.setPosition(0.67);
                     robot.intake.setPower(0);
                     robot.intake2.setPower(0);
@@ -245,7 +248,7 @@ public class Blue_Close extends OpMode {
                     shooterTarget = 0;
                     follower.followPath(park);
 
-                    setPathState(13);
+                    setPathState(60);
 
                 }
                 break;
@@ -310,7 +313,9 @@ public class Blue_Close extends OpMode {
             double shooterVelocity = robot.shooter.getVelocity();
             double shooterOutput = shooterController.calculate(shooterVelocity, shooterTarget);
 
-            robot.shooter.setPower(shooterOutput);
+//            robot.shooter.setPower(shooterOutput);
+
+            robot.shooter.setVelocity(shooterTarget);
 
 
         // Feedback to Driver Hub
@@ -320,6 +325,7 @@ public class Blue_Close extends OpMode {
         telemetry.addData("heading", follower.getPose().getHeading());
 
         telemetry.update();
+
 
         LLResult result = robot.limelight.getLatestResult();
 
