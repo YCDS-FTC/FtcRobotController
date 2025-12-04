@@ -31,7 +31,7 @@ import org.firstinspires.ftc.teamcode.finalizedSubsystems.stopperSubsystem;
 import org.firstinspires.ftc.teamcode.finalizedSubsystems.transferSubsystem;
 import org.firstinspires.ftc.teamcode.finalizedSubsystems.turretSubsystem;
 
-@Autonomous(name = "DING DONG blue", group = "Examples")
+@Autonomous(name = "bad blue", group = "Examples")
 public class old_auto_bad extends CommandOpMode {
 
     private HackinHoundsHardware robot = new HackinHoundsHardware();

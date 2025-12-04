@@ -78,9 +78,9 @@ public class HackinHounds_Mechanum extends OpMode {
 
     boolean isBlockerClosed = true;
 
-    boolean a_pressed_previous = false;
+    boolean rightBumper_pressed_previous = false;
 
-    boolean x_pressed_previous = false;
+    boolean leftBumper_pressed_previous = false;
 
     public static double shooterAngle = 0;
 
@@ -172,13 +172,18 @@ public class HackinHounds_Mechanum extends OpMode {
             robot.intake2.setPower(0);
         }
 
+        if(gamepad2.a){
+            robot.intake2.setPower(-0.3);
+            robot.intake.setPower(0.3);
+        }
+
         if(gamepad2.right_trigger > Math.abs(0.1)) {
             robot.intake.setPower(-0.7);
         }
 
 
         //Stopper logic for ONE BY ONE
-        if(gamepad2.xWasPressed() && !x_pressed_previous) {
+        if(gamepad2.left_bumper && !leftBumper_pressed_previous) {
             if (isBlockerClosed) {
                 robot.stopper.setPosition(0.47);
                 isBlockerClosed = false;
@@ -211,12 +216,14 @@ public class HackinHounds_Mechanum extends OpMode {
         // --- Stopper Control Logic to shoot ALL THREE
 
         // Check for 'A' press on gamepad2 (assuming gamepad2 for shooter controls)
-        if (gamepad2.aWasPressed() && !a_pressed_previous) {
+        if (gamepad2.right_bumper && !rightBumper_pressed_previous) {
             // This block executes ONLY on the moment 'A' is pressed down
 
             if (isBlockerClosed) {
                 // Stopper is currently closed -> Open it and start the timer
-                robot.stopper.setPosition(0.47); // Open position
+                robot.stopper.setPosition(0.47);// Open position
+                robot.intake.setPower(0.3);
+                robot.intake2.setPower(-0.3);
                 isBlockerClosed = false;
                 isStopperTimedOpen = true; // Signal that we are waiting for a close event
                 stopperTimer.reset(); // Start the 1-second countdown
@@ -226,21 +233,25 @@ public class HackinHounds_Mechanum extends OpMode {
                 robot.stopper.setPosition(0.67); // Closed position
                 isBlockerClosed = true;
                 isStopperTimedOpen = false; // Cancel any active timer wait
+                robot.intake.setPower(0.7);
+                robot.intake2.setPower(-0.7);
             }
         }
 
         // --- Automatic Close Check ---
         // If the stopper was opened by the timer logic AND 1.0 seconds have passed:
-        if (isStopperTimedOpen && stopperTimer.seconds() >= 1.5) {
+        if (isStopperTimedOpen && stopperTimer.seconds() >= 1) {
             // Close the stopper
-            robot.stopper.setPosition(0.67); // Closed position
+            robot.stopper.setPosition(0.67);// Closed position
+            robot.intake.setPower(0.7);
+            robot.intake2.setPower(-0.7);
             isBlockerClosed = true;
             isStopperTimedOpen = false; // Stop checking the timer until the next press
         }
 
         // Update the previous state for the next loop
-        a_pressed_previous = gamepad2.a;
-        x_pressed_previous = gamepad2.x;
+        rightBumper_pressed_previous = gamepad2.right_bumper;
+        leftBumper_pressed_previous = gamepad2.left_bumper;
 
 
 
@@ -323,8 +334,6 @@ public class HackinHounds_Mechanum extends OpMode {
 
         }
 
-
-        a_pressed_previous = gamepad1.a;
 
 //        robot.shooter.setVelocity(motorPower);
 
