@@ -200,9 +200,14 @@ public class HackinHoundsHardware extends Hardware {
 
 
         getHoodAngle.add(0,0);
-        getHoodAngle.add(117,0.18);
-        getHoodAngle.add(123,0.18);
-        getHoodAngle.add(128, 0.18);
+        getHoodAngle.add(109,0.2);
+        getHoodAngle.add(114,0.2);
+        getHoodAngle.add(119, 0.2);
+        getHoodAngle.add(124, 0.2);
+        getHoodAngle.add(130, 0.2);
+
+
+
 
 
 
@@ -216,14 +221,20 @@ public class HackinHoundsHardware extends Hardware {
         getShootPower.add(52, 1280);
         getShootPower.add(57, 1280);
         getShootPower.add(62, 1340);
-        getShootPower.add(67, 1320);
-        getShootPower.add(72, 1350);
-        getShootPower.add(77, 1360);
-        getShootPower.add(82, 1260);
-        getShootPower.add(83,1280);
-        getShootPower.add(117,1540);
-        getShootPower.add(123, 1580);
-        getShootPower.add(128, 1620);
+        getShootPower.add(67, 1360);
+        getShootPower.add(72, 1360);
+        getShootPower.add(77, 1380);
+        getShootPower.add(82, 1380);
+        getShootPower.add(83,1380);
+        getShootPower.add(87,1380);
+
+        getShootPower.add(109,1500);
+        getShootPower.add(114,1520);
+        getShootPower.add(119,1540);
+        getShootPower.add(124,1560);
+        getShootPower.add(130,1580);
+
+
 
 
         //imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
@@ -260,10 +271,13 @@ public class HackinHoundsHardware extends Hardware {
     public double getshooterPower(double distanceToGoal) {
         getShootPower.createLUT();
 
-        if(distanceToGoal > 128){
+        if(distanceToGoal > 130){
             shooterPower = 0;
-        } else {
+        } else if (distanceToGoal < 27){
+            shooterPower = 0;
+        } else{
             shooterPower = getShootPower.get(distanceToGoal);
+
         }
 
         return shooterPower;
@@ -272,9 +286,9 @@ public class HackinHoundsHardware extends Hardware {
     public double getHoodAngle (double distanceToGoal) {
         getHoodAngle.createLUT();
 
-        if (distanceToGoal > 128) {
+        if (distanceToGoal > 130) {
             hoodAngle = 0;
-        } else if (distanceToGoal < 117) {
+        } else if (distanceToGoal < 108) {
             hoodAngle = 0;
         } else{
             hoodAngle = getHoodAngle.get(distanceToGoal);

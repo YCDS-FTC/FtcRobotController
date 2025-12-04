@@ -50,7 +50,7 @@ public class HackinHounds_Mechanum extends OpMode {
 
 
     private static double turret_tPERd = 4.233;
-    private static double angleWant = 0;
+    private static double angleWant = 120;
     private static double slow = 1;
 
     public static double p = 0.02;
@@ -63,8 +63,8 @@ public class HackinHounds_Mechanum extends OpMode {
 
      public static double kp = 11;
      public static double ki = 0;
-     public static double kd = 0.8;
-     public static double kf = 0;
+     public static double kd = 0;
+     public static double kf = 0.8;
 
     PIDFController shooterController = new PIDFController(kp, ki, kd, kf);
 
@@ -81,6 +81,8 @@ public class HackinHounds_Mechanum extends OpMode {
     boolean a_pressed_previous = false;
 
     boolean x_pressed_previous = false;
+
+    public static double shooterAngle = 0;
 
     private ElapsedTime stopperTimer = new ElapsedTime();
     private boolean isStopperTimedOpen = false;
@@ -172,7 +174,6 @@ public class HackinHounds_Mechanum extends OpMode {
 
         if(gamepad2.right_trigger > Math.abs(0.1)) {
             robot.intake.setPower(-0.7);
-            robot.intake2.setPower(0.7);
         }
 
 
@@ -182,20 +183,26 @@ public class HackinHounds_Mechanum extends OpMode {
                 robot.stopper.setPosition(0.47);
                 isBlockerClosed = false;
                 isSingleStopperTimedOpen = true;
+                robot.intake.setPower(0.4);
+                robot.intake2.setPower(-0.5);
                 timer.reset();
             } else {
                 robot.stopper.setPosition(0.67);
                 isBlockerClosed = true;
                 isSingleStopperTimedOpen = false;
+                robot.intake.setPower(0.7);
+                robot.intake2.setPower(-0.7);
 
 
             }
         }
 
-            if(isSingleStopperTimedOpen && timer.seconds() > 0.2){
+            if(isSingleStopperTimedOpen && timer.seconds() > 0.3){
                 robot.stopper.setPosition(0.67);
                 isBlockerClosed = true;
                 isSingleStopperTimedOpen = false;
+                robot.intake.setPower(0.4);
+                robot.intake2.setPower(-0.5);
             }
 
 
@@ -306,9 +313,15 @@ public class HackinHounds_Mechanum extends OpMode {
 
         double shooterVelocity = robot.shooter.getVelocity();
 
-        double output = shooterController.calculate(shooterVelocity, shootertarget);
+        double output = shooterController.calculate(shooterVelocity, motorPower);
 
-        robot.shooter.setVelocity(shootertarget);
+        if(gamepad1.a){
+            robot.shooter.setVelocity(0);
+        } else{
+            robot.angleServo.setPosition(hoodAngle);
+            robot.shooter.setVelocity(output);
+
+        }
 
 
         a_pressed_previous = gamepad1.a;

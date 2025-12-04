@@ -28,6 +28,8 @@ public class Blue_Close extends OpMode {
     private final Pose startPose = new Pose(17.6580310880829, 121.3678756476684, Math.toRadians(55));
     private final Pose scorePose = new Pose(45, 90, Math.toRadians(180));
     private final Pose pickupOne = new Pose(7,92, Math.toRadians(180));
+    private final Pose goback = new Pose(14, 92, Math.toRadians(180));
+    private final Pose gateEmpty = new Pose(14, 81, Math.toRadians(90));
     private final Pose pickupTwo = new Pose (15,70, Math.toRadians(180));
     private final Pose curve1 = new Pose(62, 55);
     private final Pose pickupThree = new Pose(15, 48, Math.toRadians(180));
@@ -38,18 +40,18 @@ public class Blue_Close extends OpMode {
     public double p = 0.025, i = 0, d = 0.0004, f = 0;
 
     public PIDFController turretController = new PIDFController(p, i, d, f);
-    double target = 135;
+    double target = 133;
 
 
     private FtcDashboard dashboard;
 
     public double P = 11, I = 0, D = 0, F = 0.8;
     public PIDFController shooterController = new PIDFController(P, I, D, F);
-    double shooterTarget = 1220;
+    double shooterTarget = 1200;
 
     public double ticksPerDegree = 4.233;
 
-    private Path scorePreload, pickup1, score1, pickup2, score2, pickup3, score3, park;
+    private Path scorePreload, pickup1, goBack, emptygate, score1, pickup2, score2, pickup3, score3, park;
 
 
 
@@ -66,8 +68,15 @@ public class Blue_Close extends OpMode {
         pickup1 = new Path(new BezierLine(scorePose, pickupOne));
         pickup1.setLinearHeadingInterpolation(scorePose.getHeading(), pickupOne.getHeading(), 0.7);
 
-        score1 = new Path(new BezierLine(pickupOne, scorePose));
-        score1.setLinearHeadingInterpolation(pickupOne.getHeading(), scorePose.getHeading(), 0.9);
+        goBack = new Path(new BezierLine(pickupOne, goback));
+        goBack.setConstantHeadingInterpolation(goback.getHeading());
+
+        emptygate = new Path(new BezierLine(goback, gateEmpty));
+        emptygate.setLinearHeadingInterpolation(goback.getHeading(), gateEmpty.getHeading());
+
+
+        score1 = new Path(new BezierLine(gateEmpty, scorePose));
+        score1.setLinearHeadingInterpolation(gateEmpty.getHeading(), scorePose.getHeading(), 0.9);
 
         pickup2 = new Path(new BezierCurve(scorePose, curve1, pickupTwo));
         pickup2.setLinearHeadingInterpolation(scorePose.getHeading(), pickupTwo.getHeading(), 0.7);
@@ -146,93 +155,89 @@ public class Blue_Close extends OpMode {
                 break;
 
             case 4:
-                if (!follower.isBusy()) {
+                if(!follower.isBusy()){
+                    follower.followPath(goBack);
+                    robot.intake2.setPower(-0.3);
+                    robot.intake.setPower(0.3);
+                    setPathState(5);
+                }
+                break;
+
+
+            case 5:
+                if(!follower.isBusy()){
+                    follower.followPath(emptygate);
+                    robot.intake2.setPower(-0.3);
+                    robot.intake.setPower(0.3);
+                    setPathState(6);
+                }
+                break;
+
+
+            case 6:
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2) {
 
                     follower.setMaxPower(1);
                     follower.followPath(score1);
                     robot.intake2.setPower(-0.3);
                     robot.intake.setPower(0.3);
-                    setPathState(5);
-
-                }
-                break;
-            case 5:
-                if(!follower.isBusy()){
-                    robot.intake.setPower(0.7);
-                    robot.intake2.setPower(-0.7);
-                    robot.stopper.setPosition(0.47);
-                    setPathState(6);
-
-                }
-                break;
-
-            case 6:
-                if(pathTimer.getElapsedTimeSeconds() > 2){
-                    follower.setMaxPower(0.4);
-                    follower.followPath(pickup2);
-                    robot.intake.setPower(1);
-                    robot.intake2.setPower(-0.7);
-                    robot.stopper.setPosition(0.67);
                     setPathState(7);
 
                 }
                 break;
-
             case 7:
                 if(!follower.isBusy()){
-                    follower.setMaxPower(1);
-                    follower.followPath(score2);
-                    robot.intake.setPower(0.3);
-                    robot.intake2.setPower(-0.3);
+                    robot.intake.setPower(0.7);
+                    robot.intake2.setPower(-0.7);
+                    robot.stopper.setPosition(0.47);
                     setPathState(8);
 
                 }
                 break;
 
             case 8:
-                if(!follower.isBusy()){
-
-                    robot.intake.setPower(0.7);
+                if(pathTimer.getElapsedTimeSeconds() > 2){
+                    follower.setMaxPower(0.4);
+                    follower.followPath(pickup2);
+                    robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
-                    robot.stopper.setPosition(0.47);
+                    robot.stopper.setPosition(0.67);
                     setPathState(9);
 
                 }
                 break;
 
-
-
             case 9:
-                if(pathTimer.getElapsedTimeSeconds() > 1.5){
-                    follower.setMaxPower(0.3);
-                    follower.followPath(pickup3);
-                    robot.stopper.setPosition(0.67);
-                    robot.intake.setPower(1);
-                    robot.intake2.setPower(-0.7);
+                if(!follower.isBusy()){
+                    follower.setMaxPower(1);
+                    follower.followPath(score2);
+                    robot.intake.setPower(0.3);
+                    robot.intake2.setPower(-0.3);
                     setPathState(10);
 
                 }
                 break;
 
-
             case 10:
                 if(!follower.isBusy()){
-                    follower.setMaxPower(1);
-                    follower.followPath(score3);
 
-                    robot.intake.setPower(0.3);
-                    robot.intake2.setPower(-0.3);
+                    robot.intake.setPower(0.7);
+                    robot.intake2.setPower(-0.7);
+                    robot.stopper.setPosition(0.47);
                     setPathState(11);
 
                 }
                 break;
 
 
+
             case 11:
-                if(!follower.isBusy()){
+                if(pathTimer.getElapsedTimeSeconds() > 1.5){
+                    follower.setMaxPower(0.3);
+                    follower.followPath(pickup3);
+                    robot.stopper.setPosition(0.67);
+                    robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
-                    robot.intake.setPower(0.7);
-                    robot.stopper.setPosition(0.47);
                     setPathState(12);
 
                 }
@@ -240,15 +245,13 @@ public class Blue_Close extends OpMode {
 
 
             case 12:
-                if(pathTimer.getElapsedTimeSeconds() > 2.4){
-                    robot.stopper.setPosition(0.67);
-                    robot.intake.setPower(0);
-                    robot.intake2.setPower(0);
-                    target = 0;
-                    shooterTarget = 0;
-                    follower.followPath(park);
+                if(!follower.isBusy()){
+                    follower.setMaxPower(1);
+                    follower.followPath(score3);
 
-                    setPathState(60);
+                    robot.intake.setPower(0.3);
+                    robot.intake2.setPower(-0.3);
+                    setPathState(13);
 
                 }
                 break;
@@ -256,8 +259,8 @@ public class Blue_Close extends OpMode {
 
             case 13:
                 if(!follower.isBusy()){
-                    robot.intake.setPower(0.7);
                     robot.intake2.setPower(-0.7);
+                    robot.intake.setPower(0.7);
                     robot.stopper.setPosition(0.47);
                     setPathState(14);
 
@@ -266,16 +269,42 @@ public class Blue_Close extends OpMode {
 
 
             case 14:
-                if(!follower.isBusy()){
-                    robot.intake.setPower(0.7);
-                    robot.intake2.setPower(-0.7);
-                    robot.stopper.setPosition(0.47);
+                if(pathTimer.getElapsedTimeSeconds() > 2.4){
+                    robot.stopper.setPosition(0.67);
+                    robot.intake.setPower(0);
+                    robot.intake2.setPower(0);
+                    target = 0;
+                    shooterTarget = 0;
+                    follower.followPath(park);
+
                     setPathState(15);
 
                 }
                 break;
 
+
             case 15:
+                if(!follower.isBusy()){
+                    robot.intake.setPower(0.7);
+                    robot.intake2.setPower(-0.7);
+                    robot.stopper.setPosition(0.47);
+                    setPathState(16);
+
+                }
+                break;
+
+
+            case 16:
+                if(!follower.isBusy()){
+                    robot.intake.setPower(0.7);
+                    robot.intake2.setPower(-0.7);
+                    robot.stopper.setPosition(0.47);
+                    setPathState(17);
+
+                }
+                break;
+
+            case 17:
                 if(!follower.isBusy()){
                     robot.intake.setPower(0.7);
                     robot.intake2.setPower(-0.7);
@@ -315,7 +344,7 @@ public class Blue_Close extends OpMode {
 
 //            robot.shooter.setPower(shooterOutput);
 
-            robot.shooter.setVelocity(shooterTarget);
+            robot.shooter.setVelocity(shooterOutput);
 
 
         // Feedback to Driver Hub
