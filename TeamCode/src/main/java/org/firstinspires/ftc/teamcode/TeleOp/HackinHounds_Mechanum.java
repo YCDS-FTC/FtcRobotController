@@ -202,12 +202,12 @@ public class HackinHounds_Mechanum extends OpMode {
             }
         }
 
-            if(isSingleStopperTimedOpen && timer.seconds() > 0.3){
+            if(isSingleStopperTimedOpen && timer.seconds() > 0.2){
                 robot.stopper.setPosition(0.67);
                 isBlockerClosed = true;
                 isSingleStopperTimedOpen = false;
                 robot.intake.setPower(0.4);
-                robot.intake2.setPower(-0.5);
+                robot.intake2.setPower(-0.7);
             }
 
 
@@ -252,7 +252,6 @@ public class HackinHounds_Mechanum extends OpMode {
         // Update the previous state for the next loop
         rightBumper_pressed_previous = gamepad2.right_bumper;
         leftBumper_pressed_previous = gamepad2.left_bumper;
-
 
 
 
@@ -347,8 +346,16 @@ public class HackinHounds_Mechanum extends OpMode {
         if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
 //        double error = target - turretAngle;
 //        double turretPower = clamp(error * slow, -1, 1);
-        robot.turret.setVelocity(turretController.calculate(turretAngle, target) * 1400 - robot.imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * turret_tPERd);
+        robot.turret.setVelocity(turretController.calculate(turretAngle, target) * 1450 - robot.imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * turret_tPERd);
 
+
+        if((Math.abs(tx) < 2)){
+            robot.light.setPosition(0.677);
+            robot.light2.setPosition(0.677);
+        } else{
+            robot.light.setPosition(0);
+            robot.light2.setPosition(0);
+        }
 
 
         telemetry.addData("imu", "%f", robotHeading);
@@ -385,6 +392,7 @@ public class HackinHounds_Mechanum extends OpMode {
         dashboard.sendTelemetryPacket(packet);
 
     }
+
 
 
 

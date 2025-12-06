@@ -57,6 +57,9 @@ public class HackinHoundsHardware extends Hardware {
     public Servo stopper;
     public DcMotorEx turret;
 
+    public Servo light;
+    public Servo light2;
+
 
 
     public GoBildaPinpointDriver pinpoint;
@@ -160,6 +163,10 @@ public class HackinHoundsHardware extends Hardware {
         angleServo = robotMap.get(Servo.class,"angleServo");
 
 
+        light = robotMap.get(Servo.class,"light");
+        light2 = robotMap.get(Servo.class,"light2");
+
+
 
         limelight = robotMap.get(Limelight3A.class, "limelight");
 
@@ -215,19 +222,22 @@ public class HackinHoundsHardware extends Hardware {
 
         getShootPower.add(27, 1220);
         getShootPower.add(32, 1250);
-        getShootPower.add(37, 1260);
-        getShootPower.add(42, 1260);
-        getShootPower.add(47, 1260);
-        getShootPower.add(52, 1280);
-        getShootPower.add(57, 1280);
-        getShootPower.add(62, 1320);
-        getShootPower.add(67, 1340);
-        getShootPower.add(72, 1340);
-        getShootPower.add(77, 1360);
+        getShootPower.add(37, 1220);
+        getShootPower.add(42, 1220);
+        getShootPower.add(47, 1220);
+        getShootPower.add(52, 1220);
+        getShootPower.add(57, 1240);
+        getShootPower.add(62, 1280);
+        getShootPower.add(67, 1300);
+        getShootPower.add(72, 1300);
+        getShootPower.add(77, 1340);
         getShootPower.add(82, 1360);
         getShootPower.add(83,1360);
         getShootPower.add(87,1360);
-
+        getShootPower.add(92,1380);
+        getShootPower.add(97,1380);
+        getShootPower.add(102,1380);
+        getShootPower.add(107,1400);
         getShootPower.add(109,1500);
         getShootPower.add(114,1520);
         getShootPower.add(119,1540);
@@ -312,6 +322,8 @@ public class HackinHoundsHardware extends Hardware {
         double distanceToGoal = (distanceToGoal1) * Math.cos(txToRadians);
         return distanceToGoal;
     }
+
+
 
 }
 

@@ -27,9 +27,9 @@ public class Blue_Close_Noah extends OpMode {
     private final Pose startPose = new Pose(17.6580310880829, 121.3678756476684, Math.toRadians(55));
     private final Pose scorePose = new Pose(45, 90, Math.toRadians(180));
     private final Pose pickupOne = new Pose(7,92, Math.toRadians(180));
-    private final Pose goback = new Pose(20, 70, Math.toRadians(180));
+    private final Pose goback = new Pose(17, 70, Math.toRadians(180));
     private final Pose gateEmpty = new Pose(14, 81, Math.toRadians(90));
-    private final Pose pickupTwo = new Pose (15,70, Math.toRadians(180));
+    private final Pose pickupTwo = new Pose (13,70, Math.toRadians(180));
     private final Pose curve1 = new Pose(62, 55);
     private final Pose pickupThree = new Pose(15, 48, Math.toRadians(180));
     private final Pose curve2 = new Pose(60, 25);
@@ -39,14 +39,14 @@ public class Blue_Close_Noah extends OpMode {
     public double p = 0.025, i = 0, d = 0.0004, f = 0;
 
     public PIDFController turretController = new PIDFController(p, i, d, f);
-    double target = 133;
+    double target = 135;
 
 
     private FtcDashboard dashboard;
 
     public double P = 11, I = 0, D = 0, F = 0.8;
     public PIDFController shooterController = new PIDFController(P, I, D, F);
-    double shooterTarget = 1220;
+    double shooterTarget = 1240;
 
     public double ticksPerDegree = 4.233;
 
@@ -122,8 +122,8 @@ public class Blue_Close_Noah extends OpMode {
 
             case 1:
                 if (!follower.isBusy()) {
-                    robot.intake.setPower(0.7);
-                    robot.intake2.setPower(-0.7);
+                    robot.intake.setPower(0.3);
+                    robot.intake2.setPower(-0.4);
                     setPathState(2);
                 }
                 break;
@@ -167,20 +167,22 @@ public class Blue_Close_Noah extends OpMode {
 
 
             case 6:
-                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2) {
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5) {
 
                     follower.setMaxPower(1);
                     follower.followPath(score1);
-                    robot.intake2.setPower(-0.3);
+                    robot.intake2.setPower(-0.4);
                     robot.intake.setPower(0.3);
+                    target = 137;
                     setPathState(7);
 
                 }
                 break;
             case 7:
                 if(!follower.isBusy()){
-                    robot.intake.setPower(0.7);
-                    robot.intake2.setPower(-0.7);
+                    target = 135;
+                    robot.intake.setPower(0.3);
+                    robot.intake2.setPower(-0.4);
                     robot.stopper.setPosition(0.47);
                     setPathState(8);
 
@@ -221,7 +223,7 @@ public class Blue_Close_Noah extends OpMode {
 
 
             case 9:
-                if(!follower.isBusy()){
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1){
                     follower.setMaxPower(1);
                     follower.followPath(score2);
                     robot.intake.setPower(0.3);
@@ -232,10 +234,10 @@ public class Blue_Close_Noah extends OpMode {
                 break;
 
             case 10:
-                if(!follower.isBusy()){
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 5){
 
-                    robot.intake.setPower(0.7);
-                    robot.intake2.setPower(-0.7);
+                    robot.intake.setPower(0.3);
+                    robot.intake2.setPower(-0.4);
                     robot.stopper.setPosition(0.47);
                     setPathState(14);
 
@@ -290,7 +292,7 @@ public class Blue_Close_Noah extends OpMode {
                     shooterTarget = 0;
                     follower.followPath(park);
 
-                    setPathState(15);
+                    setPathState(100);
 
                 }
                 break;
