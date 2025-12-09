@@ -14,8 +14,8 @@ import com.seattlesolvers.solverslib.controller.PIDFController;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 
-@Autonomous(name = "red_close", group = "Examples")
-public class Red_Close extends OpMode {
+@Autonomous(name = "red_close_no_gate", group = "Examples")
+public class Red_Close_No_Gate extends OpMode {
 
     private HackinHoundsHardware robot = new HackinHoundsHardware();
 
@@ -28,7 +28,7 @@ public class Red_Close extends OpMode {
     private final Pose pickupOne = new Pose(122,71.5, Math.toRadians(0));
     private final Pose goback = new Pose(116, 70, Math.toRadians(0));
     private final Pose gateEmpty = new Pose(129, 68.5, Math.toRadians(90));
-    private final Pose pickupTwo = new Pose (126,45, Math.toRadians(0));
+    private final Pose pickupTwo = new Pose (122,45, Math.toRadians(0));
     private final Pose curve1 = new Pose(74, 35);
     private final Pose pickupThree = new Pose(125, 20, Math.toRadians(0));
     private final Pose curve2 = new Pose(77, 15);
@@ -38,7 +38,7 @@ public class Red_Close extends OpMode {
     public double p = 0.025, i = 0, d = 0.0004, f = 0;
 
     public PIDFController turretController = new PIDFController(p, i, d, f);
-    double target = -135.5;
+    double target = -136.5;
 
 
 
@@ -147,35 +147,35 @@ public class Red_Close extends OpMode {
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
                     robot.stopper.setPosition(0.67);
-                    setPathState(20);
-
-                }
-                break;
-
-            case 20:
-                if (!follower.isBusy()) {
-
-                    follower.followPath(goBack);
-                    follower.setMaxPower(1);
-                    robot.intake.setPower(1);
-                    robot.intake2.setPower(-0.7);
-                    robot.stopper.setPosition(0.67);
-                    setPathState(21);
-
-                }
-                break;
-
-            case 21:
-                if (!follower.isBusy()) {
-
-                    follower.followPath(emptyGate);
-                    robot.intake.setPower(1);
-                    robot.intake2.setPower(-0.7);
-                    robot.stopper.setPosition(0.67);
                     setPathState(4);
 
                 }
                 break;
+
+//            case 20:
+//                if (!follower.isBusy()) {
+//
+//                    follower.followPath(goBack);
+//                    follower.setMaxPower(1);
+//                    robot.intake.setPower(1);
+//                    robot.intake2.setPower(-0.7);
+//                    robot.stopper.setPosition(0.67);
+//                    setPathState(21);
+//
+//                }
+//                break;
+//
+//            case 21:
+//                if (!follower.isBusy()) {
+//
+//                    follower.followPath(emptyGate);
+//                    robot.intake.setPower(1);
+//                    robot.intake2.setPower(-0.7);
+//                    robot.stopper.setPosition(0.67);
+//                    setPathState(4);
+//
+//                }
+//                break;
 
             case 4:
                 if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.5) {
@@ -200,6 +200,7 @@ public class Red_Close extends OpMode {
             case 6:
                 if(pathTimer.getElapsedTimeSeconds() > 2.5){
                     follower.followPath(pickup2);
+                    follower.setMaxPower(0.6);
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
                     robot.stopper.setPosition(0.67);
@@ -211,6 +212,7 @@ public class Red_Close extends OpMode {
             case 7:
                 if(!follower.isBusy()){
                     follower.followPath(score2);
+                    follower.setMaxPower(1);
                     robot.intake.setPower(0.3);
                     robot.intake2.setPower(-0.3);
                     setPathState(8);

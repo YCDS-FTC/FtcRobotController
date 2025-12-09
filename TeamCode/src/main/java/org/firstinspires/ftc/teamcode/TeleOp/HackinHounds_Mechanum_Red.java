@@ -4,28 +4,19 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.rev.Rev9AxisImuOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
-
-import java.lang.annotation.Native;
 
 
 @Config
-@TeleOp(name = "Mechanum", group = "Linear OpMode")
-public class HackinHounds_Mechanum extends OpMode {
+@TeleOp(name = "Mechanum-Red", group = "Linear OpMode")
+public class HackinHounds_Mechanum_Red extends OpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
     private ElapsedTime timer = new ElapsedTime();
@@ -50,7 +41,7 @@ public class HackinHounds_Mechanum extends OpMode {
 
 
     private static double turret_tPERd = 4.233;
-    private static double angleWant = 120;
+    private static double angleWant = -120;
     private static double slow = 1;
 
     public static double p = 0.02;
@@ -99,7 +90,7 @@ public class HackinHounds_Mechanum extends OpMode {
         telemetry.setMsTransmissionInterval(50);   // Speed up telemetry updates, Just use for debugging.
         telemetry.setDisplayFormat(Telemetry.DisplayFormat.MONOSPACE);
         telemetry.update();
-        robot.limelight.pipelineSwitch(0);
+        robot.limelight.pipelineSwitch(1);
     }
 
     @Override
@@ -157,6 +148,8 @@ public class HackinHounds_Mechanum extends OpMode {
 //        robot.intake.setPower(intakePower);
 //        robot.intake2.setPower(transferPower);
 
+
+
         if (gamepad1.back) {
             robot.imu.resetYaw();
         }
@@ -181,6 +174,14 @@ public class HackinHounds_Mechanum extends OpMode {
             robot.intake.setPower(-0.7);
         }
 
+        if(gamepad1.right_bumper){
+            robot.intake.setPower(-0.7);
+        }
+
+        if (gamepad1.left_bumper) {
+            angleWant = -120;
+        }
+
 
         //Stopper logic for ONE BY ONE
         if(gamepad2.left_bumper && !leftBumper_pressed_previous) {
@@ -202,12 +203,12 @@ public class HackinHounds_Mechanum extends OpMode {
             }
         }
 
-            if(isSingleStopperTimedOpen && timer.seconds() > 0.2){
+            if(isSingleStopperTimedOpen && timer.seconds() > 0.16){
                 robot.stopper.setPosition(0.67);
                 isBlockerClosed = true;
                 isSingleStopperTimedOpen = false;
                 robot.intake.setPower(0.4);
-                robot.intake2.setPower(-0.7);
+                robot.intake2.setPower(-0.5);
             }
 
 
@@ -341,7 +342,7 @@ public class HackinHounds_Mechanum extends OpMode {
         double robotHeading = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
         //if (gamepad1.right_trigger > 0.1) {angleWant = robotHeading;}
         double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
-        if (result.isValid()) {angleWant = (robotHeading + turretAngle) - tx;}
+        if (result.isValid() && !gamepad1.left_bumper) {angleWant = (robotHeading + turretAngle) - tx;}
         double target = normA(angleWant - robotHeading);
         if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
 //        double error = target - turretAngle;
@@ -349,13 +350,6 @@ public class HackinHounds_Mechanum extends OpMode {
         robot.turret.setVelocity(turretController.calculate(turretAngle, target) * 1450 - robot.imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * turret_tPERd);
 
 
-        if((Math.abs(tx) < 2)){
-            robot.light.setPosition(0.677);
-            robot.light2.setPosition(0.677);
-        } else{
-            robot.light.setPosition(0);
-            robot.light2.setPosition(0);
-        }
 
 
         telemetry.addData("imu", "%f", robotHeading);
