@@ -82,10 +82,10 @@ public class ErikThing extends LinearOpMode {
     public double currentVelocity;
     public double rpm;
 
-    public static double P = 1;
-    public static double I = 0.04;
+    public static double P = 11;
+    public static double I = 0;
     public static double D = 0.00;
-    public static double F = 1;
+    public static double F = 0.8;
 
     public static double hoodPosition = 0.00;
 
@@ -94,7 +94,6 @@ public class ErikThing extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        hoodAngler = hardwareMap.get(Servo.class, "hoodAngle");
 
         left  = hardwareMap.get(DcMotorEx.class, "left");
 //        right = hardwareMap.get(DcMotorEx.class, "right");
@@ -126,7 +125,6 @@ public class ErikThing extends LinearOpMode {
 
 
 
-            hoodAngler.setPosition(hoodPosition);
 
 //            while (!pController.atSetPoint()) {
 //                double output = pController.calculate(

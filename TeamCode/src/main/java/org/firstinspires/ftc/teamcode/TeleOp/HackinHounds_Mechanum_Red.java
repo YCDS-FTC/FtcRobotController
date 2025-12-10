@@ -193,7 +193,7 @@ public class HackinHounds_Mechanum_Red extends OpMode {
                 robot.intake2.setPower(-0.5);
                 timer.reset();
             } else {
-                robot.stopper.setPosition(0.67);
+                robot.stopper.setPosition(0.7);
                 isBlockerClosed = true;
                 isSingleStopperTimedOpen = false;
                 robot.intake.setPower(0.7);
@@ -204,7 +204,7 @@ public class HackinHounds_Mechanum_Red extends OpMode {
         }
 
             if(isSingleStopperTimedOpen && timer.seconds() > 0.16){
-                robot.stopper.setPosition(0.67);
+                robot.stopper.setPosition(0.7);
                 isBlockerClosed = true;
                 isSingleStopperTimedOpen = false;
                 robot.intake.setPower(0.4);
@@ -231,7 +231,7 @@ public class HackinHounds_Mechanum_Red extends OpMode {
 
             } else {
                 // Stopper is currently open -> Close it manually (if desired)
-                robot.stopper.setPosition(0.67); // Closed position
+                robot.stopper.setPosition(0.7); // Closed position
                 isBlockerClosed = true;
                 isStopperTimedOpen = false; // Cancel any active timer wait
                 robot.intake.setPower(0.7);
@@ -243,7 +243,7 @@ public class HackinHounds_Mechanum_Red extends OpMode {
         // If the stopper was opened by the timer logic AND 1.0 seconds have passed:
         if (isStopperTimedOpen && stopperTimer.seconds() >= 1) {
             // Close the stopper
-            robot.stopper.setPosition(0.67);// Closed position
+            robot.stopper.setPosition(0.7);// Closed position
             robot.intake.setPower(0.7);
             robot.intake2.setPower(-0.7);
             isBlockerClosed = true;
@@ -324,12 +324,14 @@ public class HackinHounds_Mechanum_Red extends OpMode {
 
         double shooterVelocity = robot.shooter.getVelocity();
 
-        double output = shooterController.calculate(shooterVelocity, motorPower);
+        double output = shooterController.calculate(shooterVelocity, shootertarget);
+
+
 
         if(gamepad1.a){
             robot.shooter.setVelocity(0);
         } else{
-            robot.angleServo.setPosition(hoodAngle);
+            robot.angleServo.setPosition(shooterAngle);
             robot.shooter.setVelocity(output);
 
         }
@@ -343,12 +345,11 @@ public class HackinHounds_Mechanum_Red extends OpMode {
         //if (gamepad1.right_trigger > 0.1) {angleWant = robotHeading;}
         double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
         if (result.isValid() && !gamepad1.left_bumper) {angleWant = (robotHeading + turretAngle) - tx;}
-        double target = normA(angleWant - robotHeading);
+        double target = normA(angleWant - robotHeading - 2);
         if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
 //        double error = target - turretAngle;
 //        double turretPower = clamp(error * slow, -1, 1);
         robot.turret.setVelocity(turretController.calculate(turretAngle, target) * 1450 - robot.imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * turret_tPERd);
-
 
 
 
