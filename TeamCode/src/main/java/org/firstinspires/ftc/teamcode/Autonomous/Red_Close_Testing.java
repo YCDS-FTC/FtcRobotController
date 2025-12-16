@@ -11,12 +11,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 
-@Autonomous(name = "red_close", group = "Examples")
-public class Red_Close extends OpMode {
+@Autonomous(name = "red_close-testing", group = "Examples")
+public class Red_Close_Testing extends OpMode {
 
     private HackinHoundsHardware robot = new HackinHoundsHardware();
 
@@ -24,13 +23,13 @@ public class Red_Close extends OpMode {
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
 
-    private final Pose startPose = new Pose(126, 122, Math.toRadians(125));
-    private final Pose scorePose = new Pose(84, 73, Math.toRadians(0));
-    private final Pose pickupOne = new Pose(122,71.5, Math.toRadians(0));
+    private final Pose startPose = new Pose(114.579, 124.67, Math.toRadians(127.408625));
+    private final Pose scorePose = new Pose(73, 72.81, Math.toRadians(0));
+    private final Pose pickupOne = new Pose(110.837,71.31, Math.toRadians(0));
     private final Pose goback = new Pose(116, 70, Math.toRadians(0));
     private final Pose gateEmpty = new Pose(129, 68.5, Math.toRadians(90));
-    private final Pose pickupTwo = new Pose (126,45, Math.toRadians(0));
-    private final Pose curve1 = new Pose(74, 35);
+    private final Pose pickupTwo = new Pose (112.74,48, Math.toRadians(0));
+    private final Pose curve1 = new Pose(86.115, 40);
     private final Pose pickupThree = new Pose(125, 20, Math.toRadians(0));
     private final Pose curve2 = new Pose(77, 15);
     private final Pose move = new Pose (121, 70, Math.toRadians(0));
@@ -39,13 +38,13 @@ public class Red_Close extends OpMode {
     public double p = 0.025, i = 0, d = 0.0004, f = 0;
 
     public PIDFController turretController = new PIDFController(p, i, d, f);
-    double angleWant = -134;
+    double target = -135.5;
 
 
 
     public double P = 11, I = 0, D = 0, F = 0.8;
     public PIDFController shooterController = new PIDFController(P, I, D, F);
-    double shooterTarget = 1080;
+    double shooterTarget = 1170;
 
     public double ticksPerDegree = 4.233;
 
@@ -148,35 +147,12 @@ public class Red_Close extends OpMode {
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
                     robot.stopper.setPosition(0.67);
-                    setPathState(20);
-
-                }
-                break;
-
-            case 20:
-                if (!follower.isBusy()) {
-
-                    follower.followPath(goBack);
-                    follower.setMaxPower(1);
-                    robot.intake.setPower(1);
-                    robot.intake2.setPower(-0.7);
-                    robot.stopper.setPosition(0.67);
-                    setPathState(21);
-
-                }
-                break;
-
-            case 21:
-                if (!follower.isBusy()) {
-
-                    follower.followPath(emptyGate);
-                    robot.intake.setPower(1);
-                    robot.intake2.setPower(-0.7);
-                    robot.stopper.setPosition(0.67);
                     setPathState(4);
 
                 }
                 break;
+
+
 
             case 4:
                 if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.5) {
@@ -273,7 +249,7 @@ public class Red_Close extends OpMode {
                     robot.stopper.setPosition(0.67);
                     robot.intake.setPower(0);
                     robot.intake2.setPower(0);
-                    angleWant = 0;
+                    target = 0;
                     shooterTarget = 0;
                     follower.followPath(park);
 
@@ -330,31 +306,16 @@ public class Red_Close extends OpMode {
         autonomousPathUpdate();
 
 
-        LLResult result = robot.limelight.getLatestResult();
 
-        double ty = result.getTy();
-        double tx = result.getTx();
-
-
-//        double robotHeading = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-//        //if (gamepad1.right_trigger > 0.1) {angleWant = robotHeading;}
-        double turretAngle = robot.turret.getCurrentPosition()/ticksPerDegree;
-//        if (result.isValid() && !gamepad1.left_bumper) {angleWant = (robotHeading + turretAngle) - tx;}
-//        double target = normA(angleWant - robotHeading);
-//        if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
-////        double error = target - turretAngle;
-////        double turretPower = clamp(error * slow, -1, 1);
-        robot.turret.setVelocity(turretController.calculate(turretAngle, angleWant) * 1450 - robot.imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * ticksPerDegree);
+            double turretPosition = robot.turret.getCurrentPosition()/4.233;
+            double output  = turretController.calculate(turretPosition, target);
 
 
 
 
 
-
-        double shooterVelocity = robot.shooter.getVelocity();
+            double shooterVelocity = robot.shooter.getVelocity();
             double shooterOutput = shooterController.calculate(shooterVelocity, shooterTarget);
-
-            robot.shooter.setPower(shooterOutput);
 
 
         // Feedback to Driver Hub
@@ -365,6 +326,10 @@ public class Red_Close extends OpMode {
 
         telemetry.update();
 
+        LLResult result = robot.limelight.getLatestResult();
+
+        double ty = result.getTy();
+        double tx = result.getTx();
 
         double distanceToGoal =  robot.limelight(ty, tx);
         double motorPower = robot.getshooterPower(distanceToGoal);
@@ -416,7 +381,4 @@ public class Red_Close extends OpMode {
     public void stop(){
 
     }
-
-    public double normA(double angle) {angle %= 360; if (angle < -134) angle += 360; else if (angle > 134) angle -= 360;return angle;}
-
 }

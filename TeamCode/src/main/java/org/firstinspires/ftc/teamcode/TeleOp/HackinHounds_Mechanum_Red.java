@@ -203,13 +203,13 @@ public class HackinHounds_Mechanum_Red extends OpMode {
             }
         }
 
-            if(isSingleStopperTimedOpen && timer.seconds() > 0.16){
+        if(isSingleStopperTimedOpen && timer.seconds() > 0.16){
                 robot.stopper.setPosition(0.7);
                 isBlockerClosed = true;
                 isSingleStopperTimedOpen = false;
                 robot.intake.setPower(0.4);
                 robot.intake2.setPower(-0.5);
-            }
+        }
 
 
 
@@ -223,8 +223,8 @@ public class HackinHounds_Mechanum_Red extends OpMode {
             if (isBlockerClosed) {
                 // Stopper is currently closed -> Open it and start the timer
                 robot.stopper.setPosition(0.47);// Open position
-                robot.intake.setPower(0.3);
-                robot.intake2.setPower(-0.3);
+                robot.intake.setPower(0.5);
+                robot.intake2.setPower(-0.5);
                 isBlockerClosed = false;
                 isStopperTimedOpen = true; // Signal that we are waiting for a close event
                 stopperTimer.reset(); // Start the 1-second countdown
@@ -328,24 +328,27 @@ public class HackinHounds_Mechanum_Red extends OpMode {
 
 
 
+
+
+        robot.angleServo.setPosition(shooterAngle);
+
+
         if(gamepad1.a){
             robot.shooter.setVelocity(0);
         } else{
-            robot.angleServo.setPosition(shooterAngle);
             robot.shooter.setVelocity(output);
 
         }
 
 
-//        robot.shooter.setVelocity(motorPower);
 
-
+        //distance >= 130 = 1.9 pffset
 
         double robotHeading = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
         //if (gamepad1.right_trigger > 0.1) {angleWant = robotHeading;}
         double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
         if (result.isValid() && !gamepad1.left_bumper) {angleWant = (robotHeading + turretAngle) - tx;}
-        double target = normA(angleWant - robotHeading - 2);
+        double target = normA(angleWant - robotHeading);
         if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
 //        double error = target - turretAngle;
 //        double turretPower = clamp(error * slow, -1, 1);
@@ -374,6 +377,8 @@ public class HackinHounds_Mechanum_Red extends OpMode {
 //        telemetry.addData("error", "%f", error);
         telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
         telemetry.addData("distancetogoal", distanceToGoal);
+        telemetry.addData("shooterPower", robot.shooter.getVelocity());
+        telemetry.addData("targetShootPower", motorPower);
 
         telemetry.update();
 
