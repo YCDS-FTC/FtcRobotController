@@ -175,6 +175,7 @@ public class ColorSense extends OpMode {
         //double turretPower = clamp(error * slow, -1, 1);
         robot.turret.setVelocity(turretController.calculate(turretAngle, target) * 1450 - robot.imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * turret_tPERd);
 
+
         telemetry.addData("x", robot.pinpoint.getPosX(DistanceUnit.INCH));
         telemetry.addData("y", robot.pinpoint.getPosY(DistanceUnit.INCH));
         telemetry.addData("x", robot.pinpoint.getVelX(DistanceUnit.INCH));
