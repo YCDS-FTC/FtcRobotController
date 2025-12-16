@@ -162,6 +162,7 @@ public class ColorSense extends OpMode {
 
 
         double robotHeading = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+
         robot.pinpoint.setHeading(robotHeading, AngleUnit.DEGREES);
         robot.pinpoint.update();
         //if (gamepad1.right_trigger > 0.1) {angleWant = robotHeading;}

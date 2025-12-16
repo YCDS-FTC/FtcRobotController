@@ -26,12 +26,12 @@ public class Red_Close extends OpMode {
 
     private final Pose startPose = new Pose(126, 122, Math.toRadians(125));
     private final Pose scorePose = new Pose(84, 73, Math.toRadians(0));
-    private final Pose pickupOne = new Pose(122,71.5, Math.toRadians(0));
+    private final Pose pickupOne = new Pose(122,70.5, Math.toRadians(0));
     private final Pose goback = new Pose(116, 70, Math.toRadians(0));
     private final Pose gateEmpty = new Pose(129, 68.5, Math.toRadians(90));
-    private final Pose pickupTwo = new Pose (126,45, Math.toRadians(0));
+    private final Pose pickupTwo = new Pose (126,43, Math.toRadians(0));
     private final Pose curve1 = new Pose(74, 35);
-    private final Pose pickupThree = new Pose(125, 20, Math.toRadians(0));
+    private final Pose pickupThree = new Pose(125, 19, Math.toRadians(0));
     private final Pose curve2 = new Pose(77, 15);
     private final Pose move = new Pose (121, 70, Math.toRadians(0));
 
@@ -141,7 +141,7 @@ public class Red_Close extends OpMode {
             break;
 
             case 3:
-                if (pathTimer.getElapsedTimeSeconds() > 2) {
+                if (pathTimer.getElapsedTimeSeconds() > 1) {
 
                     follower.followPath(pickup1);
                     follower.setMaxPower(0.6);
@@ -189,7 +189,7 @@ public class Red_Close extends OpMode {
                 }
                 break;
             case 5:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5){
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.5){
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
                     robot.stopper.setPosition(0.47);
@@ -199,7 +199,7 @@ public class Red_Close extends OpMode {
                 break;
 
             case 6:
-                if(pathTimer.getElapsedTimeSeconds() > 2.5){
+                if(pathTimer.getElapsedTimeSeconds() > 1){
                     follower.followPath(pickup2);
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
@@ -220,7 +220,7 @@ public class Red_Close extends OpMode {
                 break;
 
             case 8:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5){
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.5){
 
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
@@ -233,7 +233,7 @@ public class Red_Close extends OpMode {
 
 
             case 9:
-                if(pathTimer.getElapsedTimeSeconds() > 2){
+                if(pathTimer.getElapsedTimeSeconds() > 1){
                     follower.followPath(pickup3);
                     follower.setMaxPower(0.4);
                     robot.stopper.setPosition(0.67);
@@ -258,7 +258,7 @@ public class Red_Close extends OpMode {
 
 
             case 11:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5){
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2){
                     robot.intake2.setPower(-0.7);
                     robot.intake.setPower(0.7);
                     robot.stopper.setPosition(0.47);
@@ -269,7 +269,7 @@ public class Red_Close extends OpMode {
 
 
             case 12:
-                if(pathTimer.getElapsedTimeSeconds() > 2){
+                if(pathTimer.getElapsedTimeSeconds() > 1){
                     robot.stopper.setPosition(0.67);
                     robot.intake.setPower(0);
                     robot.intake2.setPower(0);
