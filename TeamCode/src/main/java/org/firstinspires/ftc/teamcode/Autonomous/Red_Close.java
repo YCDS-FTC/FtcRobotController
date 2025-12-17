@@ -119,7 +119,7 @@ public class Red_Close extends OpMode {
                 break;
 
             case 1:
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.5) {
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-1);
                     setPathState(2);

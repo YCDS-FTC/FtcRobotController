@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 
@@ -30,21 +31,21 @@ public class Red_Close_Testing extends OpMode {
     private final Pose gateEmpty = new Pose(129, 68.5, Math.toRadians(90));
     private final Pose pickupTwo = new Pose (112.74,48, Math.toRadians(0));
     private final Pose curve1 = new Pose(86.115, 40);
-    private final Pose pickupThree = new Pose(125, 20, Math.toRadians(0));
+    private final Pose pickupThree = new Pose(115, 20, Math.toRadians(0));
     private final Pose curve2 = new Pose(77, 15);
-    private final Pose move = new Pose (121, 70, Math.toRadians(0));
+    private final Pose move = new Pose (110, 70, Math.toRadians(0));
 
 
     public double p = 0.025, i = 0, d = 0.0004, f = 0;
 
     public PIDFController turretController = new PIDFController(p, i, d, f);
-    double target = -135.5;
+    double Turrettarget = -134;
 
 
 
     public double P = 11, I = 0, D = 0, F = 0.8;
     public PIDFController shooterController = new PIDFController(P, I, D, F);
-    double shooterTarget = 1170;
+    double shooterTarget = 1120;
 
     public double ticksPerDegree = 4.233;
 
@@ -140,7 +141,7 @@ public class Red_Close_Testing extends OpMode {
             break;
 
             case 3:
-                if (pathTimer.getElapsedTimeSeconds() > 2) {
+                if (pathTimer.getElapsedTimeSeconds() > 1) {
 
                     follower.followPath(pickup1);
                     follower.setMaxPower(0.6);
@@ -155,7 +156,7 @@ public class Red_Close_Testing extends OpMode {
 
 
             case 4:
-                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.5) {
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5) {
 
                     follower.followPath(score1);
                     robot.intake2.setPower(-0.3);
@@ -165,7 +166,7 @@ public class Red_Close_Testing extends OpMode {
                 }
                 break;
             case 5:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5){
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.5){
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
                     robot.stopper.setPosition(0.47);
@@ -175,7 +176,7 @@ public class Red_Close_Testing extends OpMode {
                 break;
 
             case 6:
-                if(pathTimer.getElapsedTimeSeconds() > 2.5){
+                if(pathTimer.getElapsedTimeSeconds() > 1){
                     follower.followPath(pickup2);
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
@@ -196,7 +197,7 @@ public class Red_Close_Testing extends OpMode {
                 break;
 
             case 8:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5){
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.5){
 
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
@@ -234,7 +235,7 @@ public class Red_Close_Testing extends OpMode {
 
 
             case 11:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5){
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.5){
                     robot.intake2.setPower(-0.7);
                     robot.intake.setPower(0.7);
                     robot.stopper.setPosition(0.47);
@@ -249,7 +250,7 @@ public class Red_Close_Testing extends OpMode {
                     robot.stopper.setPosition(0.67);
                     robot.intake.setPower(0);
                     robot.intake2.setPower(0);
-                    target = 0;
+                    Turrettarget = 0;
                     shooterTarget = 0;
                     follower.followPath(park);
 
@@ -302,30 +303,6 @@ public class Red_Close_Testing extends OpMode {
 
     @Override
     public void loop(){
-        follower.update();
-        autonomousPathUpdate();
-
-
-
-            double turretPosition = robot.turret.getCurrentPosition()/4.233;
-            double output  = turretController.calculate(turretPosition, target);
-
-
-
-
-
-            double shooterVelocity = robot.shooter.getVelocity();
-            double shooterOutput = shooterController.calculate(shooterVelocity, shooterTarget);
-
-
-        // Feedback to Driver Hub
-        telemetry.addData("path state", pathState);
-        telemetry.addData("x", follower.getPose().getX());
-        telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("heading", follower.getPose().getHeading());
-
-        telemetry.update();
-
         LLResult result = robot.limelight.getLatestResult();
 
         double ty = result.getTy();
@@ -334,6 +311,59 @@ public class Red_Close_Testing extends OpMode {
         double distanceToGoal =  robot.limelight(ty, tx);
         double motorPower = robot.getshooterPower(distanceToGoal);
         double hoodAngle = robot.getHoodAngle(distanceToGoal);
+
+        double shooterVelocity = robot.shooter.getVelocity();
+
+        double output = shooterController.calculate(shooterVelocity, motorPower);
+
+        robot.shooter.setVelocity(output);
+
+
+
+        double robotHeading = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+        //if (gamepad1.right_trigger > 0.1) {angleWant = robotHeading;}
+        double turretAngle = robot.turret.getCurrentPosition()/ticksPerDegree;
+
+            //Turrettarget = (robotHeading + turretAngle);
+
+
+        double target = normA(Turrettarget - robotHeading);
+        if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
+//        double error = target - turretAngle;
+//        double turretPower = clamp(error * slow, -1, 1);
+        robot.turret.setPower(turretController.calculate(turretAngle, target));
+
+
+
+
+
+
+
+        follower.update();
+        autonomousPathUpdate();
+
+
+
+
+
+
+
+        // Feedback to Driver Hub
+        telemetry.addData("path state", pathState);
+        telemetry.addData("x", follower.getPose().getX());
+        telemetry.addData("y", follower.getPose().getY());
+        telemetry.addData("heading", follower.getPose().getHeading());
+
+        telemetry.addData("imu", "%f", robotHeading);
+
+        telemetry.addData("turretPos", "%d", robot.turret.getCurrentPosition());
+        telemetry.addData("turretAngle", "%f", turretAngle);
+        telemetry.addData("turretTarget", "%f", target);
+        telemetry.addData("target", "%f", Turrettarget);
+        telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
+        telemetry.addData("Tx", "%f", tx);
+        telemetry.update();
+
 
 
     }
@@ -344,7 +374,7 @@ public class Red_Close_Testing extends OpMode {
         turretController.setPIDF(p,i,d,f);
 
 
-        robot.limelight.pipelineSwitch(0);
+        robot.limelight.pipelineSwitch(1);
 
 
 
@@ -381,4 +411,7 @@ public class Red_Close_Testing extends OpMode {
     public void stop(){
 
     }
+
+    public double normA(double angle) {angle %= 360; if (angle < -134) angle += 360; else if (angle > 134) angle -= 360;return angle;}
+
 }
