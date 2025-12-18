@@ -11,6 +11,7 @@ import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
 import com.qualcomm.hardware.rev.Rev9AxisImuOrientationOnRobot;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.AnalogInput;
 import com.qualcomm.robotcore.hardware.AnalogSensor;
@@ -59,6 +60,8 @@ public class HackinHoundsHardware extends Hardware {
 
     public Servo light;
     public Servo light2;
+
+    public RevColorSensorV3 color1, color2, color3;
 
 
 
@@ -166,6 +169,10 @@ public class HackinHoundsHardware extends Hardware {
         light = robotMap.get(Servo.class,"light");
         light2 = robotMap.get(Servo.class,"light2");
 
+
+        color1 = robotMap.get(RevColorSensorV3.class,"color1");
+        color2 = robotMap.get(RevColorSensorV3.class,"color2");
+        color3 = robotMap.get(RevColorSensorV3.class,"color3");
 
 
         limelight = robotMap.get(Limelight3A.class, "limelight");

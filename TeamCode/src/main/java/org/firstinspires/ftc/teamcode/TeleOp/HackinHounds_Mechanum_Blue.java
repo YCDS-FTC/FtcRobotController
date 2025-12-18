@@ -202,7 +202,7 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
         }
 
             if(isSingleStopperTimedOpen && timer.seconds() > 0.2){
-                robot.stopper.setPosition(0.67);
+                robot.stopper.setPosition(0.7);
                 isBlockerClosed = true;
                 isSingleStopperTimedOpen = false;
                 robot.intake.setPower(0.4);
@@ -229,7 +229,7 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
 
             } else {
                 // Stopper is currently open -> Close it manually (if desired)
-                robot.stopper.setPosition(0.67); // Closed position
+                robot.stopper.setPosition(0.7); // Closed position
                 isBlockerClosed = true;
                 isStopperTimedOpen = false; // Cancel any active timer wait
                 robot.intake.setPower(0.7);
@@ -402,7 +402,7 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
 
     }
 
-    public double normA(double angle) {angle %= 360; if (angle < -134) angle += 360; else if (angle > 134) angle -= 360;return angle;}
+    public double normA(double angle) {angle %= 360; if (angle < -180) angle += 360; else if (angle > 180) angle -= 360;return angle;}
     public double clamp(double x, double min, double max) {return Math.max(min,Math.min(max,x));}
 
 }

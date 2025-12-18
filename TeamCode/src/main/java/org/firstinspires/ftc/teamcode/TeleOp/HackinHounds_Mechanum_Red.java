@@ -380,6 +380,10 @@ public class HackinHounds_Mechanum_Red extends OpMode {
         telemetry.addData("shooterPower", robot.shooter.getVelocity());
         telemetry.addData("targetShootPower", motorPower);
 
+        telemetry.addData("1", mapColor(robot.color1.red(), robot.color1.green(), robot.color1.blue()));
+        telemetry.addData("2", mapColor(robot.color2.red(), robot.color2.green(), robot.color2.blue()));
+        telemetry.addData("3", mapColor(robot.color3.red(), robot.color3.green(), robot.color3.blue()));
+
         telemetry.update();
 
         TelemetryPacket packet = new TelemetryPacket();
@@ -403,7 +407,33 @@ public class HackinHounds_Mechanum_Red extends OpMode {
 
     }
 
-    public double normA(double angle) {angle %= 360; if (angle < -134) angle += 360; else if (angle > 134) angle -= 360;return angle;}
+    public double normA(double angle) {angle %= 360; if (angle < -180) angle += 360; else if (angle > 180) angle -= 360;return angle;}
     public double clamp(double x, double min, double max) {return Math.max(min,Math.min(max,x));}
+    double mapColor(double r, double g, double b) {
+        telemetry.addData("", "%f %f %f", r, g, b);
 
+//        double max = Math.max(r, Math.max(g, b));
+//        if (max > 0) {
+//            r /= max;
+//            g /= max;
+//            b /= max;
+//        }
+
+        // Determine dominant channel
+        boolean blueMax = b >= g && b >= r;
+        boolean greenMax = g >= b && g >= r;
+
+        // PURPLE: Blue is highest
+        if (blueMax) {
+            return 0.722; // violet
+        }
+
+        // GREEN: Green is highest
+        if ((greenMax) && (g - b > 20)) {
+            return 0.500; // green
+        }
+
+        // Neither
+        return 0.000;
+    }
 }

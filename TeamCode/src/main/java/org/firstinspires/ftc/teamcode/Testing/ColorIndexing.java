@@ -49,8 +49,6 @@ public class ColorIndexing extends LinearOpMode {
     }
 
     double mapColor(double r, double g, double b) {
-
-        // Normalize (required)
         double max = Math.max(r, Math.max(g, b));
         if (max > 0) {
             r /= max;
