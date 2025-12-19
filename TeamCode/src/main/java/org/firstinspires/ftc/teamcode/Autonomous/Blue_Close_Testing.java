@@ -16,8 +16,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 
-@Autonomous(name = "red_close-testing", group = "Examples")
-public class Red_Close_Testing extends OpMode {
+@Autonomous(name = "blue-close-testing", group = "Examples")
+public class Blue_Close_Testing extends OpMode {
 
     private HackinHoundsHardware robot = new HackinHoundsHardware();
 
@@ -25,19 +25,19 @@ public class Red_Close_Testing extends OpMode {
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
 
-    private final Pose startPose = new Pose(114.579, 124.67, Math.toRadians(127.408625));
-    private final Pose scorePose = new Pose(73, 72.81, Math.toRadians(0));
-    private final Pose pickupOne = new Pose(110.837,71.31, Math.toRadians(0));
-    private final Pose goback = new Pose(100, 73, Math.toRadians(0));
-    private final Pose gateEmpty = new Pose(121.9, 72.7, Math.toRadians(90));
-    private final Pose pickupTwo = new Pose (112.74,45, Math.toRadians(0));
-    private final Pose curve1 = new Pose(86.115, 39);
-    private final Pose pickupThree = new Pose(115, 20, Math.toRadians(0));
-    private final Pose curve2 = new Pose(77, 15);
-    private final Pose move = new Pose (110, 70, Math.toRadians(0));
+    private final Pose startPose = new Pose(18.48, 117.956, Math.toRadians(51.2969114));
+    private final Pose scorePose = new Pose(44.32, 86.2, Math.toRadians(180));
+    private final Pose pickupOne = new Pose(9,88.9, Math.toRadians(180));
+    private final Pose goback = new Pose(40, 83, Math.toRadians(180));
+    private final Pose gateEmpty = new Pose(6, 77, Math.toRadians(90));
+    private final Pose pickupTwo = new Pose (5.76,65.47, Math.toRadians(180));
+    private final Pose curve1 = new Pose(22, 57);
+    private final Pose pickupThree = new Pose(5.43, 41.87, Math.toRadians(180));
+    private final Pose curve2 = new Pose(25, 23);
+    private final Pose move = new Pose (14.55, 92.36, Math.toRadians(180));
 
 
-    public double p = 0.025, i = 0, d = 0.0004, f = 0;
+    public double p = 0.023, i = 0, d = 0.0004, f = 0;
 
     public PIDFController turretController = new PIDFController(p, i, d, f);
     double Turrettarget = 0;
@@ -121,7 +121,7 @@ public class Red_Close_Testing extends OpMode {
                 break;
 
             case 1:
-                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3) {
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 4) {
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-.7);
                     robot.stopper.setPosition(0.47);
@@ -162,16 +162,16 @@ public class Red_Close_Testing extends OpMode {
                 if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.5) {
 
                     follower.followPath(score1);
-                    robot.intake2.setPower(-0.4);
-                    robot.intake.setPower(0.4);
+                    robot.intake2.setPower(-0.3);
+                    robot.intake.setPower(0.3);
                     setPathState(5);
 
                 }
                 break;
             case 5:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3){
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.5){
                     robot.intake.setPower(1);
-                    robot.intake2.setPower(-0.85);
+                    robot.intake2.setPower(-0.7);
                     robot.stopper.setPosition(0.47);
                     setPathState(6);
 
@@ -324,13 +324,13 @@ public class Red_Close_Testing extends OpMode {
 
 
 
-        double robotHeading = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) + 127.408625;
+        double robotHeading = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) - 51.2969114      ;
         //double robotHeading = robot.pinpoint.getHeading(AngleUnit.DEGREES);
         //if (gamepad1.right_trigger > 0.1) {angleWant = robotHeading;}
         double turretAngle = robot.turret.getCurrentPosition()/ticksPerDegree;
 
             //Turrettarget = (robotHeading + turretAngle);
-        Turrettarget = Math.toDegrees(Math.atan2(140 - robot.pinpoint.getPosY(DistanceUnit.INCH), 136 - robot.pinpoint.getPosX(DistanceUnit.INCH))) - 180;
+        Turrettarget = Math.toDegrees(Math.atan2(140 - robot.pinpoint.getPosY(DistanceUnit.INCH), 3 + robot.pinpoint.getPosX(DistanceUnit.INCH))) - 180;
 
 
         if (result.isValid() && !gamepad1.left_bumper) {
@@ -387,7 +387,7 @@ public class Red_Close_Testing extends OpMode {
         turretController.setPIDF(p,i,d,f);
 
 
-        robot.limelight.pipelineSwitch(1);
+        robot.limelight.pipelineSwitch(0);
 
 
 
