@@ -330,7 +330,7 @@ public class Red_Close_Testing extends OpMode {
         double turretAngle = robot.turret.getCurrentPosition()/ticksPerDegree;
 
             //Turrettarget = (robotHeading + turretAngle);
-        Turrettarget = Math.toDegrees(Math.atan2(140 - robot.pinpoint.getPosY(DistanceUnit.INCH), 136 - robot.pinpoint.getPosX(DistanceUnit.INCH))) - 180;
+        Turrettarget = Math.toDegrees(Math.atan2(140 - robot.pinpoint.getPosY(DistanceUnit.INCH), 136 - robot.pinpoint.getPosX(DistanceUnit.INCH)));
 
 
         if (result.isValid() && !gamepad1.left_bumper) {

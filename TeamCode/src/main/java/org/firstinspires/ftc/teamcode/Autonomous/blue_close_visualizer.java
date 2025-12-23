@@ -16,8 +16,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 
-@Autonomous(name = "blue-close-testing", group = "Examples")
-public class Blue_Close_Testing extends OpMode {
+@Autonomous(name = "blue-close-visualizer", group = "Examples")
+public class blue_close_visualizer extends OpMode {
 
     private HackinHoundsHardware robot = new HackinHoundsHardware();
 
@@ -25,17 +25,17 @@ public class Blue_Close_Testing extends OpMode {
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
 
-    private final Pose startPose = new Pose(18.48, 117.956, Math.toRadians(51.2969114));
-    private final Pose scorePose = new Pose(44.32, 86.2, Math.toRadians(180));
-    private final Pose pickupOne = new Pose(9,88.9, Math.toRadians(180));
-    private final Pose goback = new Pose(40, 83, Math.toRadians(180));
-    private final Pose gateEmpty = new Pose(6, 77, Math.toRadians(90));
-    private final Pose stupidBack = new Pose(9,77, Math.toRadians(90));
-    private final Pose pickupTwo = new Pose (5.76,63, Math.toRadians(180));
-    private final Pose curve1 = new Pose(26, 57);
-    private final Pose pickupThree = new Pose(5.43, 41.87, Math.toRadians(180));
-    private final Pose curve2 = new Pose(33, 23);
-    private final Pose move = new Pose (20, 86.2, Math.toRadians(180));
+    private final Pose startPose = new Pose(17.6580310880829, 121.3678756476684, Math.toRadians(53));
+    private final Pose scorePose = new Pose(50.651785714285715, 85.21428571428572, Math.toRadians(180));
+    private final Pose pickupOne = new Pose(11,75, Math.toRadians(180));
+    private final Pose gateEmpty = new Pose(6.46153846153846, 64, Math.toRadians(90));
+    private final Pose goBack = new Pose(31.15384615384615, 69.46153846153847);
+    private final Pose pickupTwo = new Pose (8,51, Math.toRadians(180));
+    private final Pose curve1 = new Pose(71, 46);
+    private final Pose pickupThree = new Pose(6.923076923076923, 26.07692307692308, Math.toRadians(180));
+    private final Pose curve2 = new Pose(63.46153846153845, 19.61538461538461);
+    private final Pose move = new Pose (13.615384615384613, 75.46153846153847, Math.toRadians(180));
+
 
 
     public double p = 0.02, i = 0, d = 0.0004, f = 0;
@@ -51,7 +51,7 @@ public class Blue_Close_Testing extends OpMode {
 
     public double ticksPerDegree = 4.233;
 
-    private Path scorePreload, pickup1,goBack, emptyGate, score1, pickup2, score2, pickup3, score3, park;
+    private Path scorePreload, pickup1, emptyGate, score1, pickup2, score2, pickup3, score3, park;
 
 
     boolean wantZero = false;
@@ -68,16 +68,16 @@ public class Blue_Close_Testing extends OpMode {
 
 
         pickup1 = new Path(new BezierLine(scorePose, pickupOne));
-        pickup1.setLinearHeadingInterpolation(scorePose.getHeading(), pickupOne.getHeading(), 0.7);
+        pickup1.setLinearHeadingInterpolation(scorePose.getHeading(), pickupOne.getHeading(), 0.8);
 
 
 
-        emptyGate = new Path(new BezierCurve(pickupOne, goback, gateEmpty));
+        emptyGate = new Path(new BezierCurve(pickupOne, goBack, gateEmpty));
         emptyGate.setLinearHeadingInterpolation(pickupOne.getHeading(), gateEmpty.getHeading());
 
 
         score1 = new Path(new BezierLine(gateEmpty, scorePose));
-        score1.setLinearHeadingInterpolation(gateEmpty.getHeading(), scorePose.getHeading(), 0.9);
+        score1.setLinearHeadingInterpolation(pickupOne.getHeading(), scorePose.getHeading(), 0.9);
 
         pickup2 = new Path(new BezierCurve(scorePose, curve1, pickupTwo));
         pickup2.setLinearHeadingInterpolation(scorePose.getHeading(), pickupTwo.getHeading(), 0.7);
@@ -122,7 +122,7 @@ public class Blue_Close_Testing extends OpMode {
                 break;
 
             case 1:
-                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 4) {
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3) {
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-.7);
                     robot.stopper.setPosition(0.47);
@@ -150,8 +150,8 @@ public class Blue_Close_Testing extends OpMode {
                 if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5) {
 
                     follower.followPath(emptyGate);
-                    robot.intake2.setPower(-0.2);
-                    robot.intake.setPower(0.2);
+                    robot.intake2.setPower(-0.3);
+                    robot.intake.setPower(0.3);
                     setPathState(4);
 
                 }
@@ -162,17 +162,17 @@ public class Blue_Close_Testing extends OpMode {
             case 4:
                 if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.5) {
 
-                    follower.followPath(score1, true);
-                    robot.intake2.setPower(-0.2);
-                    robot.intake.setPower(0.2);
+                    follower.followPath(score1);
+                    robot.intake2.setPower(-0.4);
+                    robot.intake.setPower(0.4);
                     setPathState(5);
 
                 }
                 break;
             case 5:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3.3){
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3){
                     robot.intake.setPower(1);
-                    robot.intake2.setPower(-0.7);
+                    robot.intake2.setPower(-0.85);
                     robot.stopper.setPosition(0.47);
                     setPathState(6);
 
@@ -180,7 +180,7 @@ public class Blue_Close_Testing extends OpMode {
                 break;
 
             case 6:
-                if(pathTimer.getElapsedTimeSeconds() > 1.5){
+                if(pathTimer.getElapsedTimeSeconds() > 1){
                     follower.followPath(pickup2);
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
@@ -192,7 +192,7 @@ public class Blue_Close_Testing extends OpMode {
 
             case 7:
                 if(!follower.isBusy()){
-                    follower.followPath(score2, true);
+                    follower.followPath(score2);
                     robot.intake.setPower(0.3);
                     robot.intake2.setPower(-0.3);
                     setPathState(8);
@@ -201,7 +201,7 @@ public class Blue_Close_Testing extends OpMode {
                 break;
 
             case 8:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 4){
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3){
 
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
@@ -214,9 +214,9 @@ public class Blue_Close_Testing extends OpMode {
 
 
             case 9:
-                if(pathTimer.getElapsedTimeSeconds() > 2){
-                    follower.followPath(pickup3, true);
-                    follower.setMaxPower(0.7);
+                if(pathTimer.getElapsedTimeSeconds() > 1.8){
+                    follower.followPath(pickup3);
+                    follower.setMaxPower(0.6);
                     robot.stopper.setPosition(0.7);
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
@@ -257,7 +257,7 @@ public class Blue_Close_Testing extends OpMode {
                     Turrettarget = 0;
                     shooterTarget = 0;
                     wantZero = true;
-                    follower.followPath(park, true);
+                    follower.followPath(park);
 
                     setPathState(1000);
 
@@ -321,17 +321,17 @@ public class Blue_Close_Testing extends OpMode {
 
         double output = shooterController.calculate(shooterVelocity, shooterTarget);
 
-        robot.shooter.setVelocity(output);
+//        robot.shooter.setVelocity(output);
 
 
 
-        double robotHeading = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) - 52.2969114;
+        double robotHeading = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) - 53;
         //double robotHeading = robot.pinpoint.getHeading(AngleUnit.DEGREES);
         //if (gamepad1.right_trigger > 0.1) {angleWant = robotHeading;}
         double turretAngle = robot.turret.getCurrentPosition()/ticksPerDegree;
 
             //Turrettarget = (robotHeading + turretAngle);
-        Turrettarget = Math.toDegrees(Math.atan2(140 - robot.pinpoint.getPosY(DistanceUnit.INCH), robot.pinpoint.getPosX(DistanceUnit.INCH))) - 180;
+        Turrettarget = Math.toDegrees(Math.atan2(140 - robot.pinpoint.getPosY(DistanceUnit.INCH), 3 + robot.pinpoint.getPosX(DistanceUnit.INCH))) - 180;
 
 
         if (result.isValid() && !gamepad1.left_bumper) {
@@ -339,13 +339,13 @@ public class Blue_Close_Testing extends OpMode {
         }
 
 
-        if (wantZero) {Turrettarget =75;}
+        if (wantZero) {Turrettarget = 0;}
 
         double target = normA(Turrettarget - robotHeading);
         if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
 //        double error = target - turretAngle;
 //        double turretPower = clamp(error * slow, -1, 1);
-        robot.turret.setPower(turretController.calculate(turretAngle, target));
+//        robot.turret.setPower(turretController.calculate(turretAngle, target));
 
 
 

@@ -49,14 +49,16 @@ public class old_auto_bad extends CommandOpMode {
     private shooterSubsystem shooterSubsystem;
 
 
-    private final Pose startPose = new Pose(17.6580310880829, 121.3678756476684, Math.toRadians(235));
-    private final Pose scorePose = new Pose(59.651785714285715, 84.21428571428572, Math.toRadians(186));
-    private final Pose pickupOne = new Pose(15,83, Math.toRadians(180));
+    private final Pose startPose = new Pose(17.6580310880829, 121.3678756476684, Math.toRadians(53));
+    private final Pose scorePose = new Pose(59.651785714285715, 84.21428571428572, Math.toRadians(180));
+    private final Pose pickupOne = new Pose(20,84, Math.toRadians(180));
+    private final Pose gateEmpty = new Pose(15.46153846153846, 73, Math.toRadians(90));
+    private final Pose goBack = new Pose(40.15384615384615, 78.46153846153847);
     private final Pose pickupTwo = new Pose (17,60, Math.toRadians(180));
     private final Pose curve1 = new Pose(80, 55);
-    private final Pose pickupThree = new Pose(17, 32, Math.toRadians(180));
-    private final Pose curve2 = new Pose(70, 36);
-    private final Pose move = new Pose (60, 60, Math.toRadians(180));
+    private final Pose pickupThree = new Pose(15.923076923076923, 35.07692307692308, Math.toRadians(180));
+    private final Pose curve2 = new Pose(72.46153846153845, 28.61538461538461);
+    private final Pose move = new Pose (22.615384615384613, 84.46153846153847, Math.toRadians(180));
 
 
 
