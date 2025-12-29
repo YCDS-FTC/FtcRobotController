@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Autonomous;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
@@ -11,13 +12,11 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 
-@Autonomous(name = "red_close-testing", group = "Examples")
-public class Red_Close_Testing extends OpMode {
+@Autonomous(name = "new Blue Close", group = "Examples")
+public class Blue_Close_Old extends OpMode {
 
     private HackinHoundsHardware robot = new HackinHoundsHardware();
 
@@ -25,39 +24,38 @@ public class Red_Close_Testing extends OpMode {
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
 
-    private final Pose startPose = new Pose(114.579, 124.67, Math.toRadians(127.408625));
-    private final Pose scorePose = new Pose(73, 72.81, Math.toRadians(0));
-    private final Pose pickupOne = new Pose(110.837,71.31, Math.toRadians(0));
-    private final Pose goback = new Pose(100, 73, Math.toRadians(0));
-    private final Pose gateEmpty = new Pose(121.9, 72.7, Math.toRadians(90));
-    private final Pose pickupTwo = new Pose (112.74,45, Math.toRadians(0));
-    private final Pose curve1 = new Pose(86.115, 39);
-    private final Pose pickupThree = new Pose(115, 20, Math.toRadians(0));
-    private final Pose curve2 = new Pose(77, 15);
-    private final Pose move = new Pose (110, 70, Math.toRadians(0));
+    private final Pose startPose = new Pose(17.6580310880829, 121.3678756476684, Math.toRadians(55));
+    private final Pose scorePose = new Pose(45, 90, Math.toRadians(180));
+    private final Pose pickupOne = new Pose(7,92, Math.toRadians(180));
+    private final Pose goback = new Pose(14, 92, Math.toRadians(180));
+    private final Pose gateEmpty = new Pose(14, 81, Math.toRadians(90));
+    private final Pose pickupTwo = new Pose (15,70, Math.toRadians(180));
+    private final Pose curve1 = new Pose(62, 55);
+    private final Pose pickupThree = new Pose(15, 48, Math.toRadians(180));
+    private final Pose curve2 = new Pose(60, 25);
+    private final Pose move = new Pose (28, 72.3, Math.toRadians(180));
 
 
     public double p = 0.025, i = 0, d = 0.0004, f = 0;
 
     public PIDFController turretController = new PIDFController(p, i, d, f);
-    double Turrettarget = 0;
+    double target = 133;
 
 
+    private FtcDashboard dashboard;
 
     public double P = 11, I = 0, D = 0, F = 0.8;
     public PIDFController shooterController = new PIDFController(P, I, D, F);
-    double shooterTarget = 1130;
+    double shooterTarget = 1200;
 
     public double ticksPerDegree = 4.233;
 
-    private Path scorePreload, pickup1,goBack, emptyGate, score1, pickup2, score2, pickup3, score3, park;
-
-
-    boolean wantZero = false;
+    private Path scorePreload, pickup1, goBack, emptygate, score1, pickup2, score2, pickup3, score3, park;
 
 
 
-    //weird
+
+
 
 
 
@@ -69,14 +67,15 @@ public class Red_Close_Testing extends OpMode {
         pickup1 = new Path(new BezierLine(scorePose, pickupOne));
         pickup1.setLinearHeadingInterpolation(scorePose.getHeading(), pickupOne.getHeading(), 0.7);
 
+        goBack = new Path(new BezierLine(pickupOne, goback));
+        goBack.setConstantHeadingInterpolation(goback.getHeading());
 
-
-        emptyGate = new Path(new BezierCurve(pickupOne, goback, gateEmpty));
-        emptyGate.setLinearHeadingInterpolation(pickupOne.getHeading(), gateEmpty.getHeading());
+        emptygate = new Path(new BezierLine(goback, gateEmpty));
+        emptygate.setLinearHeadingInterpolation(goback.getHeading(), gateEmpty.getHeading());
 
 
         score1 = new Path(new BezierLine(gateEmpty, scorePose));
-        score1.setLinearHeadingInterpolation(pickupOne.getHeading(), scorePose.getHeading(), 0.9);
+        score1.setLinearHeadingInterpolation(gateEmpty.getHeading(), scorePose.getHeading(), 0.9);
 
         pickup2 = new Path(new BezierCurve(scorePose, curve1, pickupTwo));
         pickup2.setLinearHeadingInterpolation(scorePose.getHeading(), pickupTwo.getHeading(), 0.7);
@@ -110,7 +109,8 @@ public class Red_Close_Testing extends OpMode {
 
             case 0:
                 if (!follower.isBusy()) {
-                    robot.stopper.setPosition(0.7);
+                    robot.stopper.setPosition(0.67);
+                    follower.setMaxPower(0.7);
                     follower.followPath(scorePreload);
                     robot.intake.setPower(0.5);
                     robot.intake2.setPower(-0.3);
@@ -121,127 +121,122 @@ public class Red_Close_Testing extends OpMode {
                 break;
 
             case 1:
-                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3) {
-                    robot.intake.setPower(1);
-                    robot.intake2.setPower(-.7);
-                    robot.stopper.setPosition(0.47);
-                    setPathState(3);
+                if (!follower.isBusy()) {
+                    robot.intake.setPower(0.7);
+                    robot.intake2.setPower(-0.7);
+                    setPathState(2);
                 }
                 break;
 
 
+            case 2: {
+                robot.stopper.setPosition(0.47);
+
+
+//                    if(robot.flick.getCurrentPosition() > 49){
+//                        robot.flick.setTargetPosition(0);
+//                    }
+
+                setPathState(3);
+            }
 
             case 3:
-                if (pathTimer.getElapsedTimeSeconds() > 1) {
+                if (pathTimer.getElapsedTimeSeconds() > 1.5) {
 
+                    follower.setMaxPower(0.5);
                     follower.followPath(pickup1);
-                    follower.setMaxPower(0.6);
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
-                    robot.stopper.setPosition(0.7);
-                    setPathState(20);
-
-                }
-                break;
-
-
-            case 20:
-                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5) {
-
-                    follower.followPath(emptyGate);
-                    robot.intake2.setPower(-0.3);
-                    robot.intake.setPower(0.3);
+                    robot.stopper.setPosition(0.67);
                     setPathState(4);
 
                 }
                 break;
 
-
-
             case 4:
-                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.5) {
-
-                    follower.followPath(score1);
-                    robot.intake2.setPower(-0.4);
-                    robot.intake.setPower(0.4);
+                if(!follower.isBusy()){
+                    follower.followPath(goBack);
+                    robot.intake2.setPower(-0.3);
+                    robot.intake.setPower(0.3);
                     setPathState(5);
-
                 }
                 break;
+
+
             case 5:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3){
-                    robot.intake.setPower(1);
-                    robot.intake2.setPower(-0.85);
-                    robot.stopper.setPosition(0.47);
+                if(!follower.isBusy()){
+                    follower.followPath(emptygate);
+                    robot.intake2.setPower(-0.3);
+                    robot.intake.setPower(0.3);
                     setPathState(6);
-
                 }
                 break;
+
 
             case 6:
-                if(pathTimer.getElapsedTimeSeconds() > 1){
-                    follower.followPath(pickup2);
-                    robot.intake.setPower(1);
-                    robot.intake2.setPower(-0.7);
-                    robot.stopper.setPosition(0.7);
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2) {
+
+                    follower.setMaxPower(1);
+                    follower.followPath(score1);
+                    robot.intake2.setPower(-0.3);
+                    robot.intake.setPower(0.3);
                     setPathState(7);
 
                 }
                 break;
-
             case 7:
                 if(!follower.isBusy()){
-                    follower.followPath(score2);
-                    robot.intake.setPower(0.3);
-                    robot.intake2.setPower(-0.3);
+                    robot.intake.setPower(0.7);
+                    robot.intake2.setPower(-0.7);
+                    robot.stopper.setPosition(0.47);
                     setPathState(8);
 
                 }
                 break;
 
             case 8:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3){
-
+                if(pathTimer.getElapsedTimeSeconds() > 2){
+                    follower.setMaxPower(0.4);
+                    follower.followPath(pickup2);
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
-                    robot.stopper.setPosition(0.47);
+                    robot.stopper.setPosition(0.67);
                     setPathState(9);
 
                 }
                 break;
 
-
-
             case 9:
-                if(pathTimer.getElapsedTimeSeconds() > 1.8){
-                    follower.followPath(pickup3);
-                    follower.setMaxPower(0.4);
-                    robot.stopper.setPosition(0.7);
-                    robot.intake.setPower(1);
-                    robot.intake2.setPower(-0.7);
+                if(!follower.isBusy()){
+                    follower.setMaxPower(1);
+                    follower.followPath(score2);
+                    robot.intake.setPower(0.3);
+                    robot.intake2.setPower(-0.3);
                     setPathState(10);
 
                 }
                 break;
 
-
             case 10:
                 if(!follower.isBusy()){
-                    follower.followPath(score3);
-                    follower.setMaxPower(1);
-                    robot.intake.setPower(0.3);
-                    robot.intake2.setPower(-0.3);
+
+                    robot.intake.setPower(0.7);
+                    robot.intake2.setPower(-0.7);
+                    robot.stopper.setPosition(0.47);
                     setPathState(11);
 
                 }
                 break;
 
 
+
             case 11:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3){
+                if(pathTimer.getElapsedTimeSeconds() > 1.5){
+                    follower.setMaxPower(0.3);
+                    follower.followPath(pickup3);
+                    robot.stopper.setPosition(0.67);
+                    robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
-                    robot.intake.setPower(0.7);
-                    robot.stopper.setPosition(0.47);
                     setPathState(12);
 
                 }
@@ -249,16 +244,13 @@ public class Red_Close_Testing extends OpMode {
 
 
             case 12:
-                if(pathTimer.getElapsedTimeSeconds() > 1){
-                    robot.stopper.setPosition(0.7);
-                    robot.intake.setPower(0);
-                    robot.intake2.setPower(0);
-                    Turrettarget = 0;
-                    shooterTarget = 0;
-                    wantZero = true;
-                    follower.followPath(park);
+                if(!follower.isBusy()){
+                    follower.setMaxPower(1);
+                    follower.followPath(score3);
 
-                    setPathState(1000);
+                    robot.intake.setPower(0.3);
+                    robot.intake2.setPower(-0.3);
+                    setPathState(13);
 
                 }
                 break;
@@ -266,8 +258,8 @@ public class Red_Close_Testing extends OpMode {
 
             case 13:
                 if(!follower.isBusy()){
-                    robot.intake.setPower(0.7);
                     robot.intake2.setPower(-0.7);
+                    robot.intake.setPower(0.7);
                     robot.stopper.setPosition(0.47);
                     setPathState(14);
 
@@ -276,16 +268,42 @@ public class Red_Close_Testing extends OpMode {
 
 
             case 14:
-                if(!follower.isBusy()){
-                    robot.intake.setPower(0.7);
-                    robot.intake2.setPower(-0.7);
-                    robot.stopper.setPosition(0.47);
+                if(pathTimer.getElapsedTimeSeconds() > 2.4){
+                    robot.stopper.setPosition(0.67);
+                    robot.intake.setPower(0);
+                    robot.intake2.setPower(0);
+                    target = 0;
+                    shooterTarget = 0;
+                    follower.followPath(park);
+
                     setPathState(15);
 
                 }
                 break;
 
+
             case 15:
+                if(!follower.isBusy()){
+                    robot.intake.setPower(0.7);
+                    robot.intake2.setPower(-0.7);
+                    robot.stopper.setPosition(0.47);
+                    setPathState(16);
+
+                }
+                break;
+
+
+            case 16:
+                if(!follower.isBusy()){
+                    robot.intake.setPower(0.7);
+                    robot.intake2.setPower(-0.7);
+                    robot.stopper.setPosition(0.47);
+                    setPathState(17);
+
+                }
+                break;
+
+            case 17:
                 if(!follower.isBusy()){
                     robot.intake.setPower(0.7);
                     robot.intake2.setPower(-0.7);
@@ -307,58 +325,25 @@ public class Red_Close_Testing extends OpMode {
 
     @Override
     public void loop(){
-        LLResult result = robot.limelight.getLatestResult();
-
-        double ty = result.getTy();
-        double tx = result.getTx();
-
-        double distanceToGoal =  robot.limelight(ty, tx);
-        double motorPower = robot.getshooterPower(distanceToGoal);
-        double hoodAngle = robot.getHoodAngle(distanceToGoal);
-
-        double shooterVelocity = robot.shooter.getVelocity();
-
-        double output = shooterController.calculate(shooterVelocity, shooterTarget);
-
-        robot.shooter.setVelocity(output);
-
-
-
-        double robotHeading = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) + 127.408625;
-        //double robotHeading = robot.pinpoint.getHeading(AngleUnit.DEGREES);
-        //if (gamepad1.right_trigger > 0.1) {angleWant = robotHeading;}
-        double turretAngle = robot.turret.getCurrentPosition()/ticksPerDegree;
-
-            //Turrettarget = (robotHeading + turretAngle);
-        Turrettarget = Math.toDegrees(Math.atan2(140 - robot.pinpoint.getPosY(DistanceUnit.INCH), 136 - robot.pinpoint.getPosX(DistanceUnit.INCH)));
-
-
-        if (result.isValid() && !gamepad1.left_bumper) {
-            Turrettarget = (robotHeading + turretAngle) - tx;
-        }
-
-
-        if (wantZero) {Turrettarget = 0;}
-
-        double target = normA(Turrettarget - robotHeading);
-        if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
-//        double error = target - turretAngle;
-//        double turretPower = clamp(error * slow, -1, 1);
-        robot.turret.setPower(turretController.calculate(turretAngle, target));
-
-
-
-
-
-
-
         follower.update();
         autonomousPathUpdate();
 
 
 
+            double turretPosition = robot.turret.getCurrentPosition()/4.233;
+            double output  = turretController.calculate(turretPosition, target);
+
+            robot.turret.setPower(output);
 
 
+
+
+            double shooterVelocity = robot.shooter.getVelocity();
+            double shooterOutput = shooterController.calculate(shooterVelocity, shooterTarget);
+
+//            robot.shooter.setPower(shooterOutput);
+
+            robot.shooter.setVelocity(shooterOutput);
 
 
         // Feedback to Driver Hub
@@ -367,16 +352,17 @@ public class Red_Close_Testing extends OpMode {
         telemetry.addData("y", follower.getPose().getY());
         telemetry.addData("heading", follower.getPose().getHeading());
 
-        telemetry.addData("imu", "%f", robotHeading);
-
-        telemetry.addData("turretPos", "%d", robot.turret.getCurrentPosition());
-        telemetry.addData("turretAngle", "%f", turretAngle);
-        telemetry.addData("turretTarget", "%f", target);
-        telemetry.addData("target", "%f", Turrettarget);
-        telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
-        telemetry.addData("Tx", "%f", tx);
         telemetry.update();
 
+
+        LLResult result = robot.limelight.getLatestResult();
+
+        double ty = result.getTy();
+        double tx = result.getTx();
+
+        double distanceToGoal =  robot.limelight(ty, tx);
+        double motorPower = robot.getshooterPower(distanceToGoal);
+        double hoodAngle = robot.getHoodAngle(distanceToGoal);
 
 
     }
@@ -387,7 +373,7 @@ public class Red_Close_Testing extends OpMode {
         turretController.setPIDF(p,i,d,f);
 
 
-        robot.limelight.pipelineSwitch(1);
+        robot.limelight.pipelineSwitch(0);
 
 
 
@@ -424,7 +410,4 @@ public class Red_Close_Testing extends OpMode {
     public void stop(){
 
     }
-
-    public double normA(double angle) {angle %= 360; if (angle < -180) angle += 360; else if (angle > 180) angle -= 360;return angle;}
-
 }
