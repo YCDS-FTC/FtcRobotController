@@ -26,8 +26,8 @@ public class blue_close_visualizer extends OpMode {
     private int pathState;
 
     private final Pose startPose = new Pose(17.6580310880829, 121.3678756476684, Math.toRadians(53));
-    private final Pose scorePose = new Pose(59.651785714285715, 85.21428571428572, Math.toRadians(180));
-    private final Pose pickupOne = new Pose(20,84, Math.toRadians(180));
+    private final Pose scorePose = new Pose(52.651785714285715, 94.21428571428572, Math.toRadians(180));
+    private final Pose pickupOne = new Pose(13,93, Math.toRadians(180));
     private final Pose gateEmpty = new Pose(15.46153846153846, 73, Math.toRadians(90));
     private final Pose goBack = new Pose(40.15384615384615, 78.46153846153847);
     private final Pose pickupTwo = new Pose (17,60, Math.toRadians(180));

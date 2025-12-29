@@ -15,8 +15,8 @@ import com.seattlesolvers.solverslib.controller.PIDFController;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 
-@Autonomous(name = "Blue far", group = "Examples")
-public class Blue_Far extends OpMode {
+@Autonomous(name = "Red far", group = "Examples")
+public class Red_Far extends OpMode {
 
     private HackinHoundsHardware robot = new HackinHoundsHardware();
 
@@ -24,24 +24,23 @@ public class Blue_Far extends OpMode {
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
 
-    private final Pose startPose = new Pose(57, 8, Math.toRadians(180));
-    private final Pose scorePose = new Pose(53, 10, Math.toRadians(180));
-    private final Pose pickupOne = new Pose(4,15.73, Math.toRadians(260));
+    private final Pose startPose = new Pose(86.76923076923076, 8, Math.toRadians(0));
+    private final Pose scorePose = new Pose(90.6923076923077, 13.153846153846155, Math.toRadians(0));
+    private final Pose pickupOne = new Pose(123.6153846153846,24, Math.toRadians(-70));
 
-    private final Pose pickupPointTwo = new Pose(6.77, 3, Math.toRadians(255));
+    private final Pose pickupPointTwo = new Pose(123.0769230769231, 12.07692307692307, Math.toRadians(-65));
 
-    private final Pose curve1 = new Pose(37.8,20.7);
 
-    private final Pose pickupTwo = new Pose (13.1,36.4, Math.toRadians(180));
+    private final Pose pickupTwo = new Pose (126.15384615384616,36, Math.toRadians(0));
 
-    private final Pose curve2 = new Pose(66.3, 44);
-    private final Pose move = new Pose (34.6, 11.3, Math.toRadians(180));
+    private final Pose curve2 = new Pose(63.38461538461539, 42.46153846153845);
+    private final Pose move = new Pose (105, 11.3, Math.toRadians(0));
 
 
     public double p = 0.025, i = 0, d = 0.0004, f = 0;
 
     public PIDFController turretController = new PIDFController(p, i, d, f);
-    double turrettarget = 113;
+    double turrettarget = -112;
 
     double target = 0;
 
@@ -49,7 +48,7 @@ public class Blue_Far extends OpMode {
 
     public double P = 11, I = 0, D = 0, F = 0.8;
     public PIDFController shooterController = new PIDFController(P, I, D, F);
-    double shooterTarget = 1480;
+    double shooterTarget = 1500;
     double hoodAngle = 0.13;
 
     public double ticksPerDegree = 4.233;
@@ -71,12 +70,12 @@ public class Blue_Far extends OpMode {
         scorepreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading());
 
         pickup1 = new Path(new BezierLine(scorePose, pickupOne));
-        pickup1.setLinearHeadingInterpolation(scorePose.getHeading(), pickupOne.getHeading());
+        pickup1.setLinearHeadingInterpolation(scorePose.getHeading(), pickupOne.getHeading(), 0.7);
 
         pickupPartTwo = new Path(new BezierLine(pickupOne,pickupPointTwo));
         pickupPartTwo.setLinearHeadingInterpolation(pickupOne.getHeading(), pickupPointTwo.getHeading());
 
-        score1 = new Path(new BezierCurve(pickupPointTwo, curve1, scorePose));
+        score1 = new Path(new BezierCurve(pickupPointTwo, scorePose));
         score1.setLinearHeadingInterpolation(pickupPointTwo.getHeading(), scorePose.getHeading(), 0.9);
 
         pickup2 = new Path(new BezierCurve(scorePose, curve2, pickupTwo));
@@ -171,7 +170,7 @@ public class Blue_Far extends OpMode {
 
 
             case 12:
-                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 4) {
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3) {
                     robot.intake.setPower(0.7);
                     robot.intake2.setPower(-0.7);
                     robot.stopper.setPosition(0.47);
@@ -183,7 +182,7 @@ public class Blue_Far extends OpMode {
 
 
             case 13:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1){
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2){
                     follower.setMaxPower(0.6);
                     follower.followPath(pickup2, true);
                    robot.intake.setPower(0.7);
@@ -255,7 +254,7 @@ public class Blue_Far extends OpMode {
         LLResult result = robot.limelight.getLatestResult();
 
         if(result.isValid() && wantToTrack){
-            double target = normA(turrettarget - result.getTx() + 2.5);
+            double target = normA(turrettarget - result.getTx() - 1);
             double turretPosition = robot.turret.getCurrentPosition()/4.233;
             if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
 
@@ -313,7 +312,7 @@ public class Blue_Far extends OpMode {
         turretController.setPIDF(p,i,d,f);
 
 
-        robot.limelight.pipelineSwitch(0);
+        robot.limelight.pipelineSwitch(1);
 
 
 
