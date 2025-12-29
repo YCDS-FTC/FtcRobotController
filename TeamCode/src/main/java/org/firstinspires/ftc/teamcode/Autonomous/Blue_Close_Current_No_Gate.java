@@ -11,10 +11,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 
-public class Red_Close_No_Gate_Old extends OpMode {
+@Autonomous(name = "blue-close-current", group = "Examples")
+public class Blue_Close_Current_No_Gate extends OpMode {
 
     private HackinHoundsHardware robot = new HackinHoundsHardware();
 
@@ -22,37 +25,40 @@ public class Red_Close_No_Gate_Old extends OpMode {
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
 
-    private final Pose startPose = new Pose(126, 122, Math.toRadians(125));
-    private final Pose scorePose = new Pose(84, 73, Math.toRadians(0));
-    private final Pose pickupOne = new Pose(122,71.5, Math.toRadians(0));
-    private final Pose goback = new Pose(116, 70, Math.toRadians(0));
-    private final Pose gateEmpty = new Pose(129, 68.5, Math.toRadians(90));
-    private final Pose pickupTwo = new Pose (122,45, Math.toRadians(0));
-    private final Pose curve1 = new Pose(74, 35);
-    private final Pose pickupThree = new Pose(125, 20, Math.toRadians(0));
-    private final Pose curve2 = new Pose(77, 15);
-    private final Pose move = new Pose (121, 70, Math.toRadians(0));
+    private final Pose startPose = new Pose(18.48, 117.956, Math.toRadians(51.2969114));
+    private final Pose scorePose = new Pose(44.32, 86.2, Math.toRadians(180));
+    private final Pose pickupOne = new Pose(9,88.9, Math.toRadians(180));
+    private final Pose goback = new Pose(40, 83, Math.toRadians(180));
+    private final Pose gateEmpty = new Pose(6, 77, Math.toRadians(90));
+    private final Pose stupidBack = new Pose(9,77, Math.toRadians(90));
+    private final Pose pickupTwo = new Pose (5.76,63, Math.toRadians(180));
+    private final Pose curve1 = new Pose(26, 57);
+    private final Pose pickupThree = new Pose(5.43, 41.87, Math.toRadians(180));
+    private final Pose curve2 = new Pose(33, 23);
+    private final Pose move = new Pose (20, 86.2, Math.toRadians(180));
 
 
-    public double p = 0.025, i = 0, d = 0.0004, f = 0;
+    public double p = 0.02, i = 0, d = 0.0004, f = 0;
 
     public PIDFController turretController = new PIDFController(p, i, d, f);
-    double target = -136.5;
+    double Turrettarget = 0;
 
 
 
     public double P = 11, I = 0, D = 0, F = 0.8;
     public PIDFController shooterController = new PIDFController(P, I, D, F);
-    double shooterTarget = 1170;
+    double shooterTarget = 1130;
 
     public double ticksPerDegree = 4.233;
 
     private Path scorePreload, pickup1,goBack, emptyGate, score1, pickup2, score2, pickup3, score3, park;
 
 
+    boolean wantZero = false;
 
 
 
+    //weird
 
 
 
@@ -64,11 +70,10 @@ public class Red_Close_No_Gate_Old extends OpMode {
         pickup1 = new Path(new BezierLine(scorePose, pickupOne));
         pickup1.setLinearHeadingInterpolation(scorePose.getHeading(), pickupOne.getHeading(), 0.7);
 
-        goBack = new Path(new BezierLine(pickupOne, goback));
-        goBack.setConstantHeadingInterpolation(goback.getHeading());
 
-        emptyGate = new Path(new BezierLine(goback, gateEmpty));
-        emptyGate.setLinearHeadingInterpolation(goback.getHeading(), gateEmpty.getHeading());
+
+        emptyGate = new Path(new BezierCurve(pickupOne, goback, gateEmpty));
+        emptyGate.setLinearHeadingInterpolation(pickupOne.getHeading(), gateEmpty.getHeading());
 
 
         score1 = new Path(new BezierLine(pickupOne, scorePose));
@@ -106,7 +111,7 @@ public class Red_Close_No_Gate_Old extends OpMode {
 
             case 0:
                 if (!follower.isBusy()) {
-                    robot.stopper.setPosition(0.67);
+                    robot.stopper.setPosition(0.7);
                     follower.followPath(scorePreload);
                     robot.intake.setPower(0.5);
                     robot.intake2.setPower(-0.3);
@@ -117,77 +122,44 @@ public class Red_Close_No_Gate_Old extends OpMode {
                 break;
 
             case 1:
-                if (!follower.isBusy()) {
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 4) {
                     robot.intake.setPower(1);
-                    robot.intake2.setPower(-1);
-                    setPathState(2);
+                    robot.intake2.setPower(-.7);
+                    robot.stopper.setPosition(0.47);
+                    setPathState(3);
                 }
                 break;
 
 
-            case 2: {
-                robot.stopper.setPosition(0.47);
-
-
-//                    if(robot.flick.getCurrentPosition() > 49){
-//                        robot.flick.setTargetPosition(0);
-//                    }
-
-                setPathState(3);
-            }
-
-            break;
 
             case 3:
-                if (pathTimer.getElapsedTimeSeconds() > 2) {
+                if (pathTimer.getElapsedTimeSeconds() > 1) {
 
                     follower.followPath(pickup1);
                     follower.setMaxPower(0.6);
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
-                    robot.stopper.setPosition(0.67);
+                    robot.stopper.setPosition(0.7);
                     setPathState(4);
 
                 }
                 break;
 
-//            case 20:
-//                if (!follower.isBusy()) {
-//
-//                    follower.followPath(goBack);
-//                    follower.setMaxPower(1);
-//                    robot.intake.setPower(1);
-//                    robot.intake2.setPower(-0.7);
-//                    robot.stopper.setPosition(0.67);
-//                    setPathState(21);
-//
-//                }
-//                break;
-//
-//            case 21:
-//                if (!follower.isBusy()) {
-//
-//                    follower.followPath(emptyGate);
-//                    robot.intake.setPower(1);
-//                    robot.intake2.setPower(-0.7);
-//                    robot.stopper.setPosition(0.67);
-//                    setPathState(4);
-//
-//                }
-//                break;
+
+
 
             case 4:
-                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.5) {
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.5) {
 
-                    follower.followPath(score1);
-                    robot.intake2.setPower(-0.3);
-                    robot.intake.setPower(0.3);
+                    follower.followPath(score1, true);
+                    robot.intake2.setPower(-0.2);
+                    robot.intake.setPower(0.2);
                     setPathState(5);
 
                 }
                 break;
             case 5:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5){
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3.3){
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
                     robot.stopper.setPosition(0.47);
@@ -197,12 +169,11 @@ public class Red_Close_No_Gate_Old extends OpMode {
                 break;
 
             case 6:
-                if(pathTimer.getElapsedTimeSeconds() > 2.5){
+                if(pathTimer.getElapsedTimeSeconds() > 1.5){
                     follower.followPath(pickup2);
-                    follower.setMaxPower(0.6);
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
-                    robot.stopper.setPosition(0.67);
+                    robot.stopper.setPosition(0.7);
                     setPathState(7);
 
                 }
@@ -210,8 +181,7 @@ public class Red_Close_No_Gate_Old extends OpMode {
 
             case 7:
                 if(!follower.isBusy()){
-                    follower.followPath(score2);
-                    follower.setMaxPower(1);
+                    follower.followPath(score2, true);
                     robot.intake.setPower(0.3);
                     robot.intake2.setPower(-0.3);
                     setPathState(8);
@@ -220,7 +190,7 @@ public class Red_Close_No_Gate_Old extends OpMode {
                 break;
 
             case 8:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5){
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 4){
 
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
@@ -234,9 +204,9 @@ public class Red_Close_No_Gate_Old extends OpMode {
 
             case 9:
                 if(pathTimer.getElapsedTimeSeconds() > 2){
-                    follower.followPath(pickup3);
-                    follower.setMaxPower(0.4);
-                    robot.stopper.setPosition(0.67);
+                    follower.followPath(pickup3, true);
+                    follower.setMaxPower(0.7);
+                    robot.stopper.setPosition(0.7);
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
                     setPathState(10);
@@ -258,7 +228,7 @@ public class Red_Close_No_Gate_Old extends OpMode {
 
 
             case 11:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5){
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3){
                     robot.intake2.setPower(-0.7);
                     robot.intake.setPower(0.7);
                     robot.stopper.setPosition(0.47);
@@ -269,13 +239,14 @@ public class Red_Close_No_Gate_Old extends OpMode {
 
 
             case 12:
-                if(pathTimer.getElapsedTimeSeconds() > 2){
-                    robot.stopper.setPosition(0.67);
+                if(pathTimer.getElapsedTimeSeconds() > 1){
+                    robot.stopper.setPosition(0.7);
                     robot.intake.setPower(0);
                     robot.intake2.setPower(0);
-                    target = 0;
+                    Turrettarget = 0;
                     shooterTarget = 0;
-                    follower.followPath(park);
+                    wantZero = true;
+                    follower.followPath(park, true);
 
                     setPathState(1000);
 
@@ -326,33 +297,6 @@ public class Red_Close_No_Gate_Old extends OpMode {
 
     @Override
     public void loop(){
-        follower.update();
-        autonomousPathUpdate();
-
-
-
-            double turretPosition = robot.turret.getCurrentPosition()/4.233;
-            double output  = turretController.calculate(turretPosition, target);
-
-            robot.turret.setPower(output);
-
-
-
-
-            double shooterVelocity = robot.shooter.getVelocity();
-            double shooterOutput = shooterController.calculate(shooterVelocity, shooterTarget);
-
-            robot.shooter.setPower(shooterOutput);
-
-
-        // Feedback to Driver Hub
-        telemetry.addData("path state", pathState);
-        telemetry.addData("x", follower.getPose().getX());
-        telemetry.addData("y", follower.getPose().getY());
-        telemetry.addData("heading", follower.getPose().getHeading());
-
-        telemetry.update();
-
         LLResult result = robot.limelight.getLatestResult();
 
         double ty = result.getTy();
@@ -361,6 +305,68 @@ public class Red_Close_No_Gate_Old extends OpMode {
         double distanceToGoal =  robot.limelight(ty, tx);
         double motorPower = robot.getshooterPower(distanceToGoal);
         double hoodAngle = robot.getHoodAngle(distanceToGoal);
+
+        double shooterVelocity = robot.shooter.getVelocity();
+
+        double output = shooterController.calculate(shooterVelocity, shooterTarget);
+
+        robot.shooter.setVelocity(output);
+
+
+
+        double robotHeading = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) - 52.2969114;
+        //double robotHeading = robot.pinpoint.getHeading(AngleUnit.DEGREES);
+        //if (gamepad1.right_trigger > 0.1) {angleWant = robotHeading;}
+        double turretAngle = robot.turret.getCurrentPosition()/ticksPerDegree;
+
+            //Turrettarget = (robotHeading + turretAngle);
+        Turrettarget = Math.toDegrees(Math.atan2(140 - robot.pinpoint.getPosY(DistanceUnit.INCH), robot.pinpoint.getPosX(DistanceUnit.INCH))) - 180;
+
+
+        if (result.isValid() && !gamepad1.left_bumper) {
+            Turrettarget = (robotHeading + turretAngle) - tx;
+        }
+
+
+        if (wantZero) {Turrettarget =75;}
+
+        double target = normA(Turrettarget - robotHeading);
+        if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
+//        double error = target - turretAngle;
+//        double turretPower = clamp(error * slow, -1, 1);
+        robot.turret.setPower(turretController.calculate(turretAngle, target));
+
+
+
+
+
+
+
+        follower.update();
+        autonomousPathUpdate();
+
+
+
+
+
+
+
+        // Feedback to Driver Hub
+        telemetry.addData("path state", pathState);
+        telemetry.addData("x", follower.getPose().getX());
+        telemetry.addData("y", follower.getPose().getY());
+        telemetry.addData("heading", follower.getPose().getHeading());
+
+        telemetry.addData("imu", "%f", robotHeading);
+
+        telemetry.addData("turretPos", "%d", robot.turret.getCurrentPosition());
+        telemetry.addData("turretAngle", "%f", turretAngle);
+        telemetry.addData("turretTarget", "%f", target);
+        telemetry.addData("target", "%f", Turrettarget);
+        telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
+        telemetry.addData("Tx", "%f", tx);
+        telemetry.update();
+
 
 
     }
@@ -408,4 +414,7 @@ public class Red_Close_No_Gate_Old extends OpMode {
     public void stop(){
 
     }
+
+    public double normA(double angle) {angle %= 360; if (angle < -180) angle += 360; else if (angle > 180) angle -= 360;return angle;}
+
 }

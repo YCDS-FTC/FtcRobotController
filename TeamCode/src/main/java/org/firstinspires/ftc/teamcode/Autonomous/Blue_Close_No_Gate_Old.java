@@ -15,7 +15,6 @@ import com.seattlesolvers.solverslib.controller.PIDFController;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 
-@Autonomous(name = "new Blue Close no gate", group = "Examples")
 public class Blue_Close_No_Gate_Old extends OpMode {
 
     private HackinHoundsHardware robot = new HackinHoundsHardware();

@@ -15,7 +15,6 @@ import com.seattlesolvers.solverslib.controller.PIDFController;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 
-@Autonomous(name = "new Blue Close", group = "Examples")
 public class Blue_Close_Old extends OpMode {
 
     private HackinHoundsHardware robot = new HackinHoundsHardware();
