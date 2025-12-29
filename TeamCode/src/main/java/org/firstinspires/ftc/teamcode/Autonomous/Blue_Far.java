@@ -24,16 +24,18 @@ public class Blue_Far extends OpMode {
     private Timer pathTimer, actionTimer, opmodeTimer;
     private int pathState;
 
-    private final Pose startPose = new Pose(55.95854922279792, 9, Math.toRadians(90));
-    private final Pose scorePose = new Pose(52.9740932642487, 15, Math.toRadians(180));
-    private final Pose pickupOne = new Pose(0,19, Math.toRadians(250));
-    private final Pose pickupTwo = new Pose (7,44, Math.toRadians(180));
-    private final Pose pickupPointTwo = new Pose(-5, 9, Math.toRadians(250));
-    private final Pose pickupPointThree = new Pose(13, 12, Math.toRadians(185));
-    private final Pose pickupPointFour = new Pose(2, 12, Math.toRadians(185));
+    private final Pose startPose = new Pose(57, 8, Math.toRadians(180));
+    private final Pose scorePose = new Pose(53, 10, Math.toRadians(180));
+    private final Pose pickupOne = new Pose(9,24.23, Math.toRadians(260));
 
-    private final Pose curve2 = new Pose(67.39896373056995, 41.284974093264246);
-    private final Pose move = new Pose (52.2279792746114, 36.55958549222798, Math.toRadians(180));
+    private final Pose pickupPointTwo = new Pose(8.77, 10.61, Math.toRadians(260));
+
+    private final Pose curve1 = new Pose(37.8,20.7);
+
+    private final Pose pickupTwo = new Pose (17.1,36.4, Math.toRadians(180));
+
+    private final Pose curve2 = new Pose(64.3, 39);
+    private final Pose move = new Pose (34.6, 11.3, Math.toRadians(180));
 
 
     public double p = 0.025, i = 0, d = 0.0004, f = 0;
@@ -61,10 +63,6 @@ public class Blue_Far extends OpMode {
 
 
     public void buildPaths(){
-        scorePreload = new Path(new BezierLine(startPose, scorePose));
-        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading(), 0.8);
-
-
 
         pickup1 = new Path(new BezierLine(scorePose, pickupOne));
         pickup1.setLinearHeadingInterpolation(scorePose.getHeading(), pickupOne.getHeading());
@@ -72,13 +70,7 @@ public class Blue_Far extends OpMode {
         pickupPartTwo = new Path(new BezierLine(pickupOne,pickupPointTwo));
         pickupPartTwo.setLinearHeadingInterpolation(pickupOne.getHeading(), pickupPointTwo.getHeading());
 
-        pickupPartThree = new Path(new BezierLine(pickupPointTwo, pickupPointThree));
-        pickupPartThree.setLinearHeadingInterpolation(pickupPointTwo.getHeading(), pickupPointThree.getHeading());
-
-        pickupPartFour = new Path(new BezierLine(pickupPointThree, pickupPointFour));
-        pickupPartFour.setLinearHeadingInterpolation(pickupPointThree.getHeading(), pickupPointFour.getHeading());
-
-        score1 = new Path(new BezierLine(pickupPointFour, scorePose));
+        score1 = new Path(new BezierLine(p, scorePose));
         score1.setLinearHeadingInterpolation(pickupPointFour.getHeading(), scorePose.getHeading(), 0.9);
 
         pickup2 = new Path(new BezierCurve(scorePose, curve2, pickupTwo));

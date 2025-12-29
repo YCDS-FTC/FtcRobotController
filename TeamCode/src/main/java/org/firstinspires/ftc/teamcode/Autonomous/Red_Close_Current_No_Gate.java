@@ -146,8 +146,6 @@ public class Red_Close_Current_No_Gate extends OpMode {
 
 
 
-
-
             case 4:
                 if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5) {
 
