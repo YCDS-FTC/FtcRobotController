@@ -75,6 +75,9 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
 
     public static double shooterAngle = 0;
 
+
+    public static double turretoffset = 0;
+
     private ElapsedTime stopperTimer = new ElapsedTime();
     private boolean isStopperTimedOpen = false;
     private boolean isSingleStopperTimedOpen = false;
@@ -340,7 +343,13 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
         double robotHeading = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
         //if (gamepad1.right_trigger > 0.1) {angleWant = robotHeading;}
         double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
-        if (result.isValid() && !gamepad1.left_bumper) {angleWant = (robotHeading + turretAngle) - tx;}
+
+        if (result.isValid() && !gamepad1.left_bumper && distanceToGoal > 105){
+            angleWant = (robotHeading + turretAngle) - tx + 2.5;
+        } else if (result.isValid() && !gamepad1.left_bumper) {
+            angleWant = (robotHeading + turretAngle) - tx;
+        }
+
         double target = normA(angleWant - robotHeading);
         if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
 //        double error = target - turretAngle;

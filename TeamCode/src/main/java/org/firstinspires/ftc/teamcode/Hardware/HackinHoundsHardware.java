@@ -214,43 +214,52 @@ public class HackinHoundsHardware extends Hardware {
 
 
         getHoodAngle.add(0,0);
-        getHoodAngle.add(72, 0.1);
-        getHoodAngle.add(77, 0.1);
-        getHoodAngle.add(82, 0.15);
-
-        getHoodAngle.add(109,0.27);
-        getHoodAngle.add(115,0.13);
-        getHoodAngle.add(120, 0.13);
-        getHoodAngle.add(125, 0.13);
-        getHoodAngle.add(130, 0.09);
+        getHoodAngle.add(67, 0.1);
+        getHoodAngle.add(72, 0.11);
+        getHoodAngle.add(77, 0.12);
+        getHoodAngle.add(82, 0.13);
+        getHoodAngle.add(87, 0.13);
 
 
+        getHoodAngle.add(105,0.13);
+        getHoodAngle.add(110,0.135);
+        getHoodAngle.add(115,0.125);
+        getHoodAngle.add(120, 0.125);
+        getHoodAngle.add(125, 0.125);
+        getHoodAngle.add(130, 0.11);
+        getHoodAngle.add(148, .1);
+        getHoodAngle.add(190, .1);
 
 
 
 
 
 
-        getShootPower.add(27, 1140);
-        getShootPower.add(32, 1120);
-        getShootPower.add(37, 1020);
-        getShootPower.add(42, 1020);
-        getShootPower.add(47, 1020);
-        getShootPower.add(52, 1040);
-        getShootPower.add(57, 1050);
-        getShootPower.add(62, 1080);
-        getShootPower.add(67, 1110);
-        getShootPower.add(72, 1180);
-        getShootPower.add(77, 1180);
-        getShootPower.add(82, 1220);
-        getShootPower.add(87, 1240);
-        getShootPower.add(102,1380);
-        getShootPower.add(107,1400);
-        getShootPower.add(109,1380);
-        getShootPower.add(115,1520);
-        getShootPower.add(120,1580);
-        getShootPower.add(125,1570);
-        getShootPower.add(130,1700);
+
+
+
+        getShootPower.add(27, 1100);
+        getShootPower.add(32, 1080);
+        getShootPower.add(37, 1080);
+        getShootPower.add(42, 1100);
+        getShootPower.add(47, 1120);
+        getShootPower.add(52, 1080);
+        getShootPower.add(57, 1100);
+        getShootPower.add(62, 1140);
+        getShootPower.add(67, 1160);
+        getShootPower.add(72, 1200);
+        getShootPower.add(77, 1240);
+        getShootPower.add(82, 1260);
+        getShootPower.add(87, 1320);
+        getShootPower.add(105,1400);
+        getShootPower.add(110,1420);
+        getShootPower.add(115,1440);
+        getShootPower.add(120,1440);
+        getShootPower.add(125,1460);
+        getShootPower.add(130,1540);
+        getShootPower.add(148, 1550);
+        getShootPower.add(190, 1550);
+
 
 
 
@@ -289,13 +298,12 @@ public class HackinHoundsHardware extends Hardware {
     public double getshooterPower(double distanceToGoal) {
         getShootPower.createLUT();
 
-        if(distanceToGoal > 130){
+        if(distanceToGoal > 190){
             shooterPower = 0;
         } else if (distanceToGoal < 27){
             shooterPower = 0;
         } else{
             shooterPower = getShootPower.get(distanceToGoal);
-
         }
 
         return shooterPower;
@@ -304,9 +312,9 @@ public class HackinHoundsHardware extends Hardware {
     public double getHoodAngle (double distanceToGoal) {
         getHoodAngle.createLUT();
 
-        if (distanceToGoal > 130) {
+        if (distanceToGoal > 190) {
             hoodAngle = 0;
-        } else if (distanceToGoal < 108) {
+        } else if (distanceToGoal < 27) {
             hoodAngle = 0;
         } else{
             hoodAngle = getHoodAngle.get(distanceToGoal);
