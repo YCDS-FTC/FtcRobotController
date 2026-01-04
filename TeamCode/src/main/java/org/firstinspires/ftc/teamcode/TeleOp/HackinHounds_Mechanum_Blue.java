@@ -31,8 +31,8 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
     double finaltime = 0;
 
 
-    public static double transferPower = 0;
-    public static double intakePower = 0;
+    public  double transferPower = 0;
+    public  double intakePower = 0;
 
 
 
@@ -40,22 +40,22 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
     // transfer = 0.8
 
 
-    private static double turret_tPERd = 4.233;
-    private static double angleWant = 120;
-    private static double slow = 1;
+    private  double turret_tPERd = 4.233;
+    private  double angleWant = 120;
+    private  double slow = 1;
 
-    public static double p = 0.02;
-    public static double i = 0.002;
-    public static double d = 0.004;
+    public static double p = 0.05;
+    public static double i = 0;
+    public static double d = 0.006;
     public static double f = 0;
 
     PIDFController turretController = new PIDFController(p,i,d,f);
 
 
-     public static double kp = 11;
-     public static double ki = 0;
-     public static double kd = 0;
-     public static double kf = 0.8;
+     public  double kp = 11;
+     public  double ki = 0;
+     public  double kd = 0;
+     public  double kf = 0.8;
 
     PIDFController shooterController = new PIDFController(kp, ki, kd, kf);
 
@@ -344,8 +344,8 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
         //if (gamepad1.right_trigger > 0.1) {angleWant = robotHeading;}
         double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
 
-        if (result.isValid() && !gamepad1.left_bumper && distanceToGoal > 105){
-            angleWant = (robotHeading + turretAngle) - tx + 2.5;
+        if (result.isValid() && !gamepad1.left_bumper && distanceToGoal > 100){
+            angleWant = (robotHeading + turretAngle) - tx + 3.8;
         } else if (result.isValid() && !gamepad1.left_bumper) {
             angleWant = (robotHeading + turretAngle) - tx;
         }
