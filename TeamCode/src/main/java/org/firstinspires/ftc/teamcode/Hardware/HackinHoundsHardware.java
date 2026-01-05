@@ -170,7 +170,7 @@ public class HackinHoundsHardware extends Hardware {
 
         light1 = robotMap.get(Servo.class,"light");
         light2 = robotMap.get(Servo.class,"light2");
-        light3 = robotMap.get(Servo.class,"light3");
+//        light3 = robotMap.get(Servo.class,"light3");
 
 
         color1 = robotMap.get(RevColorSensorV3.class,"color1");

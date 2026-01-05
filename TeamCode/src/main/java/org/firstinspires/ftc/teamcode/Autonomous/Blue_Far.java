@@ -26,9 +26,11 @@ public class Blue_Far extends OpMode {
 
     private final Pose startPose = new Pose(57, 8, Math.toRadians(180));
     private final Pose scorePose = new Pose(53, 10, Math.toRadians(180));
-    private final Pose pickupOne = new Pose(4,15,Math.toRadians(260));
+    private final Pose pickupOne = new Pose(3,3,Math.toRadians(180));
 
-    private final Pose pickupPointTwo = new Pose(6.77, 3, Math.toRadians(255));
+    private final Pose goBack = new Pose(9, 3, Math.toRadians(180));
+
+    private final Pose pickupPointTwo = new Pose(3, 7, Math.toRadians(180));
 
     private final Pose curve1 = new Pose(37.8,20.7);
 
@@ -58,7 +60,7 @@ public class Blue_Far extends OpMode {
 
 
     boolean wantToTrack = false;
-    private Path scorepreload, pickup1, pickupPartTwo,  score1, pickup2, score2, pickup3, score3, park;
+    private Path scorepreload, pickup1, back, pickupPartTwo,  score1, pickup2, score2, pickup3, score3, park;
 
 
 
@@ -75,10 +77,16 @@ public class Blue_Far extends OpMode {
         pickup1 = new Path(new BezierLine(scorePose, pickupOne));
         pickup1.setLinearHeadingInterpolation(scorePose.getHeading(), pickupOne.getHeading());
 
-        pickupPartTwo = new Path(new BezierLine(pickupOne,pickupPointTwo));
-        pickupPartTwo.setLinearHeadingInterpolation(pickupOne.getHeading(), pickupPointTwo.getHeading());
 
-        score1 = new Path(new BezierCurve(pickupPointTwo, curve1, scorePose));
+
+        back = new Path(new BezierLine(pickupOne,goBack));
+        back.setConstantHeadingInterpolation(pickupOne.getHeading());
+
+
+        pickupPartTwo = new Path(new BezierLine(goBack, pickupPointTwo));
+        pickupPartTwo.setConstantHeadingInterpolation(pickupPointTwo.getHeading());
+
+        score1 = new Path(new BezierCurve(pickupPointTwo, scorePose));
         score1.setLinearHeadingInterpolation(pickupPointTwo.getHeading(), scorePose.getHeading(), 0.9);
 
         pickup2 = new Path(new BezierCurve(scorePose, curve2, pickupTwo));
@@ -154,7 +162,19 @@ public class Blue_Far extends OpMode {
                 break;
 
             case 8:
-                if(!follower.isBusy()){
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5){
+
+                    robot.intake.setPower(0.7);
+                    robot.intake2.setPower(-0.7);
+                    follower.setMaxPower(0.4);
+                    follower.followPath(back, true);
+                    setPathState(9);
+
+                }
+                break;
+
+            case 9:
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5){
 
                     robot.intake.setPower(0.7);
                     robot.intake2.setPower(-0.7);

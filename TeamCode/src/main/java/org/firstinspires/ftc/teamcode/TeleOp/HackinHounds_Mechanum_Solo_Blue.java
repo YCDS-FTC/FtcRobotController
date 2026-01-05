@@ -15,8 +15,8 @@ import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 
 
 @Config
-@TeleOp(name = "Mechanum-Blue", group = "Linear OpMode")
-public class HackinHounds_Mechanum_Blue extends OpMode {
+@TeleOp(name = "Mechanum-Solo-Blue", group = "Linear OpMode")
+public class HackinHounds_Mechanum_Solo_Blue extends OpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
     private ElapsedTime timer = new ElapsedTime();
@@ -158,26 +158,22 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
         }
 
 
-        if(gamepad2.b){
+        if(gamepad1.b){
             robot.intake.setPower(0.7);
             robot.intake2.setPower(-0.7);
         }
 
-        if(gamepad2.y){
+        if(gamepad1.y){
             robot.intake.setPower(0);
             robot.intake2.setPower(0);
         }
 
-        if(gamepad2.a){
+        if(gamepad1.a){
             robot.intake2.setPower(-0.3);
             robot.intake.setPower(0.3);
         }
 
-        if(gamepad2.right_trigger > Math.abs(0.1)) {
-            robot.intake.setPower(-0.7);
-        }
-
-        if(gamepad1.right_bumper){
+        if(gamepad1.right_trigger > Math.abs(0.1)) {
             robot.intake.setPower(-0.7);
         }
 
@@ -187,7 +183,7 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
 
 
         //Stopper logic for ONE BY ONE
-        if(gamepad2.left_bumper && !leftBumper_pressed_previous) {
+        if(gamepad1.left_bumper && !leftBumper_pressed_previous) {
             if (isBlockerClosed) {
                 robot.stopper.setPosition(0.47);
                 isBlockerClosed = false;
@@ -220,7 +216,7 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
         // --- Stopper Control Logic to shoot ALL THREE
 
         // Check for 'A' press on gamepad2 (assuming gamepad2 for shooter controls)
-        if (gamepad2.right_bumper && !rightBumper_pressed_previous) {
+        if (gamepad1.right_bumper && !rightBumper_pressed_previous) {
             // This block executes ONLY on the moment 'A' is pressed down
 
             if (isBlockerClosed) {
@@ -299,7 +295,6 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
             robot.shooter.setVelocity(0);
         } else{
             robot.angleServo.setPosition(hoodAngle);
-            robot.shooter.setVelocity(output);
 
         }
 

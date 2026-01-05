@@ -15,8 +15,8 @@ import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 
 
 @Config
-@TeleOp(name = "Mechanum-Solo", group = "Linear OpMode")
-public class HackinHounds_Mechanum_Solo extends OpMode {
+@TeleOp(name = "Mechanum-Solo-Red", group = "Linear OpMode")
+public class HackinHounds_Mechanum_Solo_Red extends OpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
     private ElapsedTime timer = new ElapsedTime();
@@ -95,7 +95,7 @@ public class HackinHounds_Mechanum_Solo extends OpMode {
         telemetry.setMsTransmissionInterval(50);   // Speed up telemetry updates, Just use for debugging.
         telemetry.setDisplayFormat(Telemetry.DisplayFormat.MONOSPACE);
         telemetry.update();
-        robot.limelight.pipelineSwitch(0);
+        robot.limelight.pipelineSwitch(1);
     }
 
     @Override
@@ -178,7 +178,7 @@ public class HackinHounds_Mechanum_Solo extends OpMode {
         }
 
         if (gamepad1.left_bumper) {
-            angleWant = 120;
+            angleWant = -120;
         }
 
 
@@ -323,7 +323,7 @@ public class HackinHounds_Mechanum_Solo extends OpMode {
 
         robot.light1.setPosition(robot.mapColor(robot.color1.getNormalizedColors().red, robot.color1.getNormalizedColors().green, robot.color1.getNormalizedColors().blue));
         robot.light2.setPosition(robot.mapColor(robot.color2.getNormalizedColors().red, robot.color2.getNormalizedColors().green, robot.color2.getNormalizedColors().blue));
-        robot.light3.setPosition(robot.mapColor(robot.color3.getNormalizedColors().red, robot.color3.getNormalizedColors().green, robot.color3.getNormalizedColors().blue));
+//        robot.light3.setPosition(robot.mapColor(robot.color3.getNormalizedColors().red, robot.color3.getNormalizedColors().green, robot.color3.getNormalizedColors().blue));
 
         telemetry.addData("imu", "%f", robotHeading);
 
