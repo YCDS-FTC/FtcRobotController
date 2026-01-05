@@ -75,7 +75,9 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
 
     public static double shooterAngle = 0;
 
+    private double lastValidDistance = Double.NaN;
 
+    private double MAX_DISTANCE_DELTA = 15;
     public static double turretoffset = 0;
 
     private ElapsedTime stopperTimer = new ElapsedTime();
@@ -262,65 +264,31 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
 
 
 
-//
-//
-//        double target = normA( turretAngle + tx);
-//        if (target > 135) {target = 135;} else if (target < -135) {target = -135;}
-////        robot.turret.setPower(-turretController.calculate(turretAngle, target));
-//
-//
-
-//        double robotYaw = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-//
-//// 1. Calculate the raw target angle the turret is commanded to go to (relative to robot)
-//// This is the simplest tracking: current turret angle plus the error.
-//
-//        robot.turret.setPower(turretController.calculate(turretAngle, target));
-//
-//        double correctedOutput  = rawOutput * -1.0;
-//        robot.turret.setPower(correctedOutput);
 
 
-
-//        robot.angleServo.setPosition(hoodAngle);
-//        if (gamepad2.right_bumper) {
-//            startTime = timer.milliseconds();
-//            robot.shooter.setVelocity(shooterPower);
-//            stopped = false;
-//        }
-//        telemetry.addData("Since click", timer.milliseconds() - startTime);
-//        if (robot.shooter.getVelocity() > shooterPower - 10 && !stopped) {
-//            stopped = true;
-//            finaltime = timer.milliseconds() - startTime;
-//        } else {
-//            telemetry.addData("time to spin up", finaltime);
-//        }
-//
-//        if (gamepad2.left_bumper){stopped = false;}
-
-
-
-
-//        else{
-//            double robotHeading = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-//            if (gamepad1.right_trigger > 0.1) {robot.imu.resetYaw();}
-//            double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
-//            double target = normA(angleWant - robotHeading - tx);
-//            if (target > 135) {target = 135;} else if (target < -135) {target = -135;}
-//            double error = target - turretAngle;
-//            double turretPower = clamp(error * slow, -1, 1);
-////            turret.setPower(turretController.calculate(turretAngle, target));
-////            robot.turret.setVelocity(turretController.calculate(turretAngle, target) * 1400 - robot.imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * turret_tPERd);
-//
-////            robot.turret.setVelocity(turretController.calculate(turretAngle, target) * 1400 - imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * turret_tPERd);
-//
-//
-
-            //        }
 
         double distanceToGoal =  robot.limelight(ty, tx);
-        double motorPower = robot.getshooterPower(distanceToGoal);
-        double hoodAngle = robot.getHoodAngle(distanceToGoal);
+
+        if (Double.isNaN(lastValidDistance)) {
+            // First reading — always accept it
+            lastValidDistance = distanceToGoal;
+        } else {
+            double delta = Math.abs(distanceToGoal - lastValidDistance);
+
+            if (delta <= MAX_DISTANCE_DELTA) {
+                // Reading is reasonable → accept it
+                lastValidDistance = distanceToGoal;
+            }
+            // else: reject the measurement and keep the old value
+        }
+
+        double filteredDistance = lastValidDistance;
+
+
+        double motorPower = robot.getshooterPower(filteredDistance);
+        double hoodAngle = robot.getHoodAngle(filteredDistance);
+
+
 
 
         double shooterVelocity = robot.shooter.getVelocity();
@@ -357,14 +325,9 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
         robot.turret.setVelocity(turretController.calculate(turretAngle, target) * 1450 - robot.imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * turret_tPERd);
 
 
-        if((Math.abs(tx) < 2)){
-            robot.light.setPosition(0.677);
-            robot.light2.setPosition(0.677);
-        } else{
-            robot.light.setPosition(0);
-            robot.light2.setPosition(0);
-        }
-
+        robot.light1.setPosition(robot.mapColor(robot.color1.getNormalizedColors().red, robot.color1.getNormalizedColors().green, robot.color1.getNormalizedColors().blue));
+        robot.light2.setPosition(robot.mapColor(robot.color2.getNormalizedColors().red, robot.color2.getNormalizedColors().green, robot.color2.getNormalizedColors().blue));
+        robot.light3.setPosition(robot.mapColor(robot.color3.getNormalizedColors().red, robot.color3.getNormalizedColors().green, robot.color3.getNormalizedColors().blue));
 
         telemetry.addData("imu", "%f", robotHeading);
 

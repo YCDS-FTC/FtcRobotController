@@ -58,8 +58,10 @@ public class HackinHoundsHardware extends Hardware {
     public Servo stopper;
     public DcMotorEx turret;
 
-    public Servo light;
+    public Servo light1;
     public Servo light2;
+
+    public Servo light3;
 
     public RevColorSensorV3 color1, color2, color3;
 
@@ -166,8 +168,9 @@ public class HackinHoundsHardware extends Hardware {
         angleServo = robotMap.get(Servo.class,"angleServo");
 
 
-        light = robotMap.get(Servo.class,"light");
+        light1 = robotMap.get(Servo.class,"light");
         light2 = robotMap.get(Servo.class,"light2");
+        light3 = robotMap.get(Servo.class,"light3");
 
 
         color1 = robotMap.get(RevColorSensorV3.class,"color1");
@@ -339,7 +342,31 @@ public class HackinHoundsHardware extends Hardware {
         return distanceToGoal;
     }
 
+    public double mapColor(double r, double g, double b) {
+        double max = Math.max(r, Math.max(g, b));
+        if (max > 0) {
+            r /= max;
+            g /= max;
+            b /= max;
+        }
 
+        // Determine dominant channel
+        boolean blueMax = b >= g && b >= r;
+        boolean greenMax = g >= b && g >= r;
+
+        // PURPLE: Blue is highest
+        if (blueMax) {
+            return 0.722; // violet
+        }
+
+        // GREEN: Green is highest
+        if (greenMax) {
+            return 0.500; // green
+        }
+
+        // Neither
+        return 0.000;
+    }
 
 }
 

@@ -16,8 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 
-@Autonomous(name = "red_close-current", group = "Examples")
-public class Red_Close_Current extends OpMode {
+public class Red_Close_Tracker_Old extends OpMode {
 
     private HackinHoundsHardware robot = new HackinHoundsHardware();
 

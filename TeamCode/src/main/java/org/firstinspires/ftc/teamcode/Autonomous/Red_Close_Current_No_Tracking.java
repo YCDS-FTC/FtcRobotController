@@ -16,8 +16,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 
-@Autonomous(name = "red_close-current-nogate", group = "Examples")
-public class Red_Close_Current_No_Gate extends OpMode {
+@Autonomous(name = "red_close-current", group = "Examples")
+public class Red_Close_Current_No_Tracking extends OpMode {
 
     private HackinHoundsHardware robot = new HackinHoundsHardware();
 
@@ -40,7 +40,7 @@ public class Red_Close_Current_No_Gate extends OpMode {
     public double p = 0.025, i = 0, d = 0.0004, f = 0;
 
     public PIDFController turretController = new PIDFController(p, i, d, f);
-    double Turrettarget = 0;
+    double Turrettarget = -133;
 
 
 
@@ -54,6 +54,8 @@ public class Red_Close_Current_No_Gate extends OpMode {
 
 
     boolean wantZero = false;
+
+    boolean wantToTrack = false;
 
 
 
@@ -75,7 +77,7 @@ public class Red_Close_Current_No_Gate extends OpMode {
         emptyGate.setLinearHeadingInterpolation(pickupOne.getHeading(), gateEmpty.getHeading());
 
 
-        score1 = new Path(new BezierLine(pickupOne, scorePose));
+        score1 = new Path(new BezierLine(gateEmpty, scorePose));
         score1.setLinearHeadingInterpolation(pickupOne.getHeading(), scorePose.getHeading(), 0.9);
 
         pickup2 = new Path(new BezierCurve(scorePose, curve1, pickupTwo));
@@ -114,7 +116,7 @@ public class Red_Close_Current_No_Gate extends OpMode {
                     follower.followPath(scorePreload);
                     robot.intake.setPower(0.5);
                     robot.intake2.setPower(-0.3);
-
+                    wantToTrack = true;
                     setPathState(1);
 
                 }
@@ -125,6 +127,7 @@ public class Red_Close_Current_No_Gate extends OpMode {
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-.7);
                     robot.stopper.setPosition(0.47);
+                    wantToTrack = true;
                     setPathState(3);
                 }
                 break;
@@ -139,6 +142,19 @@ public class Red_Close_Current_No_Gate extends OpMode {
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
                     robot.stopper.setPosition(0.7);
+                    wantToTrack = false;
+                    setPathState(20);
+
+                }
+                break;
+
+
+            case 20:
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5) {
+
+                    follower.followPath(emptyGate);
+                    robot.intake2.setPower(-0.3);
+                    robot.intake.setPower(0.3);
                     setPathState(4);
 
                 }
@@ -147,11 +163,12 @@ public class Red_Close_Current_No_Gate extends OpMode {
 
 
             case 4:
-                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5) {
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.5) {
 
                     follower.followPath(score1);
                     robot.intake2.setPower(-0.4);
                     robot.intake.setPower(0.4);
+                    wantToTrack = true;
                     setPathState(5);
 
                 }
@@ -161,6 +178,7 @@ public class Red_Close_Current_No_Gate extends OpMode {
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.85);
                     robot.stopper.setPosition(0.47);
+                    wantToTrack = true;
                     setPathState(6);
 
                 }
@@ -172,6 +190,7 @@ public class Red_Close_Current_No_Gate extends OpMode {
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
                     robot.stopper.setPosition(0.7);
+                    wantToTrack = false;
                     setPathState(7);
 
                 }
@@ -182,6 +201,7 @@ public class Red_Close_Current_No_Gate extends OpMode {
                     follower.followPath(score2);
                     robot.intake.setPower(0.3);
                     robot.intake2.setPower(-0.3);
+                    wantToTrack = true;
                     setPathState(8);
 
                 }
@@ -193,6 +213,7 @@ public class Red_Close_Current_No_Gate extends OpMode {
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
                     robot.stopper.setPosition(0.47);
+                    wantToTrack = true;
                     setPathState(9);
 
                 }
@@ -207,6 +228,7 @@ public class Red_Close_Current_No_Gate extends OpMode {
                     robot.stopper.setPosition(0.7);
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
+                    wantToTrack = false;
                     setPathState(10);
 
                 }
@@ -219,6 +241,7 @@ public class Red_Close_Current_No_Gate extends OpMode {
                     follower.setMaxPower(1);
                     robot.intake.setPower(0.3);
                     robot.intake2.setPower(-0.3);
+                    wantToTrack = true;
                     setPathState(11);
 
                 }
@@ -230,6 +253,7 @@ public class Red_Close_Current_No_Gate extends OpMode {
                     robot.intake2.setPower(-0.7);
                     robot.intake.setPower(0.7);
                     robot.stopper.setPosition(0.47);
+                    wantToTrack = true;
                     setPathState(12);
 
                 }
@@ -241,9 +265,9 @@ public class Red_Close_Current_No_Gate extends OpMode {
                     robot.stopper.setPosition(0.7);
                     robot.intake.setPower(0);
                     robot.intake2.setPower(0);
-                    Turrettarget = 0;
                     shooterTarget = 0;
-                    wantZero = true;
+                    wantToTrack = false;
+                    Turrettarget = 0;
                     follower.followPath(park);
 
                     setPathState(1000);
@@ -317,23 +341,19 @@ public class Red_Close_Current_No_Gate extends OpMode {
         //if (gamepad1.right_trigger > 0.1) {angleWant = robotHeading;}
         double turretAngle = robot.turret.getCurrentPosition()/ticksPerDegree;
 
-            //Turrettarget = (robotHeading + turretAngle);
-        Turrettarget = Math.toDegrees(Math.atan2(140 - robot.pinpoint.getPosY(DistanceUnit.INCH), 136 - robot.pinpoint.getPosX(DistanceUnit.INCH)));
+        if(result.isValid() && wantToTrack){
+            double target = normA(Turrettarget - result.getTx() + 1);
+            double turretPosition = robot.turret.getCurrentPosition()/4.233;
+            if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
 
+            robot.turret.setPower(turretController.calculate(turretPosition, target));
 
-        if (result.isValid() && !gamepad1.left_bumper) {
-            Turrettarget = (robotHeading + turretAngle) - tx;
+        } else{
+            double target = normA(Turrettarget);
+            if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
+            double turretPosition = robot.turret.getCurrentPosition()/4.233;
+            robot.turret.setPower(turretController.calculate(turretPosition, target));
         }
-
-
-        if (wantZero) {Turrettarget = 0;}
-
-        double target = normA(Turrettarget - robotHeading);
-        if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
-//        double error = target - turretAngle;
-//        double turretPower = clamp(error * slow, -1, 1);
-        robot.turret.setPower(turretController.calculate(turretAngle, target));
-
 
 
 
@@ -359,7 +379,6 @@ public class Red_Close_Current_No_Gate extends OpMode {
 
         telemetry.addData("turretPos", "%d", robot.turret.getCurrentPosition());
         telemetry.addData("turretAngle", "%f", turretAngle);
-        telemetry.addData("turretTarget", "%f", target);
         telemetry.addData("target", "%f", Turrettarget);
         telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
         telemetry.addData("Tx", "%f", tx);

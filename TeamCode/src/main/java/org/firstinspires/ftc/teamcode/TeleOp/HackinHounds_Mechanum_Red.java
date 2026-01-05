@@ -44,9 +44,9 @@ public class HackinHounds_Mechanum_Red extends OpMode {
     private static double angleWant = -120;
     private static double slow = 1;
 
-    public static double p = 0.02;
-    public static double i = 0.002;
-    public static double d = 0.004;
+    public static double p = 0.05;
+    public static double i = 0;
+    public static double d = 0.006;
     public static double f = 0;
 
     PIDFController turretController = new PIDFController(p,i,d,f);
@@ -261,62 +261,6 @@ public class HackinHounds_Mechanum_Red extends OpMode {
 
 
 
-//
-//
-//        double target = normA( turretAngle + tx);
-//        if (target > 135) {target = 135;} else if (target < -135) {target = -135;}
-////        robot.turret.setPower(-turretController.calculate(turretAngle, target));
-//
-//
-
-//        double robotYaw = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-//
-//// 1. Calculate the raw target angle the turret is commanded to go to (relative to robot)
-//// This is the simplest tracking: current turret angle plus the error.
-//
-//        robot.turret.setPower(turretController.calculate(turretAngle, target));
-//
-//        double correctedOutput  = rawOutput * -1.0;
-//        robot.turret.setPower(correctedOutput);
-
-
-
-//        robot.angleServo.setPosition(hoodAngle);
-//        if (gamepad2.right_bumper) {
-//            startTime = timer.milliseconds();
-//            robot.shooter.setVelocity(shooterPower);
-//            stopped = false;
-//        }
-//        telemetry.addData("Since click", timer.milliseconds() - startTime);
-//        if (robot.shooter.getVelocity() > shooterPower - 10 && !stopped) {
-//            stopped = true;
-//            finaltime = timer.milliseconds() - startTime;
-//        } else {
-//            telemetry.addData("time to spin up", finaltime);
-//        }
-//
-//        if (gamepad2.left_bumper){stopped = false;}
-
-
-
-
-//        else{
-//            double robotHeading = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
-//            if (gamepad1.right_trigger > 0.1) {robot.imu.resetYaw();}
-//            double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
-//            double target = normA(angleWant - robotHeading - tx);
-//            if (target > 135) {target = 135;} else if (target < -135) {target = -135;}
-//            double error = target - turretAngle;
-//            double turretPower = clamp(error * slow, -1, 1);
-////            turret.setPower(turretController.calculate(turretAngle, target));
-////            robot.turret.setVelocity(turretController.calculate(turretAngle, target) * 1400 - robot.imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * turret_tPERd);
-//
-////            robot.turret.setVelocity(turretController.calculate(turretAngle, target) * 1400 - imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * turret_tPERd);
-//
-//
-
-            //        }
-
         double distanceToGoal =  robot.limelight(ty, tx);
         double motorPower = robot.getshooterPower(distanceToGoal);
         double hoodAngle = robot.getHoodAngle(distanceToGoal);
@@ -347,7 +291,12 @@ public class HackinHounds_Mechanum_Red extends OpMode {
         double robotHeading = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
         //if (gamepad1.right_trigger > 0.1) {angleWant = robotHeading;}
         double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
-        if (result.isValid() && !gamepad1.left_bumper) {angleWant = (robotHeading + turretAngle) - tx;}
+
+        if (result.isValid() && !gamepad1.left_bumper && distanceToGoal > 100){
+            angleWant = (robotHeading + turretAngle) - tx - 3.8;
+        } else if (result.isValid() && !gamepad1.left_bumper) {
+            angleWant = (robotHeading + turretAngle) - tx;
+        }
 
         double target = normA(angleWant - robotHeading);
         if (target > 150) {target = 150;} else if (target < -150) {target = -150;}

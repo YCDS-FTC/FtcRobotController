@@ -37,6 +37,8 @@ public class ColorIndexing extends LinearOpMode {
             light2.setPosition(mapColor(color2.getNormalizedColors().red, color2.getNormalizedColors().green, color2.getNormalizedColors().blue));
 
 
+
+
             telemetry.addData("", "%d", color1.red());
             telemetry.addData("", "%d", color1.green());
             telemetry.addData("", "%d", color1.blue());
