@@ -28,8 +28,8 @@ public class Red_Close_Current_No_Tracking extends OpMode {
     private final Pose startPose = new Pose(114.579, 124.67, Math.toRadians(127.408625));
     private final Pose scorePose = new Pose(73, 72.81, Math.toRadians(0));
     private final Pose pickupOne = new Pose(110.837,71.31, Math.toRadians(0));
-    private final Pose goback = new Pose(100, 73, Math.toRadians(0));
-    private final Pose gateEmpty = new Pose(121.9, 72.7, Math.toRadians(90));
+    private final Pose goback = new Pose(90, 73, Math.toRadians(0));
+    private final Pose gateEmpty = new Pose(122.9, 72, Math.toRadians(90));
     private final Pose pickupTwo = new Pose (112.74,45, Math.toRadians(0));
     private final Pose curve1 = new Pose(86.115, 39);
     private final Pose pickupThree = new Pose(115, 20, Math.toRadians(0));

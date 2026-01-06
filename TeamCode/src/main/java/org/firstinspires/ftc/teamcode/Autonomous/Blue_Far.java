@@ -25,19 +25,23 @@ public class Blue_Far extends OpMode {
     private int pathState;
 
     private final Pose startPose = new Pose(57, 8, Math.toRadians(180));
-    private final Pose scorePose = new Pose(53, 10, Math.toRadians(180));
-    private final Pose pickupOne = new Pose(3,3,Math.toRadians(180));
+    private final Pose scorePose = new Pose(57, 14, Math.toRadians(180));
+    private final Pose pickupOne = new Pose(11,9,Math.toRadians(180));
 
-    private final Pose goBack = new Pose(9, 3, Math.toRadians(180));
+    private final Pose goBack = new Pose(17, 11, Math.toRadians(180));
 
-    private final Pose pickupPointTwo = new Pose(3, 7, Math.toRadians(180));
+    private final Pose pickupPointTwo = new Pose(12, 10, Math.toRadians(180));
 
-    private final Pose curve1 = new Pose(37.8,20.7);
 
     private final Pose pickupTwo = new Pose (13.1,36.4, Math.toRadians(180));
 
     private final Pose curve2 = new Pose(66.3, 44);
-    private final Pose pickupThree = new Pose (9,13 , Math.toRadians(180));
+    private final Pose pickupThree = new Pose (13,9 , Math.toRadians(180));
+
+    private final Pose pickupFour = new Pose (13,18 , Math.toRadians(180));
+
+    private final Pose curve1 = new Pose(57,15);
+
 
     private final Pose move = new Pose (34.6, 11.3, Math.toRadians(180));
 
@@ -53,14 +57,14 @@ public class Blue_Far extends OpMode {
 
     public double P = 11, I = 0, D = 0, F = 0.8;
     public PIDFController shooterController = new PIDFController(P, I, D, F);
-    double shooterTarget = 1480;
+    double shooterTarget = 1540;
     double hoodAngle = 0.13;
 
     public double ticksPerDegree = 4.233;
 
 
     boolean wantToTrack = false;
-    private Path scorepreload, pickup1, back, pickupPartTwo,  score1, pickup2, score2, pickup3, score3, park;
+    private Path scorepreload, pickup1, back, pickupPartTwo,  score1, pickup2, score2, pickup3, score3,pickup4, score4, park;
 
 
 
@@ -71,8 +75,12 @@ public class Blue_Far extends OpMode {
 
     public void buildPaths(){
 
+
+
         scorepreload = new Path(new BezierLine(startPose, scorePose));
-        scorepreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading());
+        scorepreload.setLinearHeadingInterpolation(scorePose.getHeading(), pickupOne.getHeading());
+
+
 
         pickup1 = new Path(new BezierLine(scorePose, pickupOne));
         pickup1.setLinearHeadingInterpolation(scorePose.getHeading(), pickupOne.getHeading());
@@ -86,7 +94,7 @@ public class Blue_Far extends OpMode {
         pickupPartTwo = new Path(new BezierLine(goBack, pickupPointTwo));
         pickupPartTwo.setConstantHeadingInterpolation(pickupPointTwo.getHeading());
 
-        score1 = new Path(new BezierCurve(pickupPointTwo, scorePose));
+        score1 = new Path(new BezierLine(pickupPointTwo, scorePose));
         score1.setLinearHeadingInterpolation(pickupPointTwo.getHeading(), scorePose.getHeading(), 0.9);
 
         pickup2 = new Path(new BezierCurve(scorePose, curve2, pickupTwo));
@@ -104,6 +112,13 @@ public class Blue_Far extends OpMode {
         score3 = new Path(new BezierLine(pickupThree, scorePose));
         score3.setLinearHeadingInterpolation(pickupThree.getHeading(), scorePose.getHeading(), 0.8);
 
+
+        pickup4 = new Path(new BezierCurve(scorePose, curve1, pickupFour));
+        pickup4.setLinearHeadingInterpolation(scorePose.getHeading(), pickupFour.getHeading(), 0.8);
+
+
+        score4 = new Path(new BezierLine(pickupFour, scorePose));
+        score4.setLinearHeadingInterpolation(pickupFour.getHeading(), scorePose.getHeading(), 0.8);
 
         park = new Path(new BezierLine(scorePose, move));
         park.setLinearHeadingInterpolation(scorePose.getHeading(), move.getHeading());
@@ -136,7 +151,7 @@ public class Blue_Far extends OpMode {
                 break;
 
             case 1:
-                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 4) {
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3.5) {
                     robot.intake.setPower(0.7);
                     robot.intake2.setPower(-0.7);
                     robot.stopper.setPosition(0.47);
@@ -149,24 +164,27 @@ public class Blue_Far extends OpMode {
 
             case 7:
                 if(pathTimer.getElapsedTimeSeconds() > 1){
-                    follower.setMaxPower(0.5);
+                    follower.setMaxPower(1);
                     follower.followPath(pickup1, true);
                     robot.intake.setPower(0.7);
                     robot.intake2.setPower(-0.7);
-                    robot.stopper.setPosition(0.67);
+                    robot.stopper.setPosition(0.7);
+
                     wantToTrack = false;
-                    setPathState(8);
+                    if (pathTimer.getElapsedTimeSeconds() > 0.5){
+                        setPathState(8);
+                    }
 
 
                 }
                 break;
 
             case 8:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5){
+                if(!follower.isBusy()){
 
                     robot.intake.setPower(0.7);
                     robot.intake2.setPower(-0.7);
-                    follower.setMaxPower(0.4);
+                    follower.setMaxPower(1);
                     follower.followPath(back, true);
                     setPathState(9);
 
@@ -174,13 +192,16 @@ public class Blue_Far extends OpMode {
                 break;
 
             case 9:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5){
+                if(!follower.isBusy()){
 
                     robot.intake.setPower(0.7);
                     robot.intake2.setPower(-0.7);
-                    follower.setMaxPower(0.4);
+                    follower.setMaxPower(1);
                     follower.followPath(pickupPartTwo, true);
-                    setPathState(11);
+
+                    if (pathTimer.getElapsedTimeSeconds() > 0.5){
+                        setPathState(11);
+                    }
 
                 }
                 break;
@@ -203,7 +224,7 @@ public class Blue_Far extends OpMode {
 
 
             case 12:
-                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3) {
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2) {
                     robot.intake.setPower(0.7);
                     robot.intake2.setPower(-0.7);
                     robot.stopper.setPosition(0.47);
@@ -216,15 +237,13 @@ public class Blue_Far extends OpMode {
 
             case 13:
                 if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1){
-                    follower.setMaxPower(0.6);
+                    follower.setMaxPower(1);
                     follower.followPath(pickup2, true);
                    robot.intake.setPower(0.7);
                    robot.intake2.setPower(-0.7);
                    robot.stopper.setPosition(0.7);
                    wantToTrack = false;
-
-
-                    setPathState(14);
+                   setPathState(14);
 
                 }
                 break;
@@ -254,10 +273,11 @@ public class Blue_Far extends OpMode {
                 break;
 
             case 16:
-                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2) {
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5) {
                     robot.intake.setPower(0.7);
                     robot.intake2.setPower(-0.7);
                     robot.stopper.setPosition(0.7);
+                    follower.setMaxPower(0.8);
                     follower.followPath(pickup3);
                     wantToTrack = true;
 
@@ -266,7 +286,7 @@ public class Blue_Far extends OpMode {
                 break;
 
             case 17:
-                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5) {
+                if (!follower.isBusy()) {
                     robot.intake.setPower(0.4);
                     robot.intake2.setPower(-0.4);
                     robot.stopper.setPosition(0.7);
@@ -279,7 +299,7 @@ public class Blue_Far extends OpMode {
 
 
             case 18:
-                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2) {
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.5) {
                     robot.intake.setPower(0.7);
                     robot.intake2.setPower(-0.7);
                     robot.stopper.setPosition(0.47);
@@ -289,9 +309,45 @@ public class Blue_Far extends OpMode {
                 }
                 break;
 
-
             case 19:
-                if(pathTimer.getElapsedTimeSeconds() > 1.5){
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1) {
+                    robot.intake.setPower(0.7);
+                    robot.intake2.setPower(-0.7);
+                    robot.stopper.setPosition(0.7);
+                    follower.followPath(pickup4);
+                    wantToTrack = true;
+
+                    setPathState(20);
+                }
+                break;
+
+            case 20:
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5) {
+                    robot.intake.setPower(0.4);
+                    robot.intake2.setPower(-0.4);
+                    robot.stopper.setPosition(0.7);
+                    follower.followPath(score4);
+                    wantToTrack = true;
+
+                    setPathState(21);
+                }
+                break;
+
+
+            case 21:
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.5) {
+                    robot.intake.setPower(0.7);
+                    robot.intake2.setPower(-0.7);
+                    robot.stopper.setPosition(0.47);
+                    wantToTrack = true;
+
+                    setPathState(22);
+                }
+                break;
+
+
+            case 22:
+                if(pathTimer.getElapsedTimeSeconds() > 1){
                     robot.intake.setPower(0);
                     robot.intake2.setPower(0);
                     robot.stopper.setPosition(0.7);

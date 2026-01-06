@@ -254,7 +254,7 @@ public class HackinHoundsHardware extends Hardware {
         getShootPower.add(77, 1240);
         getShootPower.add(82, 1260);
         getShootPower.add(87, 1320);
-        getShootPower.add(105,1440);
+        getShootPower.add(105,1420);
         getShootPower.add(110,1460);
         getShootPower.add(115,1480);
         getShootPower.add(120,1500);

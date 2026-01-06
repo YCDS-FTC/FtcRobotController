@@ -44,18 +44,18 @@ public class HackinHounds_Mechanum_Red extends OpMode {
     private static double angleWant = -120;
     private static double slow = 1;
 
-    public static double p = 0.05;
+    public static double p = 0.03;
     public static double i = 0;
-    public static double d = 0.006;
+    public static double d = 0.0035;
     public static double f = 0;
 
     PIDFController turretController = new PIDFController(p,i,d,f);
 
 
-     public static double kp = 11;
-     public static double ki = 0;
-     public static double kd = 0;
-     public static double kf = 0.8;
+     public double kp = 11;
+     public double ki = 0;
+     public double kd = 0;
+     public double kf = 0.8;
 
     PIDFController shooterController = new PIDFController(kp, ki, kd, kf);
 
@@ -63,9 +63,9 @@ public class HackinHounds_Mechanum_Red extends OpMode {
     public static double stopperPosition = .47;
     //position is 0.44 for stopping and 0.63 for neutral
 
-    public static double shootertarget = 0;
+    public  double shootertarget = 0;
 
-    public static double target = 0;
+    public  double target = 0;
 
     boolean isBlockerClosed = true;
 
@@ -268,13 +268,13 @@ public class HackinHounds_Mechanum_Red extends OpMode {
 
         double shooterVelocity = robot.shooter.getVelocity();
 
-        double output = shooterController.calculate(shooterVelocity, shootertarget);
+        double output = shooterController.calculate(shooterVelocity, motorPower);
 
 
 
 
 
-        robot.angleServo.setPosition(shooterAngle);
+        robot.angleServo.setPosition(hoodAngle);
 
 
         if(gamepad1.a){
@@ -342,7 +342,7 @@ public class HackinHounds_Mechanum_Red extends OpMode {
         packet.put("shooterRPM", (robot.shooter.getVelocity() / 28.0) * 60.0);
         packet.put("shootertarget", shootertarget);
         packet.put("turretTarget",  target);
-
+        packet.put("turretPos", turretAngle);
         dashboard.sendTelemetryPacket(packet);
 
     }

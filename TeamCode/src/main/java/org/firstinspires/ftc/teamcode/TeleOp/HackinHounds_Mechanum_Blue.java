@@ -285,8 +285,8 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
         double filteredDistance = lastValidDistance;
 
 
-        double motorPower = robot.getshooterPower(filteredDistance);
-        double hoodAngle = robot.getHoodAngle(filteredDistance);
+        double motorPower = robot.getshooterPower(distanceToGoal);
+        double hoodAngle = robot.getHoodAngle(distanceToGoal);
 
 
 
