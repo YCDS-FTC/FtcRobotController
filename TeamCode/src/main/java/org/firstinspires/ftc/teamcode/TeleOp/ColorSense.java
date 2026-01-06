@@ -64,6 +64,7 @@ public class ColorSense extends OpMode {
 
     PIDFController shooterController = new PIDFController(kp, ki, kd, kf);
 
+
     public static double hoodAngle = 0;
     public static double stopperPosition = .47;
     //position is 0.44 for stopping and 0.63 for neutral
@@ -103,11 +104,19 @@ public class ColorSense extends OpMode {
         robot.pinpoint.setPosX(72, DistanceUnit.INCH);
         robot.pinpoint.setPosY(72, DistanceUnit.INCH);
         robot.pinpoint.update();
+
+        turretController.setPIDF(p,i,d,f);
     }
     @Override
     public void start(){robot.limelight.start();}
     @Override
     public void loop(){
+
+        LLResult result = robot.limelight.getLatestResult();
+
+        double tx = result.getTx();
+        double ty = result.getTy();
+
         double facing = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
         double y  = -gamepad1.left_stick_y;
         double x  = gamepad1.left_stick_x;
@@ -128,8 +137,12 @@ public class ColorSense extends OpMode {
             double autoSteer = 0;
             if (largest != null) {
                 double dis = (largest.x - 160) / 160.0;
-                autoSteer = dis * 0.35;
-                rx -= autoSteer;
+//                autoSteer = dis * 0.35;
+//                rx -= autoSteer;
+                double assistPower = dis * 0.5;
+                double angle = facing + (Math.PI / 2.0);
+                x += assistPower * Math.cos(angle);
+                y += assistPower * Math.sin(angle);
             }
         }
 
@@ -169,13 +182,30 @@ public class ColorSense extends OpMode {
         double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
         //if (result.isValid() && !gamepad1.left_bumper) {angleWant = (robotHeading + turretAngle) - tx;}
         //angleWant = Math.toDegrees(Math.atan2(140 - robot.pinpoint.getPosY(DistanceUnit.INCH), 130 - robot.pinpoint.getPosX(DistanceUnit.INCH))) - 180;
-        angleWant = Math.toDegrees(Math.atan2(140 - (robot.pinpoint.getPosY(DistanceUnit.INCH) + robot.pinpoint.getVelY(DistanceUnit.INCH)), 130 - (robot.pinpoint.getPosX(DistanceUnit.INCH) + robot.pinpoint.getVelX(DistanceUnit.INCH)))) - 180;
+        angleWant = Math.toDegrees(Math.atan2(140 - (robot.pinpoint.getPosY(DistanceUnit.INCH) + robot.pinpoint.getVelY(DistanceUnit.INCH)/2), 138 - (robot.pinpoint.getPosX(DistanceUnit.INCH) + robot.pinpoint.getVelX(DistanceUnit.INCH)/2))) - 180;
         double target = normA(angleWant - robotHeading);
         if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
         //double error = target - turretAngle;
         //double turretPower = clamp(error * slow, -1, 1);
         robot.turret.setVelocity(turretController.calculate(turretAngle, target) * 1450 - robot.imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * turret_tPERd);
 
+
+        double distanceToGoal =  robot.limelight(ty, tx);
+        //distanceToGoal = Math.sqrt(Math.pow(140 - (robot.pinpoint.getPosY(DistanceUnit.INCH) + robot.pinpoint.getVelY(DistanceUnit.INCH)/2), 2) + Math.pow(138 - (robot.pinpoint.getPosX(DistanceUnit.INCH) + robot.pinpoint.getVelX(DistanceUnit.INCH)/2), 2));
+        double motorPower = robot.getshooterPower(distanceToGoal);
+        double hoodAngle = robot.getHoodAngle(distanceToGoal);
+
+
+        double shooterVelocity = robot.shooter.getVelocity();
+
+        double output = shooterController.calculate(shooterVelocity, motorPower);
+        robot.angleServo.setPosition(shooterAngle);
+        if(gamepad1.a){
+            robot.shooter.setVelocity(0);
+        } else{
+            robot.shooter.setVelocity(output);
+
+        }
 
         telemetry.addData("x", robot.pinpoint.getPosX(DistanceUnit.INCH));
         telemetry.addData("y", robot.pinpoint.getPosY(DistanceUnit.INCH));
@@ -184,6 +214,35 @@ public class ColorSense extends OpMode {
         telemetry.addData("anglewant", angleWant);
         telemetry.addData("target", target);
         telemetry.addData("facing", robotHeading);
+
+
+        if (gamepad1.back) {
+            robot.imu.resetYaw();
+        }
+
+
+        if(gamepad2.b){
+            robot.intake.setPower(0.7);
+            robot.intake2.setPower(-0.7);
+        }
+
+        if(gamepad2.y){
+            robot.intake.setPower(0);
+            robot.intake2.setPower(0);
+        }
+
+        if(gamepad2.a){
+            robot.intake2.setPower(-0.3);
+            robot.intake.setPower(0.3);
+        }
+
+        if (gamepad1.x) {
+            if (robot.stopper.getPosition() == 0.47){
+                robot.stopper.setPosition(0.7);
+            } else {
+                robot.stopper.setPosition(0.47);
+            }
+        }
 
 
         telemetry.update();

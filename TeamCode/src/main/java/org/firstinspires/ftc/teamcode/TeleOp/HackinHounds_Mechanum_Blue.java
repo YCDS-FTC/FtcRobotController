@@ -39,6 +39,9 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
     // intake = 0.5
     // transfer = 0.8
 
+    private double filteredVar = 0;
+    private boolean filterStart = false;
+    private double filterTick = 0;
 
     private  double turret_tPERd = 4.233;
     private  double angleWant = 120;
@@ -269,20 +272,17 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
 
         double distanceToGoal =  robot.limelight(ty, tx);
 
-        if (Double.isNaN(lastValidDistance)) {
-            // First reading — always accept it
-            lastValidDistance = distanceToGoal;
-        } else {
-            double delta = Math.abs(distanceToGoal - lastValidDistance);
 
-            if (delta <= MAX_DISTANCE_DELTA) {
-                // Reading is reasonable → accept it
-                lastValidDistance = distanceToGoal;
+        if (Math.abs(filteredVar - distanceToGoal) < 60 && filterStart) {
+            filterTick++;
+            if (filterTick < 5) {
+                distanceToGoal = filteredVar;
             }
-            // else: reject the measurement and keep the old value
+        } else {
+            filterTick = 0;
         }
-
-        double filteredDistance = lastValidDistance;
+        filteredVar = distanceToGoal;
+        filterStart = true;
 
 
         double motorPower = robot.getshooterPower(distanceToGoal);
