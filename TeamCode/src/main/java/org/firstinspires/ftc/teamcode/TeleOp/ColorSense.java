@@ -122,7 +122,7 @@ public class ColorSense extends OpMode {
         double x  = gamepad1.left_stick_x;
         double rx = gamepad1.right_stick_x;
 
-        if (gamepad1.right_bumper) {
+        if (gamepad1.left_bumper) {
             HuskyLens.Block[] blocks = huskyLens.blocks();
             HuskyLens.Block largest = null;
             int largestArea = 0;
@@ -139,10 +139,10 @@ public class ColorSense extends OpMode {
                 double dis = (largest.x - 160) / 160.0;
 //                autoSteer = dis * 0.35;
 //                rx -= autoSteer;
-                double assistPower = dis * 0.5;
+                double assistPower = dis * 0.75;
                 double angle = facing + (Math.PI / 2.0);
-                x += assistPower * Math.cos(angle);
-                y += assistPower * Math.sin(angle);
+                y += assistPower * Math.cos(angle);
+                x -= assistPower * Math.sin(angle);
             }
         }
 

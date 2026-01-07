@@ -65,7 +65,7 @@ public class HackinHoundsHardware extends Hardware {
 
     public RevColorSensorV3 color1, color2, color3;
 
-
+    public HuskyLens huskyLens;
 
     public GoBildaPinpointDriver pinpoint;
 
@@ -87,6 +87,9 @@ public class HackinHoundsHardware extends Hardware {
 
     InterpLUT getShootPower = new InterpLUT();
     public static double shooterPower = 0;
+
+
+    InterpLUT getShootPowerRed = new InterpLUT();
 
     InterpLUT getHoodAngle = new InterpLUT();
     public static double hoodAngle = 0;
@@ -196,7 +199,8 @@ public class HackinHoundsHardware extends Hardware {
         intake2.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         intake2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-
+        huskyLens = robotMap.get(HuskyLens.class, "huskylens");
+        huskyLens.selectAlgorithm(HuskyLens.Algorithm.COLOR_RECOGNITION);
 
 
         // Defines the REV Hub's internal IMU (Gyro)
@@ -266,6 +270,32 @@ public class HackinHoundsHardware extends Hardware {
 
 
 
+        getShootPowerRed.add(27, 1100);
+        getShootPowerRed.add(32, 1080);
+        getShootPowerRed.add(37, 1080);
+        getShootPowerRed.add(42, 1100);
+        getShootPowerRed.add(47, 1120);
+        getShootPowerRed.add(52, 1080);
+        getShootPowerRed.add(57, 1100);
+        getShootPowerRed.add(62, 1140);
+        getShootPowerRed.add(67, 1160);
+        getShootPowerRed.add(72, 1200);
+        getShootPowerRed.add(77, 1240);
+        getShootPowerRed.add(82, 1260);
+        getShootPowerRed.add(87, 1320);
+        getShootPowerRed.add(105,140);
+        getShootPowerRed.add(110,1440);
+        getShootPowerRed.add(115,1460);
+        getShootPowerRed.add(120,1580);
+        getShootPowerRed.add(125,1500);
+        getShootPowerRed.add(130,1520);
+        getShootPowerRed.add(148, 1560);
+        getShootPowerRed.add(190, 1560);
+
+
+
+
+
 
         //imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
     }
@@ -307,6 +337,20 @@ public class HackinHoundsHardware extends Hardware {
             shooterPower = 0;
         } else{
             shooterPower = getShootPower.get(distanceToGoal);
+        }
+
+        return shooterPower;
+    }
+
+    public double getshooterPowerRed(double distanceToGoal) {
+        getShootPowerRed.createLUT();
+
+        if(distanceToGoal > 190){
+            shooterPower = 0;
+        } else if (distanceToGoal < 27){
+            shooterPower = 0;
+        } else{
+            shooterPower = getShootPowerRed.get(distanceToGoal);
         }
 
         return shooterPower;

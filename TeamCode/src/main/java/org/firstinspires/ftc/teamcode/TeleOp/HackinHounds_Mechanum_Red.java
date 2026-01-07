@@ -35,6 +35,9 @@ public class HackinHounds_Mechanum_Red extends OpMode {
     public static double intakePower = 0;
 
 
+    private double filteredVar = 0;
+    private boolean filterStart = false;
+    private double filterTick = 0;
 
     // intake = 0.5
     // transfer = 0.8
@@ -262,7 +265,21 @@ public class HackinHounds_Mechanum_Red extends OpMode {
 
 
         double distanceToGoal =  robot.limelight(ty, tx);
-        double motorPower = robot.getshooterPower(distanceToGoal);
+
+        if (Math.abs(filteredVar - distanceToGoal) > 50 && filterStart) {
+            filterTick++;
+//            distanceToGoal = filteredVar;
+            if (filterTick < 10) {
+                distanceToGoal = filteredVar;
+            } else {
+                filterTick = 0;
+            }
+        } else {
+            filterTick = 0;
+        }
+        filteredVar = distanceToGoal;
+        filterStart = true;
+        double motorPower = robot.getshooterPowerRed(distanceToGoal);
         double hoodAngle = robot.getHoodAngle(distanceToGoal);
 
 
@@ -293,7 +310,7 @@ public class HackinHounds_Mechanum_Red extends OpMode {
         double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
 
         if (result.isValid() && !gamepad1.left_bumper && distanceToGoal > 100){
-            angleWant = (robotHeading + turretAngle) - tx - 3.8;
+            angleWant = (robotHeading + turretAngle) - tx - 1.5;
         } else if (result.isValid() && !gamepad1.left_bumper) {
             angleWant = (robotHeading + turretAngle) - tx;
         }

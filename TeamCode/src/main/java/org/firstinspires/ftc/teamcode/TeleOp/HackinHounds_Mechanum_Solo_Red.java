@@ -41,12 +41,12 @@ public class HackinHounds_Mechanum_Solo_Red extends OpMode {
 
 
     private  double turret_tPERd = 4.233;
-    private  double angleWant = 120;
+    private  double angleWant = -120;
     private  double slow = 1;
 
-    public static double p = 0.05;
+    public static double p = 0.035;
     public static double i = 0;
-    public static double d = 0.006;
+    public static double d = 0.0035;
     public static double f = 0;
 
     PIDFController turretController = new PIDFController(p,i,d,f);
@@ -74,6 +74,12 @@ public class HackinHounds_Mechanum_Solo_Red extends OpMode {
     boolean leftBumper_pressed_previous = false;
 
     public static double shooterAngle = 0;
+
+
+    private double filteredVar = 0;
+    private boolean filterStart = false;
+    private double filterTick = 0;
+
 
     private double lastValidDistance = Double.NaN;
 
@@ -265,24 +271,24 @@ public class HackinHounds_Mechanum_Solo_Red extends OpMode {
 
         double distanceToGoal =  robot.limelight(ty, tx);
 
-        if (Double.isNaN(lastValidDistance)) {
-            // First reading — always accept it
-            lastValidDistance = distanceToGoal;
-        } else {
-            double delta = Math.abs(distanceToGoal - lastValidDistance);
 
-            if (delta <= MAX_DISTANCE_DELTA) {
-                // Reading is reasonable → accept it
-                lastValidDistance = distanceToGoal;
+        if (Math.abs(filteredVar - distanceToGoal) > 50 && filterStart) {
+            filterTick++;
+//            distanceToGoal = filteredVar;
+            if (filterTick < 10) {
+                distanceToGoal = filteredVar;
+            } else {
+                filterTick = 0;
             }
-            // else: reject the measurement and keep the old value
+        } else {
+            filterTick = 0;
         }
+        filteredVar = distanceToGoal;
+        filterStart = true;
 
-        double filteredDistance = lastValidDistance;
 
-
-        double motorPower = robot.getshooterPower(filteredDistance);
-        double hoodAngle = robot.getHoodAngle(filteredDistance);
+        double motorPower = robot.getshooterPower(distanceToGoal);
+        double hoodAngle = robot.getHoodAngle(distanceToGoal);
 
 
 
@@ -309,7 +315,7 @@ public class HackinHounds_Mechanum_Solo_Red extends OpMode {
         double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
 
         if (result.isValid() && !gamepad1.left_bumper && distanceToGoal > 100){
-            angleWant = (robotHeading + turretAngle) - tx + 3.8;
+            angleWant = (robotHeading + turretAngle) - tx - 1.7;
         } else if (result.isValid() && !gamepad1.left_bumper) {
             angleWant = (robotHeading + turretAngle) - tx;
         }

@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -47,9 +48,9 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
     private  double angleWant = 120;
     private  double slow = 1;
 
-    public static double p = 0.05;
+    public static double p = 0.03;
     public static double i = 0;
-    public static double d = 0.006;
+    public static double d = 0.0035;
     public static double f = 0;
 
     PIDFController turretController = new PIDFController(p,i,d,f);
@@ -136,6 +137,29 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
         //double y = 0;
         double x = gamepad1.left_stick_x;
         double rx = gamepad1.right_stick_x;
+
+        if (gamepad1.right_trigger > 0.3) {
+            HuskyLens.Block[] blocks = robot.huskyLens.blocks();
+            HuskyLens.Block largest = null;
+            int largestArea = 0;
+            for (HuskyLens.Block b : blocks) {
+                int area = b.width * b.height;
+                if (area > largestArea) {
+                    largestArea = area;
+                    largest = b;
+                }
+            }
+            double autoSteer = 0;
+            if (largest != null) {
+                double dis = (largest.x - 160) / 160.0;
+//                autoSteer = dis * 0.35;
+//                rx -= autoSteer;
+                double assistPower = dis * 0.5;
+                double angle = facing + (Math.PI / 2.0);
+                y += assistPower * Math.cos(angle);
+                x -= assistPower * Math.sin(angle);
+            }
+        }
 
         double rotX = x * Math.cos(-facing) - y * Math.sin(-facing);
         rotX = rotX * 1.1;
@@ -273,10 +297,13 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
         double distanceToGoal =  robot.limelight(ty, tx);
 
 
-        if (Math.abs(filteredVar - distanceToGoal) < 60 && filterStart) {
+        if (Math.abs(filteredVar - distanceToGoal) > 50 && filterStart) {
             filterTick++;
-            if (filterTick < 5) {
+//            distanceToGoal = filteredVar;
+            if (filterTick < 10) {
                 distanceToGoal = filteredVar;
+            } else {
+                filterTick = 0;
             }
         } else {
             filterTick = 0;

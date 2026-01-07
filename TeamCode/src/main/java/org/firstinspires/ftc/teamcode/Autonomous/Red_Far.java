@@ -30,7 +30,7 @@ public class Red_Far extends OpMode {
 
     private final Pose goBack = new Pose(118.0769230769231, 11, Math.toRadians(0));
 
-    private final Pose pickupPointTwo = new Pose(131.0769230769231, 8, Math.toRadians(0));
+    private final Pose pickupPointTwo = new Pose(130.0769230769231, 8, Math.toRadians(0));
 
     private final Pose pickupTwo = new Pose (130.15384615384616,36, Math.toRadians(0));
 
