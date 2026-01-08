@@ -326,151 +326,58 @@ public class HackinHounds_Mechanum_Red extends OpMode {
 //        double turretPower = clamp(error * slow, -1, 1);
         robot.turret.setVelocity(turretController.calculate(turretAngle, target) * 1450 - robot.imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * turret_tPERd);
 
-
-
-//        robot.light1.setPosition(mapColor(robot.color1.getNormalizedColors().red, robot.color1.getNormalizedColors().green, robot.color1.getNormalizedColors().blue));
-//        robot.light2.setPosition(mapColor(robot.color2.getNormalizedColors().red, robot.color2.getNormalizedColors().green, robot.color2.getNormalizedColors().blue));
-//        robot.light3.setPosition(mapColor(robot.color3.getNormalizedColors().red, robot.color3.getNormalizedColors().green, robot.color3.getNormalizedColors().blue));
-//        robot.light3.setPosition(mapColor(robot.color4.getNormalizedColors().red, robot.color4.getNormalizedColors().green, robot.color4.getNormalizedColors().blue));
-
-
-        NormalizedRGBA colors0 = robot.color0.getNormalizedColors();
-        NormalizedRGBA colors1 = robot.color1.getNormalizedColors();
-        NormalizedRGBA colors2 = robot.color2.getNormalizedColors();
-        NormalizedRGBA colors3 = robot.color3.getNormalizedColors();
-
-        int color0 = colors0.toColor();
-        int color1 = colors1.toColor();
-        int color2 = colors2.toColor();
-        int color3 = colors3.toColor();
-
-        int red0 = Color.red(color0);
-        int green0 = Color.green(color0);
-        int blue0 = Color.blue(color0);
-
-        int red1 = Color.red(color1);
-        int green1 = Color.green(color1);
-        int blue1 = Color.blue(color1);
-
-        int red2 = Color.red(color2);
-        int green2 = Color.green(color2);
-        int blue2 = Color.blue(color2);
-
-        int red3 = Color.red(color3);
-        int green3 = Color.green(color3);
-        int blue3 = Color.blue(color3);
-
-
-
-        float[] hsvValues1 = new float[3];
-        Color.colorToHSV(color1, hsvValues1);
-
-
-        float[] hsvValues2 = new float[3];
-        Color.colorToHSV(color2, hsvValues2);
-
-
-        float[] hsvValues3 = new float[3];
-        Color.colorToHSV(color3, hsvValues3);
-
-        float[] hsvValues0 = new float[3];
-        Color.colorToHSV(color0, hsvValues0);
-
-
-        float hue3 = hsvValues3[0];        // 0-360
-        float saturation3 = hsvValues3[1]; // 0-1
-        float value3 = hsvValues3[2];// 0-1
-
-
-        float hue2 = hsvValues2[0];        // 0-360
-        float saturation2 = hsvValues2[1]; // 0-1
-        float value2 = hsvValues2[2];
-
-        float hue1 = hsvValues1[0];        // 0-360
-        float saturation1 = hsvValues1[1]; // 0-1
-        float value1 = hsvValues1[2];
-
-        float hue0 = hsvValues0[0];        // 0-360
-        float saturation0 = hsvValues0[1]; // 0-1
-        float value0 = hsvValues0[2];
-
-// Detect color based on hue
-        String detectedColor = "Unknown";
-
-
-        if(saturation3 > 0.5 &&  140< hue3 && hue3 < 175){
-            robot.light3.setPosition(0.5);
-            detectedColor = "Green";
-        } else if(saturation3 < 0.5 && hue3 > 180){
-            robot.light3.setPosition(0.722);
-            detectedColor = "Purple";
-        } else{
-            robot.light3.setPosition(0);
-            detectedColor = "Purple";
-        }
-
-        if(saturation2 > 0.5){
-            robot.light2.setPosition(0.5);
-            detectedColor = "Green";
-        } else if(saturation2 < 0.5 && hue2 > 170){
-            robot.light2.setPosition(0.722);
-            detectedColor = "Purple";
-        } else{
-            robot.light2.setPosition(0);
-        }
-
-        if (saturation0 > 0.5 && (green0 > blue0 || green1 > blue1)){
-            robot.light1.setPosition(0.5);
-        } else if(hue1 != 150 && hue0 != 150){
-            robot.light1.setPosition(0.722);
-        } else{
-            robot.light1.setPosition(0);
-        }
-        telemetry.addData("", "%d, %d, %d", red0, green0, blue0);
-        telemetry.addData("", "%d, %d, %d", red1, green1, blue1);
-
-
-
-        telemetry.addData("Detected Color", detectedColor);
-        telemetry.addData("Hue", hue1);
-        telemetry.addData("Saturation", saturation1);
-        telemetry.addData("Value", value1);
-        telemetry.addData("Detected Color", detectedColor);
-        telemetry.addData("Hue", hue0);
-        telemetry.addData("Saturation", saturation0);
-        telemetry.addData("Value", value0);
-        telemetry.update();
-
-
-//        if(robot.color1.getDistance(DistanceUnit.INCH) < 2) {
-//            if (robot.light3.getPosition() == 0.722) {
-//                robot.light1.setPosition(0.5);
-//            } else {
-//                robot.light1.setPosition(0.722);
-//            }
-//        } else {
-//            robot.light1.setPosition(0);
+        robot.lights(robot.light1, robot.light2, robot.light3, robot.color0, robot.color1, robot.color2, robot.color3);
+//        NormalizedRGBA colors0 = robot.color0.getNormalizedColors(), colors1 = robot.color1.getNormalizedColors(), colors2 = robot.color2.getNormalizedColors(), colors3 = robot.color3.getNormalizedColors();
 //
+//        int color0 = colors0.toColor(), color1 = colors1.toColor(), color2 = colors2.toColor(), color3 = colors3.toColor();
+//        int green0 = Color.green(color0), blue0 = Color.blue(color0);
+//        int green1 = Color.green(color1), blue1 = Color.blue(color1);
+//
+//        float[] hsvValues1 = new float[3];
+//        Color.colorToHSV(color1, hsvValues1);
+//        float[] hsvValues2 = new float[3];
+//        Color.colorToHSV(color2, hsvValues2);
+//        float[] hsvValues3 = new float[3];
+//        Color.colorToHSV(color3, hsvValues3);
+//        float[] hsvValues0 = new float[3];
+//        Color.colorToHSV(color0, hsvValues0);
+//
+//        float hue0 = hsvValues0[0], hue1 = hsvValues1[0], hue2 = hsvValues2[0], hue3 = hsvValues3[0];
+//        float saturation0 = hsvValues0[1], saturation2 = hsvValues2[1], saturation3 = hsvValues3[1];
+//
+//        if(saturation3 > 0.5 &&  140< hue3 && hue3 < 175){
+//            robot.light3.setPosition(0.5);
+//        } else if(saturation3 < 0.5 && hue3 > 180){
+//            robot.light3.setPosition(0.722);
+//        } else{
+//            robot.light3.setPosition(0);
 //        }
-
-
+//        if(saturation2 > 0.5){
+//            robot.light2.setPosition(0.5);
+//        } else if(saturation2 < 0.5 && hue2 > 170){
+//            robot.light2.setPosition(0.722);
+//        } else{
+//            robot.light2.setPosition(0);
+//        }
+//        if (saturation0 > 0.5 && (green0 > blue0 || green1 > blue1)){
+//            robot.light1.setPosition(0.5);
+//        } else if(hue1 != 150 && hue0 != 150){
+//            robot.light1.setPosition(0.722);
+//        } else{
+//            robot.light1.setPosition(0);
+//        }
 
         telemetry.addData("imu", "%f", robotHeading);
 
         telemetry.addData("turretPos", "%d", robot.turret.getCurrentPosition());
         telemetry.addData("turretAngle", "%f", turretAngle);
         telemetry.addData("turretTarget", "%f", target);
-//        telemetry.addData("error", "%f", error);
         telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
         telemetry.addData("Tx", "%f", tx);
-
 
         telemetry.addData("bumper variable", rightBumper_pressed_previous);
         telemetry.addData("stopperPos", robot.stopper.getPosition());
         telemetry.addData("stopperTimer", stopperTimer.seconds());
-
-
-
 
         telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
         telemetry.addData("tx", tx);
@@ -478,7 +385,7 @@ public class HackinHounds_Mechanum_Red extends OpMode {
         telemetry.addData("back:", "%f", robot.intake2.getPower());
         telemetry.addData("turretPos", "%f", robot.turret.getCurrentPosition()/4.233);
         telemetry.addData("turretTarget", "%f", target);
-//        telemetry.addData("error", "%f", error);
+
         telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
         telemetry.addData("distancetogoal", distanceToGoal);
         telemetry.addData("shooterPower", robot.shooter.getVelocity());
@@ -504,7 +411,6 @@ public class HackinHounds_Mechanum_Red extends OpMode {
     @Override
     public void stop(){
         robot.limelight.stop();
-
     }
 
     public double normA(double angle) {angle %= 360; if (angle < -180) angle += 360; else if (angle > 180) angle -= 360;return angle;}
@@ -522,5 +428,16 @@ public class HackinHounds_Mechanum_Red extends OpMode {
             return 0.500;
         }
         return 0.000;
+//        telemetry.addData("", "%d, %d, %d", red0, green0, blue0);
+//        telemetry.addData("", "%d, %d, %d", red1, green1, blue1);
+//        telemetry.addData("Detected Color", detectedColor);
+//        telemetry.addData("Hue", hue1);
+//        telemetry.addData("Saturation", saturation1);
+//        telemetry.addData("Value", value1);
+//        telemetry.addData("Detected Color", detectedColor);
+//        telemetry.addData("Hue", hue0);
+//        telemetry.addData("Saturation", saturation0);
+//        telemetry.addData("Value", value0);
+//        telemetry.update();
     }
 }

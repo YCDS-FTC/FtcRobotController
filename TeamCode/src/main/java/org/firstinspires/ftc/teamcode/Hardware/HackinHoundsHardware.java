@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.Hardware;
 
+import android.graphics.Color;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.ftc.localization.localizers.PinpointLocalizer;
@@ -23,6 +25,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -404,6 +407,47 @@ public class HackinHoundsHardware extends Hardware {
         }
         return 0.000;
     }
+    public void lights(Servo light1, Servo light2, Servo light3, NormalizedColorSensor ncolor0, NormalizedColorSensor ncolor1, NormalizedColorSensor ncolor2, NormalizedColorSensor ncolor3) {
 
+        NormalizedRGBA colors0 = ncolor0.getNormalizedColors(), colors1 = ncolor1.getNormalizedColors(), colors2 = ncolor2.getNormalizedColors(), colors3 = ncolor3.getNormalizedColors();
+
+        int color0 = colors0.toColor(), color1 = colors1.toColor(), color2 = colors2.toColor(), color3 = colors3.toColor();
+        int green0 = Color.green(color0), blue0 = Color.blue(color0);
+        int green1 = Color.green(color1), blue1 = Color.blue(color1);
+
+        float[] hsvValues1 = new float[3];
+        Color.colorToHSV(color1, hsvValues1);
+        float[] hsvValues2 = new float[3];
+        Color.colorToHSV(color2, hsvValues2);
+        float[] hsvValues3 = new float[3];
+        Color.colorToHSV(color3, hsvValues3);
+        float[] hsvValues0 = new float[3];
+        Color.colorToHSV(color0, hsvValues0);
+
+        float hue0 = hsvValues0[0], hue1 = hsvValues1[0], hue2 = hsvValues2[0], hue3 = hsvValues3[0];
+        float saturation0 = hsvValues0[1], saturation2 = hsvValues2[1], saturation3 = hsvValues3[1];
+
+        if(saturation3 > 0.5 &&  140< hue3 && hue3 < 175){
+            light3.setPosition(0.5);
+        } else if(saturation3 < 0.5 && hue3 > 180){
+            light3.setPosition(0.722);
+        } else{
+            light3.setPosition(0);
+        }
+        if(saturation2 > 0.5){
+            light2.setPosition(0.5);
+        } else if(saturation2 < 0.5 && hue2 > 170){
+            light2.setPosition(0.722);
+        } else{
+            light2.setPosition(0);
+        }
+        if (saturation0 > 0.5 && (green0 > blue0 || green1 > blue1)){
+            light1.setPosition(0.5);
+        } else if(hue1 != 150 && hue0 != 150){
+            light1.setPosition(0.722);
+        } else{
+            light1.setPosition(0);
+        }
+    }
 }
 
