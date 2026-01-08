@@ -271,9 +271,9 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
 
         // --- Automatic Close Check ---
         // If the stopper was opened by the timer logic AND 1.0 seconds have passed:
-        if (isStopperTimedOpen && stopperTimer.seconds() >= 1) {
+        if (isStopperTimedOpen && stopperTimer.seconds() >= 2) {
             // Close the stopper
-            robot.stopper.setPosition(0.67);// Closed position
+            robot.stopper.setPosition(0.7);// Closed position
             robot.intake.setPower(0.7);
             robot.intake2.setPower(-0.7);
             isBlockerClosed = true;
@@ -354,7 +354,7 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
 
         robot.light1.setPosition(robot.mapColor(robot.color1.getNormalizedColors().red, robot.color1.getNormalizedColors().green, robot.color1.getNormalizedColors().blue));
         robot.light2.setPosition(robot.mapColor(robot.color2.getNormalizedColors().red, robot.color2.getNormalizedColors().green, robot.color2.getNormalizedColors().blue));
-//        robot.light3.setPosition(robot.mapColor(robot.color3.getNormalizedColors().red, robot.color3.getNormalizedColors().green, robot.color3.getNormalizedColors().blue));
+        robot.light3.setPosition(robot.mapColor(robot.color3.getNormalizedColors().red, robot.color3.getNormalizedColors().green, robot.color3.getNormalizedColors().blue));
 
         telemetry.addData("imu", "%f", robotHeading);
 
@@ -364,6 +364,8 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
 //        telemetry.addData("error", "%f", error);
         telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
         telemetry.addData("Tx", "%f", tx);
+        telemetry.addData("bumper variable", rightBumper_pressed_previous);
+        telemetry.addData("stopperPos", robot.stopper.getPosition());
 
 
 

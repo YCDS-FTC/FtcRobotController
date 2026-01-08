@@ -1,16 +1,21 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import android.graphics.Color;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
+import org.firstinspires.ftc.robotcore.external.JavaUtil;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 
 
@@ -244,7 +249,7 @@ public class HackinHounds_Mechanum_Red extends OpMode {
 
         // --- Automatic Close Check ---
         // If the stopper was opened by the timer logic AND 1.0 seconds have passed:
-        if (isStopperTimedOpen && stopperTimer.seconds() >= 1) {
+        if (isStopperTimedOpen && stopperTimer.seconds() >= 2) {
             // Close the stopper
             robot.stopper.setPosition(0.7);// Closed position
             robot.intake.setPower(0.7);
@@ -323,6 +328,133 @@ public class HackinHounds_Mechanum_Red extends OpMode {
 
 
 
+//        robot.light1.setPosition(mapColor(robot.color1.getNormalizedColors().red, robot.color1.getNormalizedColors().green, robot.color1.getNormalizedColors().blue));
+//        robot.light2.setPosition(mapColor(robot.color2.getNormalizedColors().red, robot.color2.getNormalizedColors().green, robot.color2.getNormalizedColors().blue));
+//        robot.light3.setPosition(mapColor(robot.color3.getNormalizedColors().red, robot.color3.getNormalizedColors().green, robot.color3.getNormalizedColors().blue));
+//        robot.light3.setPosition(mapColor(robot.color4.getNormalizedColors().red, robot.color4.getNormalizedColors().green, robot.color4.getNormalizedColors().blue));
+
+
+        NormalizedRGBA colors0 = robot.color0.getNormalizedColors();
+        NormalizedRGBA colors1 = robot.color1.getNormalizedColors();
+        NormalizedRGBA colors2 = robot.color2.getNormalizedColors();
+        NormalizedRGBA colors3 = robot.color3.getNormalizedColors();
+
+        int color0 = colors0.toColor();
+        int color1 = colors1.toColor();
+        int color2 = colors2.toColor();
+        int color3 = colors3.toColor();
+
+        int red0 = Color.red(color0);
+        int green0 = Color.green(color0);
+        int blue0 = Color.blue(color0);
+
+        int red1 = Color.red(color1);
+        int green1 = Color.green(color1);
+        int blue1 = Color.blue(color1);
+
+        int red2 = Color.red(color2);
+        int green2 = Color.green(color2);
+        int blue2 = Color.blue(color2);
+
+        int red3 = Color.red(color3);
+        int green3 = Color.green(color3);
+        int blue3 = Color.blue(color3);
+
+
+
+        float[] hsvValues1 = new float[3];
+        Color.colorToHSV(color1, hsvValues1);
+
+
+        float[] hsvValues2 = new float[3];
+        Color.colorToHSV(color2, hsvValues2);
+
+
+        float[] hsvValues3 = new float[3];
+        Color.colorToHSV(color3, hsvValues3);
+
+        float[] hsvValues0 = new float[3];
+        Color.colorToHSV(color0, hsvValues0);
+
+
+        float hue3 = hsvValues3[0];        // 0-360
+        float saturation3 = hsvValues3[1]; // 0-1
+        float value3 = hsvValues3[2];// 0-1
+
+
+        float hue2 = hsvValues2[0];        // 0-360
+        float saturation2 = hsvValues2[1]; // 0-1
+        float value2 = hsvValues2[2];
+
+        float hue1 = hsvValues1[0];        // 0-360
+        float saturation1 = hsvValues1[1]; // 0-1
+        float value1 = hsvValues1[2];
+
+        float hue0 = hsvValues0[0];        // 0-360
+        float saturation0 = hsvValues0[1]; // 0-1
+        float value0 = hsvValues0[2];
+
+// Detect color based on hue
+        String detectedColor = "Unknown";
+
+
+        if(saturation3 > 0.5 &&  140< hue3 && hue3 < 175){
+            robot.light3.setPosition(0.5);
+            detectedColor = "Green";
+        } else if(saturation3 < 0.5 && hue3 > 180){
+            robot.light3.setPosition(0.722);
+            detectedColor = "Purple";
+        } else{
+            robot.light3.setPosition(0);
+            detectedColor = "Purple";
+        }
+
+        if(saturation2 > 0.5){
+            robot.light2.setPosition(0.5);
+            detectedColor = "Green";
+        } else if(saturation2 < 0.5 && hue2 > 170){
+            robot.light2.setPosition(0.722);
+            detectedColor = "Purple";
+        } else{
+            robot.light2.setPosition(0);
+        }
+
+        if (saturation0 > 0.5 && (green0 > blue0 || green1 > blue1)){
+            robot.light1.setPosition(0.5);
+        } else if(hue1 != 150 && hue0 != 150){
+            robot.light1.setPosition(0.722);
+        } else{
+            robot.light1.setPosition(0);
+        }
+        telemetry.addData("", "%d, %d, %d", red0, green0, blue0);
+        telemetry.addData("", "%d, %d, %d", red1, green1, blue1);
+
+
+
+        telemetry.addData("Detected Color", detectedColor);
+        telemetry.addData("Hue", hue1);
+        telemetry.addData("Saturation", saturation1);
+        telemetry.addData("Value", value1);
+        telemetry.addData("Detected Color", detectedColor);
+        telemetry.addData("Hue", hue0);
+        telemetry.addData("Saturation", saturation0);
+        telemetry.addData("Value", value0);
+        telemetry.update();
+
+
+//        if(robot.color1.getDistance(DistanceUnit.INCH) < 2) {
+//            if (robot.light3.getPosition() == 0.722) {
+//                robot.light1.setPosition(0.5);
+//            } else {
+//                robot.light1.setPosition(0.722);
+//            }
+//        } else {
+//            robot.light1.setPosition(0);
+//
+//        }
+
+
+
         telemetry.addData("imu", "%f", robotHeading);
 
         telemetry.addData("turretPos", "%d", robot.turret.getCurrentPosition());
@@ -331,6 +463,11 @@ public class HackinHounds_Mechanum_Red extends OpMode {
 //        telemetry.addData("error", "%f", error);
         telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
         telemetry.addData("Tx", "%f", tx);
+
+
+        telemetry.addData("bumper variable", rightBumper_pressed_previous);
+        telemetry.addData("stopperPos", robot.stopper.getPosition());
+        telemetry.addData("stopperTimer", stopperTimer.seconds());
 
 
 
@@ -346,10 +483,6 @@ public class HackinHounds_Mechanum_Red extends OpMode {
         telemetry.addData("distancetogoal", distanceToGoal);
         telemetry.addData("shooterPower", robot.shooter.getVelocity());
         telemetry.addData("targetShootPower", motorPower);
-
-        telemetry.addData("1", mapColor(robot.color1.red(), robot.color1.green(), robot.color1.blue()));
-        telemetry.addData("2", mapColor(robot.color2.red(), robot.color2.green(), robot.color2.blue()));
-        telemetry.addData("3", mapColor(robot.color3.red(), robot.color3.green(), robot.color3.blue()));
 
         telemetry.update();
 
@@ -376,31 +509,18 @@ public class HackinHounds_Mechanum_Red extends OpMode {
 
     public double normA(double angle) {angle %= 360; if (angle < -180) angle += 360; else if (angle > 180) angle -= 360;return angle;}
     public double clamp(double x, double min, double max) {return Math.max(min,Math.min(max,x));}
+
+
     double mapColor(double r, double g, double b) {
-        telemetry.addData("", "%f %f %f", r, g, b);
-
-//        double max = Math.max(r, Math.max(g, b));
-//        if (max > 0) {
-//            r /= max;
-//            g /= max;
-//            b /= max;
-//        }
-
-        // Determine dominant channel
+        telemetry.addData("", "%f, %f, %f", r, g, b);
         boolean blueMax = b >= g && b >= r;
         boolean greenMax = g >= b && g >= r;
-
-        // PURPLE: Blue is highest
         if (blueMax) {
-            return 0.722; // violet
+            return 0.722;
         }
-
-        // GREEN: Green is highest
-        if ((greenMax) && (g - b > 20)) {
-            return 0.500; // green
+        if ((greenMax) && (g - b > 0.0005)) {
+            return 0.500;
         }
-
-        // Neither
         return 0.000;
     }
 }

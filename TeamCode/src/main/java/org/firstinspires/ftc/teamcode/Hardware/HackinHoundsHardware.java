@@ -22,6 +22,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -60,10 +61,10 @@ public class HackinHoundsHardware extends Hardware {
 
     public Servo light1;
     public Servo light2;
-
     public Servo light3;
+    public Servo light4;
 
-    public RevColorSensorV3 color1, color2, color3;
+    public NormalizedColorSensor color0, color1, color2, color3;
 
     public HuskyLens huskyLens;
 
@@ -171,15 +172,21 @@ public class HackinHoundsHardware extends Hardware {
         angleServo = robotMap.get(Servo.class,"angleServo");
 
 
-        light1 = robotMap.get(Servo.class,"light");
+        light1 = robotMap.get(Servo.class,"light1");
         light2 = robotMap.get(Servo.class,"light2");
-//        light3 = robotMap.get(Servo.class,"light3");
+        light3 = robotMap.get(Servo.class,"light3");
+        light4 = robotMap.get(Servo.class,"light4");
 
 
-        color1 = robotMap.get(RevColorSensorV3.class,"color1");
-        color2 = robotMap.get(RevColorSensorV3.class,"color2");
-        color3 = robotMap.get(RevColorSensorV3.class,"color3");
+        color0 = robotMap.get(NormalizedColorSensor.class, "color0");
+        color0.setGain(8);
 
+        color1 = robotMap.get(NormalizedColorSensor.class,"color1");
+        color1.setGain(8);
+        color2 = robotMap.get(NormalizedColorSensor.class,"color2");
+        color2.setGain(8);
+        color3 = robotMap.get(NormalizedColorSensor.class,"color3");
+        color3.setGain(8);
 
         limelight = robotMap.get(Limelight3A.class, "limelight");
 
@@ -271,12 +278,12 @@ public class HackinHoundsHardware extends Hardware {
 
 
         getShootPowerRed.add(27, 1100);
-        getShootPowerRed.add(32, 1080);
-        getShootPowerRed.add(37, 1080);
+        getShootPowerRed.add(32, 1060);
+        getShootPowerRed.add(37, 1060);
         getShootPowerRed.add(42, 1100);
-        getShootPowerRed.add(47, 1120);
+        getShootPowerRed.add(47, 1100);
         getShootPowerRed.add(52, 1080);
-        getShootPowerRed.add(57, 1100);
+        getShootPowerRed.add(57, 1120);
         getShootPowerRed.add(62, 1140);
         getShootPowerRed.add(67, 1160);
         getShootPowerRed.add(72, 1200);
@@ -284,8 +291,8 @@ public class HackinHoundsHardware extends Hardware {
         getShootPowerRed.add(82, 1260);
         getShootPowerRed.add(87, 1320);
         getShootPowerRed.add(105,140);
-        getShootPowerRed.add(110,1440);
-        getShootPowerRed.add(115,1460);
+        getShootPowerRed.add(110,1420);
+        getShootPowerRed.add(115,1480);
         getShootPowerRed.add(120,1580);
         getShootPowerRed.add(125,1500);
         getShootPowerRed.add(130,1520);
@@ -387,28 +394,14 @@ public class HackinHoundsHardware extends Hardware {
     }
 
     public double mapColor(double r, double g, double b) {
-        double max = Math.max(r, Math.max(g, b));
-        if (max > 0) {
-            r /= max;
-            g /= max;
-            b /= max;
-        }
-
-        // Determine dominant channel
         boolean blueMax = b >= g && b >= r;
         boolean greenMax = g >= b && g >= r;
-
-        // PURPLE: Blue is highest
         if (blueMax) {
-            return 0.722; // violet
+            return 0.722;
         }
-
-        // GREEN: Green is highest
-        if (greenMax) {
-            return 0.500; // green
+        if ((greenMax) && (g - b > 20)) {
+            return 0.500;
         }
-
-        // Neither
         return 0.000;
     }
 

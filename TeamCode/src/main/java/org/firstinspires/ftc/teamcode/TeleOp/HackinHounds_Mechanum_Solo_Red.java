@@ -13,6 +13,8 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 
+import kotlin.math.UMathKt;
+
 
 @Config
 @TeleOp(name = "Mechanum-Solo-Red", group = "Linear OpMode")
@@ -44,9 +46,9 @@ public class HackinHounds_Mechanum_Solo_Red extends OpMode {
     private  double angleWant = -120;
     private  double slow = 1;
 
-    public static double p = 0.035;
+    public static double p = 0.026;
     public static double i = 0;
-    public static double d = 0.0035;
+    public static double d = 0.0046;
     public static double f = 0;
 
     PIDFController turretController = new PIDFController(p,i,d,f);
@@ -219,6 +221,9 @@ public class HackinHounds_Mechanum_Solo_Red extends OpMode {
 
 
 
+
+
+
         // --- Stopper Control Logic to shoot ALL THREE
 
         // Check for 'A' press on gamepad2 (assuming gamepad2 for shooter controls)
@@ -246,9 +251,9 @@ public class HackinHounds_Mechanum_Solo_Red extends OpMode {
 
         // --- Automatic Close Check ---
         // If the stopper was opened by the timer logic AND 1.0 seconds have passed:
-        if (isStopperTimedOpen && stopperTimer.seconds() >= 1) {
+        if (isStopperTimedOpen && stopperTimer.seconds() >= 2) {
             // Close the stopper
-            robot.stopper.setPosition(0.67);// Closed position
+            robot.stopper.setPosition(0.7);// Closed position
             robot.intake.setPower(0.7);
             robot.intake2.setPower(-0.7);
             isBlockerClosed = true;
@@ -256,8 +261,8 @@ public class HackinHounds_Mechanum_Solo_Red extends OpMode {
         }
 
         // Update the previous state for the next loop
-        rightBumper_pressed_previous = gamepad2.right_bumper;
-        leftBumper_pressed_previous = gamepad2.left_bumper;
+        rightBumper_pressed_previous = gamepad1.right_bumper;
+        leftBumper_pressed_previous = gamepad1.left_bumper;
 
 
 
@@ -329,8 +334,14 @@ public class HackinHounds_Mechanum_Solo_Red extends OpMode {
 
         robot.light1.setPosition(robot.mapColor(robot.color1.getNormalizedColors().red, robot.color1.getNormalizedColors().green, robot.color1.getNormalizedColors().blue));
         robot.light2.setPosition(robot.mapColor(robot.color2.getNormalizedColors().red, robot.color2.getNormalizedColors().green, robot.color2.getNormalizedColors().blue));
-//        robot.light3.setPosition(robot.mapColor(robot.color3.getNormalizedColors().red, robot.color3.getNormalizedColors().green, robot.color3.getNormalizedColors().blue));
+        robot.light3.setPosition(robot.mapColor(robot.color3.getNormalizedColors().red, robot.color3.getNormalizedColors().green, robot.color3.getNormalizedColors().blue));
 
+
+        if(robot.angleServo.getPosition() == hoodAngle && Math.abs(robot.shooter.getVelocity() - motorPower) < 50 && Math.abs(turretAngle - target) < 1){
+            robot.light4.setPosition(0.611);
+        } else{
+            robot.light4.setPosition(0);
+        }
         telemetry.addData("imu", "%f", robotHeading);
 
         telemetry.addData("turretPos", "%d", robot.turret.getCurrentPosition());
@@ -340,6 +351,10 @@ public class HackinHounds_Mechanum_Solo_Red extends OpMode {
         telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
         telemetry.addData("Tx", "%f", tx);
 
+
+        telemetry.addData("bumper variable", rightBumper_pressed_previous);
+        telemetry.addData("stopperPos", robot.stopper.getPosition());
+        telemetry.addData("stopperTimer", stopperTimer.seconds());
 
 
 
@@ -359,8 +374,11 @@ public class HackinHounds_Mechanum_Solo_Red extends OpMode {
 
         packet.put("shooterVelocity", robot.shooter.getVelocity());
         packet.put("shooterRPM", (robot.shooter.getVelocity() / 28.0) * 60.0);
-        packet.put("shootertarget", shootertarget);
+        packet.put("shootertarget", motorPower);
+        packet.put("hoodangle", hoodAngle);
+        packet.put("CurrentHood", robot.angleServo.getPosition());
         packet.put("turretTarget",  target);
+
 
         dashboard.sendTelemetryPacket(packet);
 
