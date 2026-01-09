@@ -47,7 +47,7 @@ public class Blue_Close_Current_No_Tracking extends OpMode {
 
     public double P = 11, I = 0, D = 0, F = 0.8;
     public PIDFController shooterController = new PIDFController(P, I, D, F);
-    double shooterTarget = 1130;
+    double shooterTarget = 1160;
 
     public double ticksPerDegree = 4.233;
 

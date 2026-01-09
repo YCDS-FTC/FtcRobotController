@@ -259,7 +259,7 @@ public class HackinHoundsHardware extends Hardware {
         getShootPower.add(32, 1080);
         getShootPower.add(37, 1080);
         getShootPower.add(42, 1100);
-        getShootPower.add(47, 1120);
+        getShootPower.add(47, 1140);
         getShootPower.add(52, 1080);
         getShootPower.add(57, 1100);
         getShootPower.add(62, 1140);
@@ -269,8 +269,8 @@ public class HackinHoundsHardware extends Hardware {
         getShootPower.add(82, 1260);
         getShootPower.add(87, 1320);
         getShootPower.add(105,1420);
-        getShootPower.add(110,1460);
-        getShootPower.add(115,1480);
+        getShootPower.add(110,1440);
+        getShootPower.add(115,1460);
         getShootPower.add(120,1500);
         getShootPower.add(125,1520);
         getShootPower.add(130,1540);
@@ -286,16 +286,16 @@ public class HackinHoundsHardware extends Hardware {
         getShootPowerRed.add(42, 1100);
         getShootPowerRed.add(47, 1100);
         getShootPowerRed.add(52, 1080);
-        getShootPowerRed.add(57, 1120);
-        getShootPowerRed.add(62, 1140);
-        getShootPowerRed.add(67, 1160);
-        getShootPowerRed.add(72, 1200);
-        getShootPowerRed.add(77, 1240);
+        getShootPowerRed.add(57, 1140);
+        getShootPowerRed.add(62, 1160);
+        getShootPowerRed.add(67, 1180);
+        getShootPowerRed.add(72, 1220);
+        getShootPowerRed.add(77, 1260);
         getShootPowerRed.add(82, 1260);
         getShootPowerRed.add(87, 1320);
-        getShootPowerRed.add(105,140);
-        getShootPowerRed.add(110,1420);
-        getShootPowerRed.add(115,1480);
+        getShootPowerRed.add(105,1400);
+        getShootPowerRed.add(110,1440);
+        getShootPowerRed.add(115,1460);
         getShootPowerRed.add(120,1580);
         getShootPowerRed.add(125,1500);
         getShootPowerRed.add(130,1520);
@@ -407,6 +407,10 @@ public class HackinHoundsHardware extends Hardware {
         }
         return 0.000;
     }
+
+
+
+
     public void lights(Servo light1, Servo light2, Servo light3, NormalizedColorSensor ncolor0, NormalizedColorSensor ncolor1, NormalizedColorSensor ncolor2, NormalizedColorSensor ncolor3) {
 
         NormalizedRGBA colors0 = ncolor0.getNormalizedColors(), colors1 = ncolor1.getNormalizedColors(), colors2 = ncolor2.getNormalizedColors(), colors3 = ncolor3.getNormalizedColors();

@@ -60,10 +60,10 @@ public class HackinHounds_Mechanum_Red extends OpMode {
     PIDFController turretController = new PIDFController(p,i,d,f);
 
 
-     public double kp = 11;
-     public double ki = 0;
-     public double kd = 0;
-     public double kf = 0.8;
+     public static double kp = 11;
+     public static double ki = 0;
+     public static double kd = 2;
+     public static double kf = 1;
 
     PIDFController shooterController = new PIDFController(kp, ki, kd, kf);
 
@@ -71,7 +71,7 @@ public class HackinHounds_Mechanum_Red extends OpMode {
     public static double stopperPosition = .47;
     //position is 0.44 for stopping and 0.63 for neutral
 
-    public  double shootertarget = 0;
+    public  static double shootertarget = 0;
 
     public  double target = 0;
 
@@ -290,19 +290,19 @@ public class HackinHounds_Mechanum_Red extends OpMode {
 
         double shooterVelocity = robot.shooter.getVelocity();
 
-        double output = shooterController.calculate(shooterVelocity, motorPower);
+        double output = shooterController.calculate(shooterVelocity, shootertarget);
 
 
 
 
 
-        robot.angleServo.setPosition(hoodAngle);
 
 
         if(gamepad1.a){
             robot.shooter.setVelocity(0);
         } else{
             robot.shooter.setVelocity(output);
+            robot.angleServo.setPosition(hoodAngle);
 
         }
 
@@ -327,45 +327,14 @@ public class HackinHounds_Mechanum_Red extends OpMode {
         robot.turret.setVelocity(turretController.calculate(turretAngle, target) * 1450 - robot.imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * turret_tPERd);
 
         robot.lights(robot.light1, robot.light2, robot.light3, robot.color0, robot.color1, robot.color2, robot.color3);
-//        NormalizedRGBA colors0 = robot.color0.getNormalizedColors(), colors1 = robot.color1.getNormalizedColors(), colors2 = robot.color2.getNormalizedColors(), colors3 = robot.color3.getNormalizedColors();
-//
-//        int color0 = colors0.toColor(), color1 = colors1.toColor(), color2 = colors2.toColor(), color3 = colors3.toColor();
-//        int green0 = Color.green(color0), blue0 = Color.blue(color0);
-//        int green1 = Color.green(color1), blue1 = Color.blue(color1);
-//
-//        float[] hsvValues1 = new float[3];
-//        Color.colorToHSV(color1, hsvValues1);
-//        float[] hsvValues2 = new float[3];
-//        Color.colorToHSV(color2, hsvValues2);
-//        float[] hsvValues3 = new float[3];
-//        Color.colorToHSV(color3, hsvValues3);
-//        float[] hsvValues0 = new float[3];
-//        Color.colorToHSV(color0, hsvValues0);
-//
-//        float hue0 = hsvValues0[0], hue1 = hsvValues1[0], hue2 = hsvValues2[0], hue3 = hsvValues3[0];
-//        float saturation0 = hsvValues0[1], saturation2 = hsvValues2[1], saturation3 = hsvValues3[1];
-//
-//        if(saturation3 > 0.5 &&  140< hue3 && hue3 < 175){
-//            robot.light3.setPosition(0.5);
-//        } else if(saturation3 < 0.5 && hue3 > 180){
-//            robot.light3.setPosition(0.722);
-//        } else{
-//            robot.light3.setPosition(0);
-//        }
-//        if(saturation2 > 0.5){
-//            robot.light2.setPosition(0.5);
-//        } else if(saturation2 < 0.5 && hue2 > 170){
-//            robot.light2.setPosition(0.722);
-//        } else{
-//            robot.light2.setPosition(0);
-//        }
-//        if (saturation0 > 0.5 && (green0 > blue0 || green1 > blue1)){
-//            robot.light1.setPosition(0.5);
-//        } else if(hue1 != 150 && hue0 != 150){
-//            robot.light1.setPosition(0.722);
-//        } else{
-//            robot.light1.setPosition(0);
-//        }
+
+
+
+        if(robot.angleServo.getPosition() == hoodAngle && Math.abs(robot.shooter.getVelocity() - motorPower) < 50 && Math.abs(turretAngle - target) < 1){
+            robot.light4.setPosition(0.611);
+        } else{
+            robot.light4.setPosition(0);
+        }
 
         telemetry.addData("imu", "%f", robotHeading);
 
@@ -416,28 +385,4 @@ public class HackinHounds_Mechanum_Red extends OpMode {
     public double normA(double angle) {angle %= 360; if (angle < -180) angle += 360; else if (angle > 180) angle -= 360;return angle;}
     public double clamp(double x, double min, double max) {return Math.max(min,Math.min(max,x));}
 
-
-    double mapColor(double r, double g, double b) {
-        telemetry.addData("", "%f, %f, %f", r, g, b);
-        boolean blueMax = b >= g && b >= r;
-        boolean greenMax = g >= b && g >= r;
-        if (blueMax) {
-            return 0.722;
-        }
-        if ((greenMax) && (g - b > 0.0005)) {
-            return 0.500;
-        }
-        return 0.000;
-//        telemetry.addData("", "%d, %d, %d", red0, green0, blue0);
-//        telemetry.addData("", "%d, %d, %d", red1, green1, blue1);
-//        telemetry.addData("Detected Color", detectedColor);
-//        telemetry.addData("Hue", hue1);
-//        telemetry.addData("Saturation", saturation1);
-//        telemetry.addData("Value", value1);
-//        telemetry.addData("Detected Color", detectedColor);
-//        telemetry.addData("Hue", hue0);
-//        telemetry.addData("Saturation", saturation0);
-//        telemetry.addData("Value", value0);
-//        telemetry.update();
-    }
 }

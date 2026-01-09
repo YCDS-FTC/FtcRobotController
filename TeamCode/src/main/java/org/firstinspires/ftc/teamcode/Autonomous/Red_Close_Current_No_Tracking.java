@@ -29,7 +29,7 @@ public class Red_Close_Current_No_Tracking extends OpMode {
     private final Pose scorePose = new Pose(73, 72.81, Math.toRadians(0));
     private final Pose pickupOne = new Pose(110.837,71.31, Math.toRadians(0));
     private final Pose goback = new Pose(90, 73, Math.toRadians(0));
-    private final Pose gateEmpty = new Pose(122.9, 72, Math.toRadians(90));
+    private final Pose gateEmpty = new Pose(122.9, 72, Math.toRadians(95));
     private final Pose pickupTwo = new Pose (112.74,45, Math.toRadians(0));
     private final Pose curve1 = new Pose(86.115, 39);
     private final Pose pickupThree = new Pose(115, 20, Math.toRadians(0));
@@ -46,7 +46,7 @@ public class Red_Close_Current_No_Tracking extends OpMode {
 
     public double P = 11, I = 0, D = 0, F = 0.8;
     public PIDFController shooterController = new PIDFController(P, I, D, F);
-    double shooterTarget = 1130;
+    double shooterTarget = 1150;
 
     public double ticksPerDegree = 4.233;
 

@@ -54,10 +54,10 @@ public class HackinHounds_Mechanum_Solo_Red extends OpMode {
     PIDFController turretController = new PIDFController(p,i,d,f);
 
 
-     public  double kp = 11;
-     public  double ki = 0;
-     public  double kd = 0;
-     public  double kf = 0.8;
+    public static double kp = 11;
+    public static double ki = 0;
+    public static double kd = 2;
+    public static double kf = 1;
 
     PIDFController shooterController = new PIDFController(kp, ki, kd, kf);
 
@@ -331,10 +331,7 @@ public class HackinHounds_Mechanum_Solo_Red extends OpMode {
 //        double turretPower = clamp(error * slow, -1, 1);
         robot.turret.setVelocity(turretController.calculate(turretAngle, target) * 1450 - robot.imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * turret_tPERd);
 
-
-        robot.light1.setPosition(robot.mapColor(robot.color1.getNormalizedColors().red, robot.color1.getNormalizedColors().green, robot.color1.getNormalizedColors().blue));
-        robot.light2.setPosition(robot.mapColor(robot.color2.getNormalizedColors().red, robot.color2.getNormalizedColors().green, robot.color2.getNormalizedColors().blue));
-        robot.light3.setPosition(robot.mapColor(robot.color3.getNormalizedColors().red, robot.color3.getNormalizedColors().green, robot.color3.getNormalizedColors().blue));
+        robot.lights(robot.light1, robot.light2, robot.light3, robot.color0, robot.color1, robot.color2, robot.color3);
 
 
         if(robot.angleServo.getPosition() == hoodAngle && Math.abs(robot.shooter.getVelocity() - motorPower) < 50 && Math.abs(turretAngle - target) < 1){
