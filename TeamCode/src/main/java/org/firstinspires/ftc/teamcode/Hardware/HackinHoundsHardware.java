@@ -268,7 +268,7 @@ public class HackinHoundsHardware extends Hardware {
         getShootPower.add(77, 1240);
         getShootPower.add(82, 1260);
         getShootPower.add(87, 1320);
-        getShootPower.add(105,1420);
+        getShootPower.add(105,1400);
         getShootPower.add(110,1440);
         getShootPower.add(115,1460);
         getShootPower.add(120,1500);
@@ -293,15 +293,14 @@ public class HackinHoundsHardware extends Hardware {
         getShootPowerRed.add(77, 1260);
         getShootPowerRed.add(82, 1260);
         getShootPowerRed.add(87, 1320);
-        getShootPowerRed.add(105,1400);
-        getShootPowerRed.add(110,1440);
-        getShootPowerRed.add(115,1460);
+        getShootPowerRed.add(105,1440);
+        getShootPowerRed.add(110,1460);
+        getShootPowerRed.add(115,1480);
         getShootPowerRed.add(120,1580);
         getShootPowerRed.add(125,1500);
         getShootPowerRed.add(130,1520);
         getShootPowerRed.add(148, 1560);
         getShootPowerRed.add(190, 1560);
-
 
 
 
@@ -431,14 +430,14 @@ public class HackinHoundsHardware extends Hardware {
         float hue0 = hsvValues0[0], hue1 = hsvValues1[0], hue2 = hsvValues2[0], hue3 = hsvValues3[0];
         float saturation0 = hsvValues0[1], saturation2 = hsvValues2[1], saturation3 = hsvValues3[1];
 
-        if(saturation3 > 0.5 &&  140< hue3 && hue3 < 175){
+        if(hue3 > 150 && hue3 < 170){
             light3.setPosition(0.5);
-        } else if(saturation3 < 0.5 && hue3 > 180){
+        } else if(hue3 > 180){
             light3.setPosition(0.722);
         } else{
             light3.setPosition(0);
         }
-        if(saturation2 > 0.5){
+        if(saturation2 > 0.69){
             light2.setPosition(0.5);
         } else if(saturation2 < 0.5 && hue2 > 170){
             light2.setPosition(0.722);
@@ -447,7 +446,7 @@ public class HackinHoundsHardware extends Hardware {
         }
         if (saturation0 > 0.5 && (green0 > blue0 || green1 > blue1)){
             light1.setPosition(0.5);
-        } else if(hue1 != 150 && hue0 != 150){
+        } else if(hue1 != 150){
             light1.setPosition(0.722);
         } else{
             light1.setPosition(0);

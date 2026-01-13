@@ -26,10 +26,10 @@ public class Red_Close_Current_No_Tracking extends OpMode {
     private int pathState;
 
     private final Pose startPose = new Pose(114.579, 124.67, Math.toRadians(127.408625));
-    private final Pose scorePose = new Pose(73, 72.81, Math.toRadians(0));
+    private final Pose scorePose = new Pose(77, 72.81, Math.toRadians(0));
     private final Pose pickupOne = new Pose(110.837,71.31, Math.toRadians(0));
-    private final Pose goback = new Pose(90, 73, Math.toRadians(0));
-    private final Pose gateEmpty = new Pose(122.9, 72, Math.toRadians(95));
+    private final Pose goback = new Pose(75, 70, Math.toRadians(0));
+    private final Pose gateEmpty = new Pose(122.9, 72, Math.toRadians(90));
     private final Pose pickupTwo = new Pose (112.74,45, Math.toRadians(0));
     private final Pose curve1 = new Pose(86.115, 39);
     private final Pose pickupThree = new Pose(115, 20, Math.toRadians(0));
@@ -40,13 +40,13 @@ public class Red_Close_Current_No_Tracking extends OpMode {
     public double p = 0.025, i = 0, d = 0.0004, f = 0;
 
     public PIDFController turretController = new PIDFController(p, i, d, f);
-    double Turrettarget = -133;
+    double Turrettarget = -131;
 
 
 
     public double P = 11, I = 0, D = 0, F = 0.8;
     public PIDFController shooterController = new PIDFController(P, I, D, F);
-    double shooterTarget = 1150;
+    double shooterTarget = 1140;
 
     public double ticksPerDegree = 4.233;
 
@@ -79,19 +79,25 @@ public class Red_Close_Current_No_Tracking extends OpMode {
 
         score1 = new Path(new BezierLine(gateEmpty, scorePose));
         score1.setLinearHeadingInterpolation(pickupOne.getHeading(), scorePose.getHeading(), 0.9);
+        score1.setBrakingStrength(2);
+        score1.setBrakingStart(5);
+
 
         pickup2 = new Path(new BezierCurve(scorePose, curve1, pickupTwo));
         pickup2.setLinearHeadingInterpolation(scorePose.getHeading(), pickupTwo.getHeading(), 0.7);
 
         score2 = new Path(new BezierLine(pickupTwo, scorePose));
         score2.setLinearHeadingInterpolation(pickupTwo.getHeading(), scorePose.getHeading(), 0.8);
-
+        score2.setBrakingStrength(2);
+        score2.setBrakingStart(5);
 
         pickup3 = new Path(new BezierCurve(scorePose, curve2, pickupThree));
         pickup3.setLinearHeadingInterpolation(scorePose.getHeading(), pickupThree.getHeading(), 0.7);
 
         score3 = new Path(new BezierLine(pickupThree, scorePose));
         score3.setLinearHeadingInterpolation(pickupThree.getHeading(), scorePose.getHeading());
+        score3.setBrakingStrength(2);
+        score3.setBrakingStart(5);
 
         park = new Path(new BezierLine(scorePose, move));
         park.setLinearHeadingInterpolation(scorePose.getHeading(), move.getHeading());
@@ -166,6 +172,7 @@ public class Red_Close_Current_No_Tracking extends OpMode {
                 if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.5) {
 
                     follower.followPath(score1);
+                    follower.setMaxPower(0.6);
                     robot.intake2.setPower(-0.4);
                     robot.intake.setPower(0.4);
                     wantToTrack = true;
@@ -186,6 +193,7 @@ public class Red_Close_Current_No_Tracking extends OpMode {
 
             case 6:
                 if(pathTimer.getElapsedTimeSeconds() > 1){
+                    follower.setMaxPower(1);
                     follower.followPath(pickup2);
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
@@ -198,6 +206,7 @@ public class Red_Close_Current_No_Tracking extends OpMode {
 
             case 7:
                 if(!follower.isBusy()){
+                    follower.setMaxPower(0.6);
                     follower.followPath(score2);
                     robot.intake.setPower(0.3);
                     robot.intake2.setPower(-0.3);
@@ -223,8 +232,8 @@ public class Red_Close_Current_No_Tracking extends OpMode {
 
             case 9:
                 if(pathTimer.getElapsedTimeSeconds() > 1.8){
+                    follower.setMaxPower(0.6);
                     follower.followPath(pickup3);
-                    follower.setMaxPower(0.4);
                     robot.stopper.setPosition(0.7);
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
@@ -238,7 +247,7 @@ public class Red_Close_Current_No_Tracking extends OpMode {
             case 10:
                 if(!follower.isBusy()){
                     follower.followPath(score3);
-                    follower.setMaxPower(1);
+                    follower.setMaxPower(0.6);
                     robot.intake.setPower(0.3);
                     robot.intake2.setPower(-0.3);
                     wantToTrack = true;
@@ -249,7 +258,7 @@ public class Red_Close_Current_No_Tracking extends OpMode {
 
 
             case 11:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3){
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 4.5){
                     robot.intake2.setPower(-0.7);
                     robot.intake.setPower(0.7);
                     robot.stopper.setPosition(0.47);
@@ -342,7 +351,7 @@ public class Red_Close_Current_No_Tracking extends OpMode {
         double turretAngle = robot.turret.getCurrentPosition()/ticksPerDegree;
 
         if(result.isValid() && wantToTrack){
-            double target = normA(Turrettarget - result.getTx() + 1);
+            double target = normA(Turrettarget - result.getTx());
             double turretPosition = robot.turret.getCurrentPosition()/4.233;
             if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
 

@@ -65,6 +65,8 @@ public class HackinHounds_Mechanum_Red extends OpMode {
      public static double kd = 2;
      public static double kf = 1;
 
+     public static double ks = 50;
+
     PIDFController shooterController = new PIDFController(kp, ki, kd, kf);
 
     public static double hoodAngle = 0;
@@ -249,7 +251,7 @@ public class HackinHounds_Mechanum_Red extends OpMode {
 
         // --- Automatic Close Check ---
         // If the stopper was opened by the timer logic AND 1.0 seconds have passed:
-        if (isStopperTimedOpen && stopperTimer.seconds() >= 2) {
+        if (isStopperTimedOpen && stopperTimer.seconds() >= 1.5) {
             // Close the stopper
             robot.stopper.setPosition(0.7);// Closed position
             robot.intake.setPower(0.7);
@@ -290,7 +292,7 @@ public class HackinHounds_Mechanum_Red extends OpMode {
 
         double shooterVelocity = robot.shooter.getVelocity();
 
-        double output = shooterController.calculate(shooterVelocity, shootertarget);
+        double output = shooterController.calculate(shooterVelocity, motorPower);
 
 
 
@@ -324,19 +326,59 @@ public class HackinHounds_Mechanum_Red extends OpMode {
         if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
 //        double error = target - turretAngle;
 //        double turretPower = clamp(error * slow, -1, 1);
-        robot.turret.setVelocity(turretController.calculate(turretAngle, target) * 1450 - robot.imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * turret_tPERd);
+        double pidVel = (turretController.calculate(turretAngle, target) * 1450);
+        double robotYawFF = robot.imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * turret_tPERd;
 
+        double velocityCommand = pidVel - robotYawFF + ks * Math.signum(pidVel);
+
+        robot.turret.setVelocity(velocityCommand);
         robot.lights(robot.light1, robot.light2, robot.light3, robot.color0, robot.color1, robot.color2, robot.color3);
 
 
 
-        if(robot.angleServo.getPosition() == hoodAngle && Math.abs(robot.shooter.getVelocity() - motorPower) < 50 && Math.abs(turretAngle - target) < 1){
-            robot.light4.setPosition(0.611);
+        double thetaError = Math.abs(distanceToGoal * tx / 57.3);
+
+        if ( Math.abs(robot.angleServo.getPosition() - hoodAngle)  < 0.01 && Math.abs(robot.shooter.getVelocity() - motorPower) < 50  && Math.abs(thetaError) < 5){
+            robot.light4.setPosition(.611);
         } else{
             robot.light4.setPosition(0);
         }
 
-        telemetry.addData("imu", "%f", robotHeading);
+
+
+        NormalizedRGBA colors2 = robot.color2.getNormalizedColors();
+
+        int color2 = colors2.toColor();
+
+        float[] hsvValues2 = new float[3];
+        Color.colorToHSV(color2, hsvValues2);
+
+        float hue2 = hsvValues2[0];
+        float saturation2 = hsvValues2[1];
+
+
+        NormalizedRGBA colors1 = robot.color1.getNormalizedColors();
+
+        int color1 = colors1.toColor();
+
+        float[] hsvValues1 = new float[3];
+        Color.colorToHSV(color1, hsvValues1);
+
+        float hue1 = hsvValues1[0];
+        float saturation1 = hsvValues1[1];
+        float value1 = hsvValues1[2];
+
+
+
+
+
+
+        telemetry.addData("hue", hue2);
+        telemetry.addData("saturation", saturation2);
+
+        telemetry.addData("hue", hue1);
+        telemetry.addData("saturation", saturation1);
+        telemetry.addData("value", value1);
 
         telemetry.addData("turretPos", "%d", robot.turret.getCurrentPosition());
         telemetry.addData("turretAngle", "%f", turretAngle);
@@ -348,16 +390,8 @@ public class HackinHounds_Mechanum_Red extends OpMode {
         telemetry.addData("stopperPos", robot.stopper.getPosition());
         telemetry.addData("stopperTimer", stopperTimer.seconds());
 
-        telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
-        telemetry.addData("tx", tx);
-        telemetry.addData("front:", "%f", robot.intake.getPower());
-        telemetry.addData("back:", "%f", robot.intake2.getPower());
-        telemetry.addData("turretPos", "%f", robot.turret.getCurrentPosition()/4.233);
-        telemetry.addData("turretTarget", "%f", target);
 
-        telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
         telemetry.addData("distancetogoal", distanceToGoal);
-        telemetry.addData("shooterPower", robot.shooter.getVelocity());
         telemetry.addData("targetShootPower", motorPower);
 
         telemetry.update();

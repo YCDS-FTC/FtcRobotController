@@ -78,19 +78,21 @@ public class Blue_Close_Current_No_Tracking extends OpMode {
 
         score1 = new Path(new BezierLine(gateEmpty, scorePose));
         score1.setLinearHeadingInterpolation(gateEmpty.getHeading(), scorePose.getHeading(), 0.9);
+        score1.setBrakingStrength(3);
 
         pickup2 = new Path(new BezierCurve(scorePose, curve1, pickupTwo));
         pickup2.setLinearHeadingInterpolation(scorePose.getHeading(), pickupTwo.getHeading(), 0.7);
 
         score2 = new Path(new BezierLine(pickupTwo, scorePose));
         score2.setLinearHeadingInterpolation(pickupTwo.getHeading(), scorePose.getHeading(), 0.8);
-
+        score2.setBrakingStrength(3);
 
         pickup3 = new Path(new BezierCurve(scorePose, curve2, pickupThree));
         pickup3.setLinearHeadingInterpolation(scorePose.getHeading(), pickupThree.getHeading(), 0.7);
 
         score3 = new Path(new BezierLine(pickupThree, scorePose));
         score3.setLinearHeadingInterpolation(pickupThree.getHeading(), scorePose.getHeading());
+        score3.setBrakingStrength(3);
 
         park = new Path(new BezierLine(scorePose, move));
         park.setLinearHeadingInterpolation(scorePose.getHeading(), move.getHeading());
@@ -340,7 +342,7 @@ public class Blue_Close_Current_No_Tracking extends OpMode {
         double turretAngle = robot.turret.getCurrentPosition()/ticksPerDegree;
 
         if(result.isValid() && wantToTrack){
-            double target = normA(Turrettarget - result.getTx() + 1);
+            double target = normA(Turrettarget - result.getTx());
             double turretPosition = robot.turret.getCurrentPosition()/4.233;
             if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
 
