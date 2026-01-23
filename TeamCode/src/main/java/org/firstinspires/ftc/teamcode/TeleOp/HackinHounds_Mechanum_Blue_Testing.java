@@ -95,6 +95,9 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
     public static double turretoffset = 0;
 
 
+
+    double turretHeadingOffset = RobotPose.endHeading;
+
     public double goalX = 0;
     public double goalY = 144;
 
@@ -363,9 +366,10 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
 
         double goalHeadingFieldDegrees = Math.toDegrees(goalHeadingField);
 
-        double robotHeading = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
+        double robotHeading = follower.getPose().getHeading() - turretHeadingOffset;
+        double robotHeadingDegrees = Math.toDegrees(robotHeading);
 
-        double turretTargetAngle = goalHeadingFieldDegrees - robotHeading;
+        double turretTargetAngle = goalHeadingFieldDegrees - robotHeadingDegrees;
 
         //if (gamepad1.right_trigger > 0.1) {angleWant = robotHeading;}
         double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
@@ -393,7 +397,8 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
         }
 
 
-        telemetry.addData("imu", "%f", robotHeading);
+        telemetry.addData("robotHeadingRadians", "%f", robotHeading);
+        telemetry.addData("robotHeadingDegrees", "%f", robotHeadingDegrees);
         telemetry.addData("dx", "%f", dx);
         telemetry.addData("dy","%f", dy);
         telemetry.addData("Goalheadingfield","%f", goalHeadingFieldDegrees);

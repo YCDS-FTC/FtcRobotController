@@ -357,7 +357,7 @@ public class blue_close_visualizer extends OpMode {
 
         endAutoPose = new Pose(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
 
-
+        RobotPose.endHeading = follower.getPose().getHeading();
 
 
         follower.update();
