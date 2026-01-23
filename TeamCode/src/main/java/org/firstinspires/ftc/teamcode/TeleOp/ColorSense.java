@@ -18,7 +18,7 @@ import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 
 
 @Config
-@TeleOp(name = "ColoeSense", group = "Linear OpMode")
+//@TeleOp(name = "ColoeSense", group = "Linear OpMode")
 public class ColorSense extends OpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -181,8 +181,8 @@ public class ColorSense extends OpMode {
         //if (gamepad1.right_trigger > 0.1) {angleWant = robotHeading;}
         double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
         //if (result.isValid() && !gamepad1.left_bumper) {angleWant = (robotHeading + turretAngle) - tx;}
-        //angleWant = Math.toDegrees(Math.atan2(140 - robot.pinpoint.getPosY(DistanceUnit.INCH), 130 - robot.pinpoint.getPosX(DistanceUnit.INCH))) - 180;
-        angleWant = Math.toDegrees(Math.atan2(140 - (robot.pinpoint.getPosY(DistanceUnit.INCH) + robot.pinpoint.getVelY(DistanceUnit.INCH)/2), 138 - (robot.pinpoint.getPosX(DistanceUnit.INCH) + robot.pinpoint.getVelX(DistanceUnit.INCH)/2))) - 180;
+        angleWant = Math.toDegrees(Math.atan2(140 - robot.pinpoint.getPosY(DistanceUnit.INCH), 130 - robot.pinpoint.getPosX(DistanceUnit.INCH))) - 180;
+        //angleWant = Math.toDegrees(Math.atan2(140 - (robot.pinpoint.getPosY(DistanceUnit.INCH) + robot.pinpoint.getVelY(DistanceUnit.INCH)/2), 138 - (robot.pinpoint.getPosX(DistanceUnit.INCH) + robot.pinpoint.getVelX(DistanceUnit.INCH)/2))) - 180;
         double target = normA(angleWant - robotHeading);
         if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
         //double error = target - turretAngle;

@@ -16,8 +16,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 
-@Autonomous(name = "Red far", group = "Examples")
-public class Red_Far extends OpMode {
+@Autonomous(name = "Red far - DBZ", group = "Examples")
+public class Red_Far_DBZ extends OpMode {
 
     private HackinHoundsHardware robot = new HackinHoundsHardware();
 
@@ -29,15 +29,16 @@ public class Red_Far extends OpMode {
     private final Pose scorePose = new Pose(88.76923076923076, 21, Math.toRadians(0));
     private final Pose pickupOne = new Pose(129.0153846153846,9.5, Math.toRadians(0));
 
+    private final Pose curve2 = new Pose(95, 0);
+
     private final Pose goBack = new Pose(118.0769230769231, 11, Math.toRadians(0));
 
     private final Pose pickupPointTwo = new Pose(129.5769230769231, 8, Math.toRadians(0));
 
-    private final Pose pickupTwo = new Pose (124.15384615384616,36, Math.toRadians(0));
+    private final Pose pickupTwo = new Pose (126.15384615384616,36, Math.toRadians(0));
 
     private final Pose curve1 = new Pose(85, 46);
 
-    private final Pose curve2 = new Pose(79, 0);
     private final Pose pickupThree = new Pose(128.0769230769231, 8.07692307692307, Math.toRadians(0));
 
     private final Pose pickupFour = new Pose(128.50769230769231, 13.07692307692307, Math.toRadians(0));
@@ -49,7 +50,7 @@ public class Red_Far extends OpMode {
     public double ks = 50;
 
     public PIDFController turretController = new PIDFController(p, i, d, f);
-    double turrettarget = -114;
+    double turrettarget = -115;
 
     double target = 0;
 
@@ -80,7 +81,7 @@ public class Red_Far extends OpMode {
         scorepreload.setLinearHeadingInterpolation(scorePose.getHeading(), pickupOne.getHeading());
 
 
-        pickup1 = new Path(new BezierLine(scorePose, pickupOne));
+        pickup1 = new Path(new BezierCurve(scorePose, curve2, pickupOne));
         pickup1.setLinearHeadingInterpolation(scorePose.getHeading(), pickupOne.getHeading());
 
 
@@ -228,50 +229,50 @@ public class Red_Far extends OpMode {
                     robot.stopper.setPosition(0.47);
                     wantToTrack = true;
 
-                    setPathState(13);
-                }
-                break;
-
-
-            case 13:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1){
-                    follower.setMaxPower(1);
-                    follower.followPath(pickup2, true);
-                    robot.intake.setPower(0.7);
-                    robot.intake2.setPower(-0.7);
-                    robot.stopper.setPosition(0.7);
-
-                    wantToTrack = false;
-                    setPathState(14);
-
-                }
-                break;
-
-
-            case 14:
-                if(!follower.isBusy()){
-                    robot.intake.setPower(0.7);
-                    robot.intake2.setPower(-0.7);
-                    robot.stopper.setPosition(0.7);
-                    follower.followPath(score2);
-
-                    wantToTrack = true;
-                    setPathState(15);
-
-                }
-                break;
-
-            case 15:
-                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3) {
-                    robot.intake.setPower(1);
-                    robot.intake2.setPower(-1);
-                    robot.stopper.setPosition(0.47);
-
-                    wantToTrack = true;
-
                     setPathState(16);
                 }
                 break;
+
+
+//            case 13:
+//                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1){
+//                    follower.setMaxPower(1);
+//                    follower.followPath(pickup2, true);
+//                    robot.intake.setPower(0.7);
+//                    robot.intake2.setPower(-0.7);
+//                    robot.stopper.setPosition(0.7);
+//
+//                    wantToTrack = false;
+//                    setPathState(14);
+//
+//                }
+//                break;
+//
+//
+//            case 14:
+//                if(!follower.isBusy()){
+//                    robot.intake.setPower(0.7);
+//                    robot.intake2.setPower(-0.7);
+//                    robot.stopper.setPosition(0.7);
+//                    follower.followPath(score2);
+//
+//                    wantToTrack = true;
+//                    setPathState(15);
+//
+//                }
+//                break;
+//
+//            case 15:
+//                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3) {
+//                    robot.intake.setPower(1);
+//                    robot.intake2.setPower(-1);
+//                    robot.stopper.setPosition(0.47);
+//
+//                    wantToTrack = true;
+//
+//                    setPathState(16);
+//                }
+//                break;
 
             case 16:
                 if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5) {
@@ -313,7 +314,7 @@ public class Red_Far extends OpMode {
                 break;
 
             case 19:
-                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1) {
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 4) {
                     robot.intake.setPower(0.7);
                     robot.intake2.setPower(-0.7);
                     robot.stopper.setPosition(0.7);
@@ -330,7 +331,6 @@ public class Red_Far extends OpMode {
                     robot.intake2.setPower(-0.4);
                     robot.stopper.setPosition(0.7);
                     follower.followPath(score4);
-                    turrettarget = -117.5;
                     shooterTarget = 1500;
                     wantToTrack = true;
 
@@ -340,7 +340,7 @@ public class Red_Far extends OpMode {
 
 
             case 21:
-                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2) {
+                if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3) {
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-1);
                     robot.stopper.setPosition(0.47);
@@ -352,7 +352,7 @@ public class Red_Far extends OpMode {
 
 
             case 22:
-                if(pathTimer.getElapsedTimeSeconds() > 1){
+                if(pathTimer.getElapsedTimeSeconds() > 0.5){
                     turrettarget = 0;
                     hoodAngle = 0;
                     robot.intake.setPower(0);
@@ -360,6 +360,7 @@ public class Red_Far extends OpMode {
                     robot.stopper.setPosition(0.7);
                     wantToTrack = false;
                     follower.followPath(park);
+                    turrettarget = 0;
 
                     setPathState(90);
                 }

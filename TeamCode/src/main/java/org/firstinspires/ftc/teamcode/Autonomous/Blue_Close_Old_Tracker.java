@@ -15,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.RobotPose;
 
 public class Blue_Close_Old_Tracker extends OpMode {
 
@@ -43,6 +44,8 @@ public class Blue_Close_Old_Tracker extends OpMode {
     double Turrettarget = 0;
 
 
+
+    public Pose endAutoPose;
 
     public double P = 11, I = 0, D = 0, F = 0.8;
     public PIDFController shooterController = new PIDFController(P, I, D, F);
@@ -358,6 +361,11 @@ public class Blue_Close_Old_Tracker extends OpMode {
 
 
 
+
+
+        endAutoPose = new Pose(robot.pinpoint.getPosY(DistanceUnit.INCH), robot.pinpoint.getHeading(AngleUnit.DEGREES));
+
+        RobotPose.endPose = endAutoPose;
 
 
 

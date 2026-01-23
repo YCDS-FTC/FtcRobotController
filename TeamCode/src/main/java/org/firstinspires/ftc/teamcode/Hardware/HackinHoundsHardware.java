@@ -5,6 +5,7 @@ import android.graphics.Color;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.pedropathing.ftc.localization.localizers.PinpointLocalizer;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -85,6 +86,8 @@ public class HackinHoundsHardware extends Hardware {
     // 1000 ticks was roughly 18 in.
     public static final double TICK_PER_INCH = 432/24;
     public static final double MinPower = 0.1;
+
+    boolean notThere = true;
 
 
     private  final double think =  5.9;
@@ -168,7 +171,7 @@ public class HackinHoundsHardware extends Hardware {
         shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         turret = robotMap.get(DcMotorEx.class, "turret");
-        turret.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
+        //turret.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         stopper = robotMap.get(Servo.class,"stopper");
@@ -226,7 +229,7 @@ public class HackinHoundsHardware extends Hardware {
 //        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logo, usb);
         Rev9AxisImuOrientationOnRobot orientationOnRobot = new Rev9AxisImuOrientationOnRobot(logo, usb);
         imu.initialize(new IMU.Parameters(orientationOnRobot));
-        imu.resetYaw();
+        //imu.resetYaw();
         lastAngle = 0;
 
 
@@ -239,10 +242,10 @@ public class HackinHoundsHardware extends Hardware {
 
 
         getHoodAngle.add(105,0.13);
-        getHoodAngle.add(110,0.135);
+        getHoodAngle.add(110,0.133);
         getHoodAngle.add(115,0.125);
         getHoodAngle.add(120, 0.125);
-        getHoodAngle.add(125, 0.125);
+        getHoodAngle.add(125, 0.12);
         getHoodAngle.add(130, 0.11);
         getHoodAngle.add(148, .1);
         getHoodAngle.add(190, .1);
@@ -254,12 +257,12 @@ public class HackinHoundsHardware extends Hardware {
 
 
 
-
+//add 18.5 inches away for offset
         getShootPower.add(27, 1100);
         getShootPower.add(32, 1080);
         getShootPower.add(37, 1080);
         getShootPower.add(42, 1100);
-        getShootPower.add(47, 1140);
+        getShootPower.add(47, 1080);
         getShootPower.add(52, 1080);
         getShootPower.add(57, 1100);
         getShootPower.add(62, 1140);
@@ -268,14 +271,17 @@ public class HackinHoundsHardware extends Hardware {
         getShootPower.add(77, 1240);
         getShootPower.add(82, 1260);
         getShootPower.add(87, 1320);
-        getShootPower.add(105,1400);
-        getShootPower.add(110,1440);
-        getShootPower.add(115,1460);
-        getShootPower.add(120,1500);
-        getShootPower.add(125,1520);
-        getShootPower.add(130,1540);
+        getShootPower.add(95,1420);
+        getShootPower.add(100,1440);
+        getShootPower.add(105,1460);
+        getShootPower.add(110,1480);
+        getShootPower.add(115,1520);
+        getShootPower.add(120,1520);
+        getShootPower.add(125,1550);
+        getShootPower.add(130,1560);
+        getShootPower.add(135,1580);
         getShootPower.add(148, 1580);
-        getShootPower.add(190, 1580);
+        getShootPower.add(190, 1600);
 
 
 
@@ -284,20 +290,20 @@ public class HackinHoundsHardware extends Hardware {
         getShootPowerRed.add(32, 1060);
         getShootPowerRed.add(37, 1060);
         getShootPowerRed.add(42, 1100);
-        getShootPowerRed.add(47, 1100);
+        getShootPowerRed.add(47, 1080);
         getShootPowerRed.add(52, 1080);
         getShootPowerRed.add(57, 1140);
-        getShootPowerRed.add(62, 1160);
-        getShootPowerRed.add(67, 1180);
+        getShootPowerRed.add(62, 1140);
+        getShootPowerRed.add(67, 1160);
         getShootPowerRed.add(72, 1220);
         getShootPowerRed.add(77, 1260);
         getShootPowerRed.add(82, 1260);
         getShootPowerRed.add(87, 1320);
         getShootPowerRed.add(105,1440);
         getShootPowerRed.add(110,1460);
-        getShootPowerRed.add(115,1480);
-        getShootPowerRed.add(120,1580);
-        getShootPowerRed.add(125,1500);
+        getShootPowerRed.add(115,1500);
+        getShootPowerRed.add(120,1520);
+        getShootPowerRed.add(125,1520);
         getShootPowerRed.add(130,1520);
         getShootPowerRed.add(148, 1560);
         getShootPowerRed.add(190, 1560);
@@ -381,17 +387,11 @@ public class HackinHoundsHardware extends Hardware {
 
     }
 
-    public double limelight(double ty, double tx){
+    public double limelight(double X, double Y){
 
-         double targetOffsetAngle_Vertical = ty;
-         double txToRadians = tx * (3.14159 / 180.0);
-         double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
-         double angleToGoalRadians = angleToGoalDegrees * (3.14159 / 180.0);
+        double distanceToGoal1 = Math.sqrt(Math.pow(0 - X, 2) + Math.pow(144 - Y, 2));
 
-        double distanceToGoal1 = (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians) + 3.3;
-
-
-        double distanceToGoal = (distanceToGoal1) * Math.cos(txToRadians);
+        double distanceToGoal = distanceToGoal1 - 18.5;
         return distanceToGoal;
     }
 
@@ -430,23 +430,32 @@ public class HackinHoundsHardware extends Hardware {
         float hue0 = hsvValues0[0], hue1 = hsvValues1[0], hue2 = hsvValues2[0], hue3 = hsvValues3[0];
         float saturation0 = hsvValues0[1], saturation2 = hsvValues2[1], saturation3 = hsvValues3[1];
 
-        if(hue3 > 150 && hue3 < 170){
+        if(hue3 < 150 && hue3 != 120){
             light3.setPosition(0.5);
+            notThere = false;
         } else if(hue3 > 180){
             light3.setPosition(0.722);
+            notThere = false;
         } else{
             light3.setPosition(0);
+            notThere = true;
         }
-        if(saturation2 > 0.69){
+        if(saturation2 > 0.69 || hue2 > 120 && hue2 < 169 ){
             light2.setPosition(0.5);
         } else if(saturation2 < 0.5 && hue2 > 170){
             light2.setPosition(0.722);
         } else{
             light2.setPosition(0);
         }
+
+        if (notThere){
+            if (hue2 == 150){
+                light2.setPosition(0);
+            }
+        }
         if (saturation0 > 0.5 && (green0 > blue0 || green1 > blue1)){
             light1.setPosition(0.5);
-        } else if(hue1 != 150){
+        } else if(hue1 != 180 && hue1!= 150){
             light1.setPosition(0.722);
         } else{
             light1.setPosition(0);

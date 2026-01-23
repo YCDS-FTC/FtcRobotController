@@ -15,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.RobotPose;
 
 @Autonomous(name = "blue-close-visualizer", group = "Examples")
 public class blue_close_visualizer extends OpMode {
@@ -26,8 +27,8 @@ public class blue_close_visualizer extends OpMode {
     private int pathState;
 
     private final Pose startPose = new Pose(17.6580310880829, 121.3678756476684, Math.toRadians(53));
-    private final Pose scorePose = new Pose(52.651785714285715, 94.21428571428572, Math.toRadians(180));
-    private final Pose pickupOne = new Pose(13,93, Math.toRadians(180));
+    private final Pose scorePose = new Pose(52.651785714285715, 83.21428571428572, Math.toRadians(180));
+    private final Pose pickupOne = new Pose(15,83, Math.toRadians(180));
     private final Pose gateEmpty = new Pose(15.46153846153846, 73, Math.toRadians(90));
     private final Pose goBack = new Pose(40.15384615384615, 78.46153846153847);
     private final Pose pickupTwo = new Pose (17,60, Math.toRadians(180));
@@ -53,6 +54,7 @@ public class blue_close_visualizer extends OpMode {
 
     private Path scorePreload, pickup1, emptyGate, score1, pickup2, score2, pickup3, score3, park;
 
+    public Pose endAutoPose;
 
     boolean wantZero = false;
 
@@ -349,6 +351,11 @@ public class blue_close_visualizer extends OpMode {
 
 
 
+
+
+        RobotPose.endPose = endAutoPose;
+
+        endAutoPose = new Pose(follower.getPose().getX(), follower.getPose().getY(), follower.getHeading());
 
 
 

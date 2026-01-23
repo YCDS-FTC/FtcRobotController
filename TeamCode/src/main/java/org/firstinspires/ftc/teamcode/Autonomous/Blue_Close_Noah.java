@@ -27,7 +27,7 @@ public class Blue_Close_Noah extends OpMode {
     private final Pose startPose = new Pose(17.6580310880829, 121.3678756476684, Math.toRadians(55));
     private final Pose scorePose = new Pose(45, 90, Math.toRadians(180));
     private final Pose pickupOne = new Pose(7,92, Math.toRadians(180));
-    private final Pose goback = new Pose(17, 70, Math.toRadians(180));
+    private final Pose goback = new Pose(19, 70, Math.toRadians(180));
     private final Pose gateEmpty = new Pose(14, 81, Math.toRadians(90));
     private final Pose pickupTwo = new Pose (13,70, Math.toRadians(180));
     private final Pose curve1 = new Pose(62, 55);
@@ -179,7 +179,7 @@ public class Blue_Close_Noah extends OpMode {
                 }
                 break;
             case 7:
-                if(!follower.isBusy()){
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.5){
                     target = 135;
                     robot.intake.setPower(0.3);
                     robot.intake2.setPower(-0.4);

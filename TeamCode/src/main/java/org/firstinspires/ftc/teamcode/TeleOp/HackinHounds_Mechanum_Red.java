@@ -5,6 +5,8 @@ import android.graphics.Color;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.pedropathing.follower.Follower;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -17,6 +19,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
+import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 
 
 @Config
@@ -49,7 +52,7 @@ public class HackinHounds_Mechanum_Red extends OpMode {
 
 
     private static double turret_tPERd = 4.233;
-    private static double angleWant = -120;
+    private static double angleWant = -120; //-120
     private static double slow = 1;
 
     public static double p = 0.03;
@@ -60,6 +63,7 @@ public class HackinHounds_Mechanum_Red extends OpMode {
     PIDFController turretController = new PIDFController(p,i,d,f);
 
 
+     private Follower follower;
      public static double kp = 11;
      public static double ki = 0;
      public static double kd = 2;
@@ -88,10 +92,15 @@ public class HackinHounds_Mechanum_Red extends OpMode {
     private ElapsedTime stopperTimer = new ElapsedTime();
     private boolean isStopperTimedOpen = false;
     private boolean isSingleStopperTimedOpen = false;
+
+    private Pose startPose = new Pose(8.875,7.625, Math.toRadians(0));
+
     @Override
     public void init(){
         robot.init(hardwareMap);
 
+        follower = Constants.createFollower(hardwareMap);
+        follower.setStartingPose(startPose);
 
         dashboard = FtcDashboard.getInstance();
         dashboard.setTelemetryTransmissionInterval(25);
@@ -101,6 +110,8 @@ public class HackinHounds_Mechanum_Red extends OpMode {
         telemetry.setDisplayFormat(Telemetry.DisplayFormat.MONOSPACE);
         telemetry.update();
         robot.limelight.pipelineSwitch(1);
+
+        robot.pinpoint.resetPosAndIMU();
     }
 
     @Override
@@ -112,11 +123,9 @@ public class HackinHounds_Mechanum_Red extends OpMode {
 
     @Override
     public void loop(){
+        follower.update();
 
 
-
-        turretController.setPIDF(p,i,d,f);
-        shooterController.setPIDF(kp,ki,kd,kf);
 
 
         LLResult result = robot.limelight.getLatestResult();
@@ -184,8 +193,10 @@ public class HackinHounds_Mechanum_Red extends OpMode {
             robot.intake.setPower(-0.7);
         }
 
-        if(gamepad1.right_bumper){
-            robot.intake.setPower(-0.7);
+        if (gamepad1.left_trigger > 0.4){
+            robot.shooter.setVelocity(1260);
+            robot.angleServo.setPosition(0.13);
+
         }
 
         if (gamepad1.left_bumper) {
@@ -286,6 +297,7 @@ public class HackinHounds_Mechanum_Red extends OpMode {
         }
         filteredVar = distanceToGoal;
         filterStart = true;
+
         double motorPower = robot.getshooterPowerRed(distanceToGoal);
         double hoodAngle = robot.getHoodAngle(distanceToGoal);
 
@@ -302,10 +314,9 @@ public class HackinHounds_Mechanum_Red extends OpMode {
 
         if(gamepad1.a){
             robot.shooter.setVelocity(0);
-        } else{
-            robot.shooter.setVelocity(output);
+        } else if (gamepad1.left_trigger <= 0.4){
             robot.angleServo.setPosition(hoodAngle);
-
+            robot.shooter.setVelocity(output);
         }
 
 
@@ -317,13 +328,14 @@ public class HackinHounds_Mechanum_Red extends OpMode {
         double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
 
         if (result.isValid() && !gamepad1.left_bumper && distanceToGoal > 100){
-            angleWant = (robotHeading + turretAngle) - tx - 1.5;
+            angleWant = (robotHeading + turretAngle) - tx - 1.8;
         } else if (result.isValid() && !gamepad1.left_bumper) {
             angleWant = (robotHeading + turretAngle) - tx;
         }
 
         double target = normA(angleWant - robotHeading);
-        if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
+
+        if (target > 140) {target = 140;} else if (target < -140) {target = -140;}
 //        double error = target - turretAngle;
 //        double turretPower = clamp(error * slow, -1, 1);
         double pidVel = (turretController.calculate(turretAngle, target) * 1450);
@@ -346,64 +358,67 @@ public class HackinHounds_Mechanum_Red extends OpMode {
 
 
 
-        NormalizedRGBA colors2 = robot.color2.getNormalizedColors();
+        NormalizedRGBA colors0 = robot.color0.getNormalizedColors();
 
-        int color2 = colors2.toColor();
+        int color0 = colors0.toColor();
 
-        float[] hsvValues2 = new float[3];
-        Color.colorToHSV(color2, hsvValues2);
+        float[] hsvValues0 = new float[3];
+        Color.colorToHSV(color0, hsvValues0);
 
-        float hue2 = hsvValues2[0];
-        float saturation2 = hsvValues2[1];
-
-
-        NormalizedRGBA colors1 = robot.color1.getNormalizedColors();
-
-        int color1 = colors1.toColor();
-
-        float[] hsvValues1 = new float[3];
-        Color.colorToHSV(color1, hsvValues1);
-
-        float hue1 = hsvValues1[0];
-        float saturation1 = hsvValues1[1];
-        float value1 = hsvValues1[2];
+        float hue0 = hsvValues0[0];
+        float saturation0 = hsvValues0[1];
 
 
+        NormalizedRGBA colors3 = robot.color3.getNormalizedColors();
+
+        int color3 = colors3.toColor();
+
+        float[] hsvValues3 = new float[3];
+        Color.colorToHSV(color3, hsvValues3);
+
+        float hue2 = hsvValues3[0];
+        float saturation2 = hsvValues3[1];
+        float value2 = hsvValues3[2];
 
 
 
 
-        telemetry.addData("hue", hue2);
-        telemetry.addData("saturation", saturation2);
 
-        telemetry.addData("hue", hue1);
-        telemetry.addData("saturation", saturation1);
-        telemetry.addData("value", value1);
+//
+//        telemetry.addData("hue", hue0);
+//        telemetry.addData("saturation", saturation0);
+//
+//        telemetry.addData("hue2", hue2);
+//        telemetry.addData("saturation2", saturation2);
+//        telemetry.addData("value2", value2);
 
         telemetry.addData("turretPos", "%d", robot.turret.getCurrentPosition());
-        telemetry.addData("turretAngle", "%f", turretAngle);
-        telemetry.addData("turretTarget", "%f", target);
-        telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
+//        telemetry.addData("turretAngle", "%f", turretAngle);
+//        telemetry.addData("turretTarget", "%f", target);
+//        telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
         telemetry.addData("Tx", "%f", tx);
-
-        telemetry.addData("bumper variable", rightBumper_pressed_previous);
-        telemetry.addData("stopperPos", robot.stopper.getPosition());
-        telemetry.addData("stopperTimer", stopperTimer.seconds());
+//
+//        telemetry.addData("bumper variable", rightBumper_pressed_previous);
+//        telemetry.addData("stopperPos", robot.stopper.getPosition());
+//        telemetry.addData("stopperTimer", stopperTimer.seconds());
 
 
         telemetry.addData("distancetogoal", distanceToGoal);
         telemetry.addData("targetShootPower", motorPower);
-
+        telemetry.addData("X", follower.getPose().getX());
+        telemetry.addData("Y", follower.getPose().getY());
+        telemetry.addData("Heading", follower.getPose().getHeading());
+//        telemetry.addData("turret", robot.turret.getCurrentPosition());
         telemetry.update();
 
-        TelemetryPacket packet = new TelemetryPacket();
-
-        packet.put("shooterVelocity", robot.shooter.getVelocity());
-        packet.put("shooterRPM", (robot.shooter.getVelocity() / 28.0) * 60.0);
-        packet.put("shootertarget", shootertarget);
-        packet.put("turretTarget",  target);
-        packet.put("turretPos", turretAngle);
-        dashboard.sendTelemetryPacket(packet);
+//        TelemetryPacket packet = new TelemetryPacket();
+//
+//        packet.put("shooterVelocity", robot.shooter.getVelocity());
+//        packet.put("shooterRPM", (robot.shooter.getVelocity() / 28.0) * 60.0);
+//        packet.put("shootertarget", shootertarget);
+//        packet.put("turretTarget",  target);
+//        packet.put("turretPos", turretAngle);
+//        dashboard.sendTelemetryPacket(packet);
 
     }
 

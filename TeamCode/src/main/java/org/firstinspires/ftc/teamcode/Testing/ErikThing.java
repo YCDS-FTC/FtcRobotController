@@ -68,7 +68,8 @@ public class ErikThing extends LinearOpMode {
 //    public DcMotorEx rightFront;
 //    public DcMotorEx leftBack;
 //    public DcMotorEx rightBack;
-    public DcMotorEx left;
+    public DcMotorEx topMotor;
+    public DcMotorEx bottomMotor;
     public Servo hoodAngler;
     int shift = 1;
 
@@ -79,8 +80,11 @@ public class ErikThing extends LinearOpMode {
 
 
     public double ticksPerRevolution = 28;
-    public double currentVelocity;
-    public double rpm;
+    public double topVelocity;
+    public double topRpm;
+
+    public double bottomVelocity;
+    public double bottomRpm;
 
     public static double P = 11;
     public static double I = 0;
@@ -95,14 +99,20 @@ public class ErikThing extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        left  = hardwareMap.get(DcMotorEx.class, "left");
+        topMotor  = hardwareMap.get(DcMotorEx.class, "topshooter");
 //        right = hardwareMap.get(DcMotorEx.class, "right");
-        left.setDirection(DcMotorSimple.Direction.REVERSE);
-        left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        topMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        topMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        topMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        topMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
+        bottomMotor = hardwareMap.get(DcMotorEx.class,"bottomshooter");
+        topMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        topMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        topMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        topMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         shift = 0;
 
@@ -115,56 +125,53 @@ public class ErikThing extends LinearOpMode {
 //                right.setPower(rightPower);
 //                left.setPower(leftPower);
 //            }
+
+
+            bottomMotor.setPower(gamepad1.right_stick_y);
+
+            topMotor.setPower(gamepad1.left_stick_y);
+
+
             shooterController.setPIDF(P,I,D,F);
 
 
-            double output = shooterController.calculate(
-                    left.getVelocity(), targetVelocity
-            );
-            left.setVelocity(output);
+//            double output = shooterController.calculate(
+//                    bottomMotor.getVelocity(), targetVelocity
+//            );
+//            bottomMotor.setVelocity(output);
+//
+//
+//            double output1 = shooterController.calculate(
+//                    topMotor.getVelocity(), targetVelocity
+//            );
+//            topMotor.setVelocity(output1);
+//
+//
+
+            bottomVelocity = bottomMotor.getVelocity();
+            bottomRpm = bottomVelocity/ticksPerRevolution * 60;
+
+            topVelocity = topMotor.getVelocity();
+            topRpm = topVelocity/ticksPerRevolution * 60;
 
 
 
-
-//            while (!pController.atSetPoint()) {
-//                double output = pController.calculate(
-//                        left.getVelocity()  // the measured value
-//                );
-//                left.setVelocity(output);
-//            }
-//            left.setPower(0);
-
-//            left.setPower(leftPower);
-
-            if (gamepad1.x) {
-                shift = 0;
-            } else if (gamepad1.y) {
-                shift = 1;
-            } else if (gamepad1.b) {
-                shift = 2;
-            } else if (gamepad1.a) {
-                shift = 3;
-            }
-
-
-            currentVelocity = left.getVelocity();
-
-            rpm = currentVelocity/ticksPerRevolution * 60;
-
-
-
-            telemetry.addData("leftpower", "%f", left.getPower());
-            telemetry.addData("leftRPM", "%f", left.getVelocity());
-            telemetry.addData("RPM", rpm);
+            telemetry.addData("leftpower", "%f", bottomMotor.getPower());
+            telemetry.addData("leftRPM", "%f", bottomMotor.getVelocity());
+            telemetry.addData("RPM", bottomRpm);
             telemetry.update();
 
             FtcDashboard dashboard = FtcDashboard.getInstance();
             Telemetry dashboardTelemetry = dashboard.getTelemetry();
 
-            dashboardTelemetry.addData("rpm", rpm );
+            dashboardTelemetry.addData("bottomRpm", bottomRpm );
             dashboardTelemetry.addData("targetVelocity", targetVelocity);
-            dashboardTelemetry.addData("currentVelocity", left.getVelocity());
-            dashboardTelemetry.addData("output", output);
+            dashboardTelemetry.addData("bottomVelocity", bottomMotor.getVelocity());
+
+            dashboardTelemetry.addData("topRpm", topRpm );
+            dashboardTelemetry.addData("topVelocity", topMotor.getVelocity());
+
+
             dashboardTelemetry.update();
 
         }

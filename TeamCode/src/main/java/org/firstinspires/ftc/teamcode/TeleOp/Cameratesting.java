@@ -79,7 +79,7 @@ import java.util.List;
  */
 @Configurable
 @Config
-@TeleOp(name = "cameraTesting", group = "Sensor")
+//@TeleOp(name = "cameraTesting", group = "Sensor")
 public class Cameratesting extends OpMode {
 
     private DcMotorEx leftBack;

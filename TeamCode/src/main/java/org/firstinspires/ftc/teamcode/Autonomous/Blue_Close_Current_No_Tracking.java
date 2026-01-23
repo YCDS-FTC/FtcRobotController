@@ -15,6 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.RobotPose;
 
 @Autonomous(name = "blue-close-current", group = "Examples")
 public class Blue_Close_Current_No_Tracking extends OpMode {
@@ -26,22 +27,26 @@ public class Blue_Close_Current_No_Tracking extends OpMode {
     private int pathState;
 
     private final Pose startPose = new Pose(18.48, 117.956, Math.toRadians(51.2969114));
-    private final Pose scorePose = new Pose(44.32, 86.2, Math.toRadians(180));
+    private final Pose scorePose = new Pose(42, 86.2, Math.toRadians(180));
     private final Pose pickupOne = new Pose(9,88.9, Math.toRadians(180));
     private final Pose goback = new Pose(40, 83, Math.toRadians(180));
     private final Pose gateEmpty = new Pose(6, 77, Math.toRadians(90));
     private final Pose stupidBack = new Pose(9,77, Math.toRadians(90));
-    private final Pose pickupTwo = new Pose (5.76,63, Math.toRadians(180));
+    private final Pose pickupTwo = new Pose (5.76,61, Math.toRadians(180));
     private final Pose curve1 = new Pose(26, 57);
-    private final Pose pickupThree = new Pose(5.43, 41.87, Math.toRadians(180));
+    private final Pose pickupThree = new Pose(5.43, 40, Math.toRadians(180));
     private final Pose curve2 = new Pose(33, 21);
     private final Pose move = new Pose (20, 86.2, Math.toRadians(180));
 
 
+    public Pose endAutoPose;
+
+    private static double turret_tPERd = 4.233;
+
     public double p = 0.02, i = 0, d = 0.0004, f = 0;
 
     public PIDFController turretController = new PIDFController(p, i, d, f);
-    double Turrettarget = 133;
+    double Turrettarget = 134;
 
 
 
@@ -166,7 +171,7 @@ public class Blue_Close_Current_No_Tracking extends OpMode {
 
             case 4:
                 if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.5) {
-
+                    follower.setMaxPower(0.5);
                     follower.followPath(score1, true);
                     robot.intake2.setPower(-0.2);
                     robot.intake.setPower(0.2);
@@ -187,7 +192,8 @@ public class Blue_Close_Current_No_Tracking extends OpMode {
                 break;
 
             case 6:
-                if(pathTimer.getElapsedTimeSeconds() > 1.5){
+                if(pathTimer.getElapsedTimeSeconds() > 1){
+                    follower.setMaxPower(0.7);
                     follower.followPath(pickup2);
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
@@ -200,6 +206,7 @@ public class Blue_Close_Current_No_Tracking extends OpMode {
 
             case 7:
                 if(!follower.isBusy()){
+                    follower.setMaxPower(0.4);
                     follower.followPath(score2, true);
                     robot.intake.setPower(0.3);
                     robot.intake2.setPower(-0.3);
@@ -209,7 +216,7 @@ public class Blue_Close_Current_No_Tracking extends OpMode {
                 break;
 
             case 8:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3){
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3.5){
 
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
@@ -224,8 +231,8 @@ public class Blue_Close_Current_No_Tracking extends OpMode {
 
             case 9:
                 if(pathTimer.getElapsedTimeSeconds() > 2){
-                    follower.followPath(pickup3, true);
                     follower.setMaxPower(0.7);
+                    follower.followPath(pickup3, true);
                     robot.stopper.setPosition(0.7);
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
@@ -238,8 +245,8 @@ public class Blue_Close_Current_No_Tracking extends OpMode {
 
             case 10:
                 if(!follower.isBusy()){
+                    follower.setMaxPower(0.6);
                     follower.followPath(score3);
-                    follower.setMaxPower(1);
                     robot.intake.setPower(0.3);
                     robot.intake2.setPower(-0.3);
                     wantToTrack = true;
@@ -250,7 +257,7 @@ public class Blue_Close_Current_No_Tracking extends OpMode {
 
 
             case 11:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3){
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3.3){
                     robot.intake2.setPower(-0.7);
                     robot.intake.setPower(0.7);
                     robot.stopper.setPosition(0.47);
@@ -263,11 +270,11 @@ public class Blue_Close_Current_No_Tracking extends OpMode {
 
             case 12:
                 if(pathTimer.getElapsedTimeSeconds() > 1.5){
+                    follower.setMaxPower(1);
                     robot.stopper.setPosition(0.7);
                     robot.intake.setPower(0);
                     robot.intake2.setPower(0);
                     Turrettarget = 0;
-                    shooterTarget = 0;
                     follower.followPath(park, true);
                     wantToTrack = false;
                     setPathState(1000);
@@ -346,13 +353,13 @@ public class Blue_Close_Current_No_Tracking extends OpMode {
             double turretPosition = robot.turret.getCurrentPosition()/4.233;
             if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
 
-            robot.turret.setPower(turretController.calculate(turretPosition, target));
+            robot.turret.setVelocity(turretController.calculate(turretPosition, target)* 1450 - - robot.imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * turret_tPERd);
 
         } else{
             double target = normA(Turrettarget);
             if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
             double turretPosition = robot.turret.getCurrentPosition()/4.233;
-            robot.turret.setPower(turretController.calculate(turretPosition, target));
+            robot.turret.setVelocity(turretController.calculate(turretPosition, target) * 1450);
         }
 
 
@@ -364,6 +371,10 @@ public class Blue_Close_Current_No_Tracking extends OpMode {
 
 
 
+
+        endAutoPose = new Pose(robot.pinpoint.getPosY(DistanceUnit.INCH), robot.pinpoint.getHeading(AngleUnit.DEGREES));
+
+        RobotPose.endPose = endAutoPose;
 
 
 
@@ -389,6 +400,7 @@ public class Blue_Close_Current_No_Tracking extends OpMode {
     public void init(){
         robot.init(hardwareMap);
 
+        robot.pinpoint.resetPosAndIMU();
         turretController.setPIDF(p,i,d,f);
 
 

@@ -16,7 +16,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 
 @Configurable
-@TeleOp(name="apriltagfollowing", group="Linear OpMode")
+//@TeleOp(name="apriltagfollowing", group="Linear OpMode")
 public class Apriltagfollowiunbg extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private HackinHoundsHardware robot = new HackinHoundsHardware();

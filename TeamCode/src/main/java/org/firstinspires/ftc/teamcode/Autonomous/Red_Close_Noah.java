@@ -27,7 +27,7 @@ public class Red_Close_Noah extends OpMode {
     private final Pose startPose = new Pose(126, 122, Math.toRadians(125));
     private final Pose scorePose = new Pose(84, 73, Math.toRadians(0));
     private final Pose pickupOne = new Pose(122,71.5, Math.toRadians(0));
-    private final Pose goback = new Pose(108, 45, Math.toRadians(0));
+    private final Pose goback = new Pose(104, 45, Math.toRadians(0));
     private final Pose gateEmpty = new Pose(128, 65, Math.toRadians(90));
     private final Pose pickupTwo = new Pose (126,45, Math.toRadians(0));
     private final Pose curve1 = new Pose(74, 35);
@@ -45,7 +45,7 @@ public class Red_Close_Noah extends OpMode {
 
     public double P = 11, I = 0, D = 0, F = 0.8;
     public PIDFController shooterController = new PIDFController(P, I, D, F);
-    double shooterTarget = 1240;
+    double shooterTarget = 1140;
 
     public double turret_tPERd = 4.233;
 
@@ -173,7 +173,7 @@ public class Red_Close_Noah extends OpMode {
                 }
                 break;
             case 5:
-                if(!follower.isBusy()){
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.5){
                     robot.intake.setPower(0.4);
                     robot.intake2.setPower(-0.4);
                     robot.stopper.setPosition(0.47);
@@ -187,7 +187,7 @@ public class Red_Close_Noah extends OpMode {
                     follower.followPath(pickup2);
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
-                    robot.stopper.setPosition(0.67);
+                    robot.stopper.setPosition(0.7);
                     setPathState(20);
 
                 }
@@ -201,7 +201,7 @@ public class Red_Close_Noah extends OpMode {
                     follower.setMaxPower(1);
                     robot.intake.setPower(1);
                     robot.intake2.setPower(-0.7);
-                    robot.stopper.setPosition(0.67);
+                    robot.stopper.setPosition(0.7);
                     setPathState(21);
 
                 }
@@ -213,7 +213,7 @@ public class Red_Close_Noah extends OpMode {
                     follower.followPath(emptyGate);
                     robot.intake.setPower(0.4);
                     robot.intake2.setPower(-0.4);
-                    robot.stopper.setPosition(0.67);
+                    robot.stopper.setPosition(0.7);
                     setPathState(7);
 
                 }
@@ -233,7 +233,7 @@ public class Red_Close_Noah extends OpMode {
 
 
             case 8:
-                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 8){
+                if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3){
 
                     robot.intake.setPower(0.4);
                     robot.intake2.setPower(-0.4);
@@ -244,8 +244,8 @@ public class Red_Close_Noah extends OpMode {
                 break;
 
             case 9:
-                if(pathTimer.getElapsedTimeSeconds() > 3){
-                    robot.stopper.setPosition(0.67);
+                if(pathTimer.getElapsedTimeSeconds() > 2){
+                    robot.stopper.setPosition(0.7);
                     robot.intake.setPower(0);
                     robot.intake2.setPower(0);
                     target = 0;

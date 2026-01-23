@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import static org.firstinspires.ftc.teamcode.PedroPathing.Tuning.follower;
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -12,8 +15,10 @@ import com.seattlesolvers.solverslib.controller.PIDFController;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
-
+import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.RobotPose;
 
 @Config
 @TeleOp(name = "Mechanum-Blue", group = "Linear OpMode")
@@ -44,14 +49,18 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
     private boolean filterStart = false;
     private double filterTick = 0;
 
+
+    public double endAutoPose;
+
     private  double turret_tPERd = 4.233;
-    private  double angleWant = 120;
+    private  double angleWant = 125;
     private  double slow = 1;
 
     public static double p = 0.03;
     public static double i = 0;
     public static double d = 0.0035;
     public static double f = 0;
+    public static double ks = 50;
 
     PIDFController turretController = new PIDFController(p,i,d,f);
 
@@ -60,7 +69,7 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
     public static double ki = 0;
     public static double kd = 2;
     public static double kf = 1;
-    public static double ks = 50;
+
 
     PIDFController shooterController = new PIDFController(kp, ki, kd, kf);
 
@@ -74,6 +83,7 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
 
     boolean isBlockerClosed = true;
 
+    boolean isWorking = true;
     boolean rightBumper_pressed_previous = false;
 
     boolean leftBumper_pressed_previous = false;
@@ -85,12 +95,17 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
     private double MAX_DISTANCE_DELTA = 15;
     public static double turretoffset = 0;
 
+    Pose startPose = RobotPose.endPose;
+
     private ElapsedTime stopperTimer = new ElapsedTime();
     private boolean isStopperTimedOpen = false;
     private boolean isSingleStopperTimedOpen = false;
     @Override
     public void init(){
         robot.init(hardwareMap);
+
+        follower = Constants.createFollower(hardwareMap);
+        follower.setStartingPose(startPose);
 
 
         dashboard = FtcDashboard.getInstance();
@@ -101,6 +116,8 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
         telemetry.setDisplayFormat(Telemetry.DisplayFormat.MONOSPACE);
         telemetry.update();
         robot.limelight.pipelineSwitch(0);
+
+
     }
 
     @Override
@@ -114,6 +131,7 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
     public void loop(){
 
 
+        follower.update();
 
         turretController.setPIDF(p,i,d,f);
         shooterController.setPIDF(kp,ki,kd,kf);
@@ -205,14 +223,17 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
             robot.intake.setPower(-0.7);
         }
 
-        if(gamepad1.right_bumper){
-            robot.intake.setPower(-0.7);
-        }
+
 
         if (gamepad1.left_bumper) {
-            angleWant = 120;
+            angleWant = 118;
         }
 
+        if (gamepad1.left_trigger > 0.4){
+            robot.shooter.setVelocity(1260);
+            robot.angleServo.setPosition(0.13);
+
+        }
 
         //Stopper logic for ONE BY ONE
         if(gamepad2.left_bumper && !leftBumper_pressed_previous) {
@@ -220,8 +241,8 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
                 robot.stopper.setPosition(0.47);
                 isBlockerClosed = false;
                 isSingleStopperTimedOpen = true;
-                robot.intake.setPower(0.3);
-                robot.intake2.setPower(-0.3);
+                robot.intake.setPower(1);
+                robot.intake2.setPower(-1);
                 timer.reset();
             } else {
                 robot.stopper.setPosition(0.67);
@@ -234,12 +255,12 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
             }
         }
 
-            if(isSingleStopperTimedOpen && timer.seconds() > 0.2){
+            if(isSingleStopperTimedOpen && timer.seconds() > 1.5){
                 robot.stopper.setPosition(0.7);
                 isBlockerClosed = true;
                 isSingleStopperTimedOpen = false;
-                robot.intake.setPower(0.4);
-                robot.intake2.setPower(-0.6);
+                robot.intake.setPower(0.5);
+                robot.intake2.setPower(-0.5);
             }
 
 
@@ -254,8 +275,8 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
             if (isBlockerClosed) {
                 // Stopper is currently closed -> Open it and start the timer
                 robot.stopper.setPosition(0.47);// Open position
-                robot.intake.setPower(0.3);
-                robot.intake2.setPower(-0.3);
+                robot.intake.setPower(0.5);
+                robot.intake2.setPower(-0.5);
                 isBlockerClosed = false;
                 isStopperTimedOpen = true; // Signal that we are waiting for a close event
                 stopperTimer.reset(); // Start the 1-second countdown
@@ -285,17 +306,7 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
         rightBumper_pressed_previous = gamepad2.right_bumper;
         leftBumper_pressed_previous = gamepad2.left_bumper;
 
-
-
-
-
-
-
-
-
-
-
-        double distanceToGoal =  robot.limelight(ty, tx);
+        double distanceToGoal =  robot.limelight(follower.getPose().getX(), follower.getPose().getY());
 
 
         if (Math.abs(filteredVar - distanceToGoal) > 50 && filterStart) {
@@ -325,7 +336,7 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
 
         if(gamepad1.a){
             robot.shooter.setVelocity(0);
-        } else{
+        } else if (gamepad1.left_trigger <= 0.4){
             robot.angleServo.setPosition(hoodAngle);
             robot.shooter.setVelocity(output);
 
@@ -341,13 +352,16 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
         double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
 
         if (result.isValid() && !gamepad1.left_bumper && distanceToGoal > 100){
-            angleWant = (robotHeading + turretAngle) - tx + 3.8;
+            angleWant = (robotHeading + turretAngle) - tx + 1.8;
         } else if (result.isValid() && !gamepad1.left_bumper) {
             angleWant = (robotHeading + turretAngle) - tx;
         }
+//        else if (!gamepad1.left_bumper){
+//            angleWant = (robotHeading + turretAngle);
+//        }
 
         double target = normA(angleWant - robotHeading);
-        if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
+        if (target > 140) {target = 140;} else if (target < -140) {target = -140;}
 //        double error = target - turretAngle;
 //        double turretPower = clamp(error * slow, -1, 1);
         double pidVel = (turretController.calculate(turretAngle, target) * 1450);
@@ -370,37 +384,42 @@ public class HackinHounds_Mechanum_Blue extends OpMode {
         telemetry.addData("imu", "%f", robotHeading);
 
         telemetry.addData("turretPos", "%d", robot.turret.getCurrentPosition());
-        telemetry.addData("turretAngle", "%f", turretAngle);
-        telemetry.addData("turretTarget", "%f", target);
-//        telemetry.addData("error", "%f", error);
-        telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
-        telemetry.addData("Tx", "%f", tx);
-        telemetry.addData("bumper variable", rightBumper_pressed_previous);
-        telemetry.addData("stopperPos", robot.stopper.getPosition());
+//        telemetry.addData("turretAngle", "%f", turretAngle);
+//        telemetry.addData("turretTarget", "%f", target);
+////        telemetry.addData("error", "%f", error);
+//        telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
+//        telemetry.addData("Tx", "%f", tx);
+//        telemetry.addData("bumper variable", rightBumper_pressed_previous);
+//        telemetry.addData("stopperPos", robot.stopper.getPosition());
 
 
 
 
-        telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
+
+        telemetry.addData("distance", distanceToGoal);
+        telemetry.addData("X", follower.getPose().getX());
+        telemetry.addData("Y", follower.getPose().getY());
+        telemetry.addData("Heading", follower.getPose().getHeading());
         telemetry.addData("tx", tx);
-        telemetry.addData("front:", "%f", robot.intake.getPower());
-        telemetry.addData("back:", "%f", robot.intake2.getPower());
-        telemetry.addData("turretPos", "%f", robot.turret.getCurrentPosition()/4.233);
-        telemetry.addData("turretTarget", "%f", target);
+//        telemetry.addData("front:", "%f", robot.intake.getPower());
+//        telemetry.addData("back:", "%f", robot.intake2.getPower());
+//        telemetry.addData("turretPos", "%f", robot.turret.getCurrentPosition()/4.233);
+//        telemetry.addData("turretTarget", "%f", target);
 //        telemetry.addData("error", "%f", error);
         telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
         telemetry.addData("distancetogoal", distanceToGoal);
+//        telemetry.addData("targetShootPower", motorPower);
 
         telemetry.update();
 
-        TelemetryPacket packet = new TelemetryPacket();
-
-        packet.put("shooterVelocity", robot.shooter.getVelocity());
-        packet.put("shooterRPM", (robot.shooter.getVelocity() / 28.0) * 60.0);
-        packet.put("shootertarget", shootertarget);
-        packet.put("turretTarget",  target);
-
-        dashboard.sendTelemetryPacket(packet);
+//        TelemetryPacket packet = new TelemetryPacket();
+//
+//        packet.put("shooterVelocity", robot.shooter.getVelocity());
+//        packet.put("shooterRPM", (robot.shooter.getVelocity() / 28.0) * 60.0);
+//        packet.put("shootertarget", shootertarget);
+//        packet.put("turretTarget",  target);
+//
+//        dashboard.sendTelemetryPacket(packet);
 
     }
 
