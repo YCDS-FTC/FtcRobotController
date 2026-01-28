@@ -391,7 +391,7 @@ public class HackinHoundsHardware extends Hardware {
 
         double distanceToGoal1 = Math.sqrt(Math.pow(0 - X, 2) + Math.pow(144 - Y, 2));
 
-        double distanceToGoal = distanceToGoal1 - 18.5;
+        double distanceToGoal = distanceToGoal1 - 23.5 ;
         return distanceToGoal;
     }
 

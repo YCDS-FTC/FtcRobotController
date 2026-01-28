@@ -14,6 +14,7 @@ import com.seattlesolvers.solverslib.controller.PIDFController;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
@@ -31,18 +32,8 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
 
     double shift = 1;
 
-    double startTime = 0;
-    boolean stopped = false;
-    double finaltime = 0;
-
-
     public  double transferPower = 0;
     public  double intakePower = 0;
-
-
-
-    // intake = 0.5
-    // transfer = 0.8
 
     private double filteredVar = 0;
     private boolean filterStart = false;
@@ -87,13 +78,6 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
 
     boolean leftBumper_pressed_previous = false;
 
-    public static double shooterAngle = 0;
-
-    private double lastValidDistance = Double.NaN;
-
-    private double MAX_DISTANCE_DELTA = 15;
-    public static double turretoffset = 0;
-
 
 
     double turretHeadingOffset = RobotPose.endHeading;
@@ -106,6 +90,13 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
     private ElapsedTime stopperTimer = new ElapsedTime();
     private boolean isStopperTimedOpen = false;
     private boolean isSingleStopperTimedOpen = false;
+
+    private double xVelocity;
+    private double yVelocity;
+    private double ballMovementClose = 5;
+
+
+
     @Override
     public void init(){
         robot.init(hardwareMap);
@@ -356,6 +347,9 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
 
 //        robot.shooter.setVelocity(motorPower);
 
+
+        xVelocity = robot.pinpoint.getVelX(DistanceUnit.METER);
+        yVelocity = robot.pinpoint.getVelY(DistanceUnit.METER);
 
 
 
