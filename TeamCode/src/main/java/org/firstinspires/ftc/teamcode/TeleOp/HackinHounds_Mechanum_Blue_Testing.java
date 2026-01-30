@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import static org.firstinspires.ftc.teamcode.NewAutosFixedPinpoint.Ball_LEBRON.endAutoPose;
 import static org.firstinspires.ftc.teamcode.PedroPathing.Tuning.follower;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -40,8 +41,6 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
     private double filterTick = 0;
 
 
-    public double endAutoPose;
-
     private  double turret_tPERd = 4.233;
     private  double angleWant = 125;
     private  double slow = 1;
@@ -80,7 +79,7 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
 
 
 
-    double turretHeadingOffset = RobotPose.endHeading;
+    double robotHeadingOffset = RobotPose.endHeading;
 
     public double goalX = 0;
     public double goalY = 144;
@@ -102,7 +101,7 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
         robot.init(hardwareMap);
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(startPose);
+        follower.setStartingPose(RobotPose.endPose);
 
 
         dashboard = FtcDashboard.getInstance();
@@ -189,10 +188,10 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
         double rf = (rotY - rotX - rx) / d;
         double rb = (rotY + rotX - rx) / d;
 
-        robot.leftBack.setVelocity(3000 * lb * shift);
-        robot.leftFront.setVelocity(3000 * lf * shift);
-        robot.rightBack.setVelocity(3000 * rb * shift);
-        robot.rightFront.setVelocity(3000 * rf * shift);
+        robot.leftBack.setPower(lb * shift);
+        robot.leftFront.setPower(lf * shift);
+        robot.rightBack.setPower(rb * shift);
+        robot.rightFront.setPower(rf * shift);
 //
 //        robot.intake.setPower(intakePower);
 //        robot.intake2.setPower(transferPower);
@@ -348,24 +347,21 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
 //        robot.shooter.setVelocity(motorPower);
 
 
-        xVelocity = robot.pinpoint.getVelX(DistanceUnit.METER);
-        yVelocity = robot.pinpoint.getVelY(DistanceUnit.METER);
 
+        double robXV = robot.pinpoint.getVelX(DistanceUnit.INCH) * 0.3;
+        double robYV = robot.pinpoint.getVelY(DistanceUnit.INCH) * 0.3;
 
+        double dx = goalX - (robotX + robXV);
+        double dy = goalY - (robotY + robYV);
 
-        double dx = goalX - robotX;
-        double dy = goalY - robotY;
-
-        double goalHeadingField = Math.atan2(dy, dx);
+        double goalHeadingField = Math.atan2(-dy, -dx);
 
         double goalHeadingFieldDegrees = Math.toDegrees(goalHeadingField);
 
-        double robotHeading = follower.getPose().getHeading() - turretHeadingOffset;
+        double robotHeading = follower.getPose().getHeading();
         double robotHeadingDegrees = Math.toDegrees(robotHeading);
 
         double turretTargetAngle = goalHeadingFieldDegrees - robotHeadingDegrees;
-
-        //if (gamepad1.right_trigger > 0.1) {angleWant = robotHeading;}
         double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
 
 //        else if (!gamepad1.left_bumper){
@@ -393,15 +389,15 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
 
         telemetry.addData("robotHeadingRadians", "%f", robotHeading);
         telemetry.addData("robotHeadingDegrees", "%f", robotHeadingDegrees);
+        telemetry.addData("X", follower.getPose().getX());
+        telemetry.addData("Y", follower.getPose().getY());
         telemetry.addData("dx", "%f", dx);
         telemetry.addData("dy","%f", dy);
         telemetry.addData("Goalheadingfield","%f", goalHeadingFieldDegrees);
         telemetry.addData("target","%f", target);
         telemetry.addData("turretPos", "%f", turretAngle);
         telemetry.addData("distance", distanceToGoal);
-        telemetry.addData("X", follower.getPose().getX());
-        telemetry.addData("Y", follower.getPose().getY());
-        telemetry.addData("Heading", robotHeading);
+
         telemetry.addData("tx", tx);
 //        telemetry.addData("front:", "%f", robot.intake.getPower());
 //        telemetry.addData("back:", "%f", robot.intake2.getPower());

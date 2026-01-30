@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.NewAutosFixedPinpoint;
 
 
+import static org.firstinspires.ftc.teamcode.PedroPathing.Tuning.follower;
+
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
@@ -26,9 +28,9 @@ public class Ball_LEBRON extends OpMode {
     private int pathState;
     private Timer pathTimer, opmodeTimer;
 
-    private final Pose startPose = new Pose(33.819494584837535, 134.6714801444043, Math.toRadians(270));
+    private final Pose startPose = new Pose(31.98166982239339, 134.40549905328197, Math.toRadians(270));
 
-    private final Pose scorePose1 = new Pose(53.92057761732854, 74.81588447653431, Math.toRadians(180));
+    private final Pose scorePose1 = new Pose(53.92057761732854, 75.81588447653431, Math.toRadians(180));
 
     private final Pose spike2 = new Pose(17.76534296028881, 58.50902527075811, Math.toRadians(180));
 
@@ -46,11 +48,11 @@ public class Ball_LEBRON extends OpMode {
 
     private final Pose spike3control = new Pose(62.50722021660651, 33.94404332129967);
 
-    private final Pose scorePose3 = new Pose(58.5664328622579, 104.22279815839822, Math.toRadians(250));
+    private final Pose scorePose3 = new Pose(56.5664328622579, 104.22279815839822, Math.toRadians(250));
 
 
 
-    public Pose endAutoPose;
+    public static Pose endAutoPose;
 
     private  double turret_tPERd = 4.233;
     private  double angleWant = 125;
@@ -76,6 +78,9 @@ public class Ball_LEBRON extends OpMode {
 
     public static double shootertarget = 0;
 
+
+    public double goalX = 0;
+    public double goalY = 144;
 
     private Path score1, spikemark2, score2, gatepickup1, score3, gatepickup2, score4, spikemark1, score5, spikemark3, score6;
 
@@ -128,13 +133,30 @@ public class Ball_LEBRON extends OpMode {
                 case 0:
                     if (!follower.isBusy()){
                         follower.followPath(score1);
+                        robot.stopper.setPosition(0.7);
+                        robot.intake.setPower(0.3);
+                        robot.intake2.setPower(-0.3);
+                        shootertarget = 1260;
+                        hoodAngle = 0.1;
+                        setPathState(100);
+                    }
+                    break;
+
+                case 100:
+                    if (!follower.isBusy()){
+                        robot.stopper.setPosition(0.47);
+                        robot.intake.setPower(1);
+                        robot.intake2.setPower(-1);
                         setPathState(1);
                     }
                     break;
 
                 case 1:
-                    if (!follower.isBusy()){
+                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5){
                         follower.followPath(spikemark2);
+                        robot.stopper.setPosition(0.7);
+                        robot.intake.setPower(0.7);
+                        robot.intake2.setPower(-0.7);
                         setPathState(2);
                     }
                     break;
@@ -142,19 +164,34 @@ public class Ball_LEBRON extends OpMode {
                 case 2:
                     if (!follower.isBusy()){
                         follower.followPath(score2);
+                        robot.stopper.setPosition(0.47);
+                        robot.intake.setPower(1);
+                        robot.intake2.setPower(-1);
+                        setPathState(101);
+                    }
+                    break;
+
+                case 101:
+                    if (!follower.isBusy()){
+                        robot.stopper.setPosition(0.47);
+                        robot.intake.setPower(1);
+                        robot.intake2.setPower(-1);
                         setPathState(3);
                     }
                     break;
 
                 case 3:
-                    if (!follower.isBusy()){
+                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5){
                         follower.followPath(gatepickup1);
+                        robot.stopper.setPosition(0.7);
+                        robot.intake.setPower(0.7);
+                        robot.intake2.setPower(-0.7);
                         setPathState(4);
                     }
                     break;
 
                 case 4:
-                    if (!follower.isBusy() & pathTimer.getElapsedTimeSeconds() > 2.5){
+                    if (!follower.isBusy() & pathTimer.getElapsedTimeSeconds() > 3){
                         follower.followPath(score3);
                         setPathState(5);
                     }
@@ -168,7 +205,7 @@ public class Ball_LEBRON extends OpMode {
                     break;
 
                 case 6:
-                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.5){
+                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3){
                         follower.followPath(score4);
                         setPathState(7);
                     }
@@ -198,7 +235,7 @@ public class Ball_LEBRON extends OpMode {
                 case 10:
                     if (!follower.isBusy()){
                         follower.followPath(score6);
-                        setPathState(100);
+                        setPathState(110);
                     }
                     break;
 
@@ -215,16 +252,44 @@ public class Ball_LEBRON extends OpMode {
 
     @Override
     public void loop(){
-
-
         follower.update();
         autonomousPathUpdate();
 
+        double shooterVelocity = robot.shooter.getVelocity();
+        double output = shooterController.calculate(shooterVelocity, shootertarget);
+        robot.shooter.setVelocity(output);
+        robot.angleServo.setPosition(hoodAngle);
 
+        double robotX = follower.getPose().getX();
+        double robotY = follower.getPose().getY();
 
-        endAutoPose = new Pose(robot.pinpoint.getPosY(DistanceUnit.INCH), robot.pinpoint.getHeading(AngleUnit.DEGREES));
+        double robXV = robot.pinpoint.getVelX(DistanceUnit.INCH) * 0.3;
+        double robYV = robot.pinpoint.getVelY(DistanceUnit.INCH) * 0.3;
 
-        RobotPose.endPose = endAutoPose;
+        double dx = goalX - (robotX + robXV);
+        double dy = goalY - (robotY + robYV);
+
+        double goalHeadingField = Math.atan2(-dy, -dx);
+        double goalHeadingFieldDegrees = Math.toDegrees(goalHeadingField);
+
+        double robotHeading = follower.getPose().getHeading();
+        double robotHeadingDegrees = Math.toDegrees(robotHeading);
+
+        double turretTargetAngle = goalHeadingFieldDegrees - robotHeadingDegrees;
+        double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
+
+        double target = normA(turretTargetAngle);
+        if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
+
+        double turretPower = (turretController.calculate(turretAngle, target));
+        robot.turret.setPower(turretPower);
+
+        telemetry.addData("shooter", robot.shooter.getVelocity());
+        telemetry.addData("X", follower.getPose().getX());
+        telemetry.addData("Y", follower.getPose().getY());
+        telemetry.addData("Heading (Radians)", follower.getPose().getHeading());
+        telemetry.addData("Heading (Degrees)", Math.toDegrees(follower.getPose().getHeading()));
+        telemetry.update();
     }
 
 
@@ -258,5 +323,13 @@ public class Ball_LEBRON extends OpMode {
     @Override
     public void stop(){
 
+        endAutoPose = new Pose(follower.getPose().getX(), follower.getPose().getY(), follower.getPose().getHeading());
+
+        RobotPose.endPose = endAutoPose;
+
+
     }
+
+    public double normA(double angle) {angle %= 360; if (angle < -180) angle += 360; else if (angle > 180) angle -= 360;return angle;}
+
 }

@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode.NewAutosFixedPinpoint;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;

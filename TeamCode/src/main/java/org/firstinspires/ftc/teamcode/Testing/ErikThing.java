@@ -127,25 +127,23 @@ public class ErikThing extends LinearOpMode {
 //            }
 
 
-            bottomMotor.setPower(gamepad1.right_stick_y);
 
-            topMotor.setPower(gamepad1.left_stick_y);
 
 
             shooterController.setPIDF(P,I,D,F);
 
 
-//            double output = shooterController.calculate(
-//                    bottomMotor.getVelocity(), targetVelocity
-//            );
-//            bottomMotor.setVelocity(output);
-//
-//
-//            double output1 = shooterController.calculate(
-//                    topMotor.getVelocity(), targetVelocity
-//            );
-//            topMotor.setVelocity(output1);
-//
+            double output = shooterController.calculate(
+                    bottomMotor.getVelocity(), targetVelocity
+            );
+            bottomMotor.setVelocity(output);
+
+
+            double output1 = shooterController.calculate(
+                    topMotor.getVelocity(), targetVelocity
+            );
+            topMotor.setVelocity(output1);
+
 //
 
             bottomVelocity = bottomMotor.getVelocity();
