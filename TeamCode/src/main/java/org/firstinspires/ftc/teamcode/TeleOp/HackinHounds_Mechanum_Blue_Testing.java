@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import static org.firstinspires.ftc.teamcode.NewAutosFixedPinpoint.Ball_LEBRON.endAutoPose;
 import static org.firstinspires.ftc.teamcode.PedroPathing.Tuning.follower;
 
 import com.acmerobotics.dashboard.FtcDashboard;
@@ -16,7 +15,6 @@ import com.seattlesolvers.solverslib.controller.PIDFController;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.RobotPose;
