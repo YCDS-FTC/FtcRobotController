@@ -102,11 +102,6 @@ public class Reset extends OpMode {
         robot.limelight.pipelineSwitch(1);
     }
 
-    @Override
-    public void start(){
-        robot.limelight.start();
-
-    }
 
 
     @Override
@@ -114,11 +109,6 @@ public class Reset extends OpMode {
         robot.imu.resetYaw();
         robot.turret.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.turret.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    }
-
-    @Override
-    public void stop(){
-        robot.limelight.stop();
     }
 
     public double normA(double angle) {angle %= 360; if (angle < -180) angle += 360; else if (angle > 180) angle -= 360;return angle;}

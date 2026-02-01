@@ -80,7 +80,7 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
     double robotHeadingOffset = RobotPose.endHeading;
 
     public double goalX = 0;
-    public double goalY = 144;
+    public double goalY = 141.5;
 
     Pose startPose = RobotPose.endPose;
 
@@ -99,7 +99,7 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
         robot.init(hardwareMap);
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(RobotPose.endPose);
+        follower.setStartingPose(startPose);
 
 
         dashboard = FtcDashboard.getInstance();
@@ -423,11 +423,7 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
 
 
 
-    @Override
-    public void stop(){
-        robot.limelight.stop();
 
-    }
 
     public double normA(double angle) {angle %= 360; if (angle < -180) angle += 360; else if (angle > 180) angle -= 360;return angle;}
     public double clamp(double x, double min, double max) {return Math.max(min,Math.min(max,x));}
