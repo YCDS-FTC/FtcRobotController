@@ -16,7 +16,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 
-@Autonomous(name = "Red far", group = "Examples")
 public class Red_Far extends OpMode {
 
     private HackinHoundsHardware robot = new HackinHoundsHardware();

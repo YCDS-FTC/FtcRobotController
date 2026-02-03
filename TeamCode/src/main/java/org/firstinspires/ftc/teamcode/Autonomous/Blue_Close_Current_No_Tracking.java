@@ -17,7 +17,6 @@ import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.RobotPose;
 
-@Autonomous(name = "blue-close-current", group = "Examples")
 public class Blue_Close_Current_No_Tracking extends OpMode {
 
     private HackinHoundsHardware robot = new HackinHoundsHardware();

@@ -17,7 +17,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 
-@Autonomous(name = "DING DONG auto far blue", group = "Examples")
 public class FAR_BLUE extends OpMode {
 
     private HackinHoundsHardware robot = new HackinHoundsHardware();

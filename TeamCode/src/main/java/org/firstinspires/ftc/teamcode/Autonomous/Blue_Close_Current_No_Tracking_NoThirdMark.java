@@ -15,7 +15,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 
-@Autonomous(name = "blue-close-current-nothirdmark", group = "Examples")
 public class Blue_Close_Current_No_Tracking_NoThirdMark extends OpMode {
 
     private HackinHoundsHardware robot = new HackinHoundsHardware();
