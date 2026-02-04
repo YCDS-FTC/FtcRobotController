@@ -73,8 +73,8 @@ public class ball12_red extends OpMode {
     public static double shootertarget = 0;
 
 
-    public double goalX = 0;
-    public double goalY = 144;
+    public double goalX = 143;
+    public double goalY = 143;
 
     private Path score1, score2, spikemark2, score3, gate, score4,spikemark1, spikemark3, move;
 
@@ -117,8 +117,7 @@ public class ball12_red extends OpMode {
 
         move = new Path(new BezierLine(scorePose1, park));
         move.setConstantHeadingInterpolation(scorePose1.getHeading());
-        move.setBrakingStart(6);
-        move.setBrakingStrength(1.5);
+
 
     }
 
@@ -132,7 +131,7 @@ public class ball12_red extends OpMode {
                         robot.stopper.setPosition(0.7);
                         robot.intake.setPower(0.3);
                         robot.intake2.setPower(-0.3);
-                        shootertarget = 1080;
+                        shootertarget = 1100;
                         hoodAngle = 0;
                         goodTrack = true;
                         setPathState(100);
@@ -168,14 +167,14 @@ public class ball12_red extends OpMode {
                     break;
 
                 case 2:
-                    if (!follower.isBusy()){
+                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3.5){
                         follower.followPath(score2);
                         setPathState(101);
                     }
                     break;
 
                 case 101:
-                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.2){
+                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3){
                         robot.stopper.setPosition(0.47);
                         robot.intake.setPower(1);
                         robot.intake2.setPower(-1);
@@ -204,7 +203,7 @@ public class ball12_red extends OpMode {
                     break;
 
                 case 103:
-                    if (!follower.isBusy()  && pathTimer.getElapsedTimeSeconds() > 2.3){
+                    if (!follower.isBusy()  && pathTimer.getElapsedTimeSeconds() > 3){
                         robot.intake.setPower(1);
                         robot.intake2.setPower(-1);
                         robot.stopper.setPosition(0.47);
@@ -236,7 +235,7 @@ public class ball12_red extends OpMode {
 
 
                 case 10:
-                    if (!follower.isBusy()  && pathTimer.getElapsedTimeSeconds() > 2.3){
+                    if (!follower.isBusy()  && pathTimer.getElapsedTimeSeconds() > 3.5){
                         robot.intake.setPower(1);
                         robot.intake2.setPower(-1);
                         robot.stopper.setPosition(0.47);
@@ -245,7 +244,7 @@ public class ball12_red extends OpMode {
                     break;
 
                 case 41:
-                    if(pathTimer.getElapsedTimeSeconds()> 0.5){
+                    if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds()> 0.5){
                         follower.followPath(move);
                         goodTrack = false;
                         robot.stopper.setPosition(0.7);
@@ -283,7 +282,7 @@ public class ball12_red extends OpMode {
         double dx = goalX - (robotX + robXV);
         double dy = goalY - (robotY + robYV);
 
-        double goalHeadingField = Math.atan2(dy, -dx);
+        double goalHeadingField = Math.atan2(-dy, -dx);
         double goalHeadingFieldDegrees = Math.toDegrees(goalHeadingField);
 
         double robotHeading = follower.getPose().getHeading();

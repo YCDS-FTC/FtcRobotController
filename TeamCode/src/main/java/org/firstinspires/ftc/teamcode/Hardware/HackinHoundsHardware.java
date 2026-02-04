@@ -387,12 +387,26 @@ public class HackinHoundsHardware extends Hardware {
 
     }
 
-    public double limelight(double X, double Y){
+    public double odometryDistance(double X, double Y){
 
         double distanceToGoal1 = Math.sqrt(Math.pow(0 - X, 2) + Math.pow(144 - Y, 2));
 
         return distanceToGoal1 - 28.5 ;
     }
+
+
+    public double limelight(double ty, double tx){
+        double targetOffsetAngle_Vertical = ty;
+        double txToRadians = tx * (3.14159/180.0);
+        double angleToGoalDegrees = limelightMountAngleDegrees + targetOffsetAngle_Vertical;
+        double angleToGoalRadians = angleToGoalDegrees * (3.14159/ 180.0);
+
+        double distanceToGoal1 = (goalHeightInches - limelightLensHeightInches) / Math.tan(angleToGoalRadians) + 3.3;
+        double distanceToGoal = (distanceToGoal1) * Math.cos(txToRadians);
+
+        return distanceToGoal;
+    }
+
 
     public double mapColor(double r, double g, double b) {
         boolean blueMax = b >= g && b >= r;
