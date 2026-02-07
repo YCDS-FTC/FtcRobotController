@@ -18,7 +18,8 @@ import org.firstinspires.ftc.teamcode.RobotPose;
 
 @Autonomous(name="12 close red", group = "examples")
 public class ball12_red extends OpMode {
-    
+
+    /**CHECK START POSE **/
     private HackinHoundsHardware robot = new HackinHoundsHardware();
 
     private Follower follower;
@@ -33,11 +34,11 @@ public class ball12_red extends OpMode {
 
     private final Pose spike1 = new Pose(123.42960288808663, 83.48014440433212, Math.toRadians(0));
 
-    private final Pose emptyGate = new Pose(128.75090252707582, 72.43321299638991, Math.toRadians(90));
+    private final Pose emptyGate = new Pose(128.75090252707582, 73.00615729347214, Math.toRadians(90));
 
-    private final Pose gateControl = new Pose(110.2350202859027, 77.56048328508678);
+    private final Pose gateControl = new Pose(111.76278141129379, 75.3006348811154);
 
-    private final Pose spike2 = new Pose(129.81338360037701, 59.58152686145146, Math.toRadians(0));
+    private final Pose spike2 = new Pose(131.35184513883854, 59.58152686145146, Math.toRadians(330));
 
     private final Pose spike2control = new Pose(82.89167293303436, 56.50161791375891);
 
@@ -63,9 +64,9 @@ public class ball12_red extends OpMode {
     PIDFController turretController = new PIDFController(p,i,d,f);
 
 
-    public static double kp = 11;
+    public static double kp = 14;
     public static double ki = 0;
-    public static double kd = 2;
+    public static double kd = 3;
     public static double kf = 1;
 
 
@@ -79,7 +80,7 @@ public class ball12_red extends OpMode {
     public double goalX = 144;
     public double goalY = 144;
 
-    private Path score1, score2, spikemark2, score3, gate, score4,spikemark1, spikemark3, move;
+    private Path score1, score2, spikemark2, score3, score4, gate, spikemark1, spikemark3, move;
 
     public void buildPaths(){
 
@@ -103,17 +104,17 @@ public class ball12_red extends OpMode {
 
 
         spikemark2 = new Path(new BezierCurve(scorePose1, spike2control, spike2));
-        spikemark2.setConstantHeadingInterpolation(spike2.getHeading());
+        spikemark2.setConstantHeadingInterpolation(scorePose1.getHeading());
 
         score3 = new Path(new BezierLine(spike2, scorePose1));
-        score3.setConstantHeadingInterpolation(spike2.getHeading());
+        score3.setLinearHeadingInterpolation(spike2.getHeading(), scorePose1.getHeading());
         score3.setBrakingStart(6);
         score3.setBrakingStrength(1.5);
 
         spikemark3 = new Path(new BezierCurve(scorePose1, spike3control, spike3));
         spikemark3.setConstantHeadingInterpolation(spike3.getHeading());
 
-        score4 = new Path(new BezierLine(spike3, scorePose1));
+        score4 = new Path(new BezierCurve(spike3, spike3control, scorePose1));
         score4.setConstantHeadingInterpolation(scorePose1.getHeading());
         score4.setBrakingStart(6);
         score4.setBrakingStrength(1.5);
@@ -234,7 +235,7 @@ public class ball12_red extends OpMode {
                         robot.stopper.setPosition(0.7);
                         robot.intake.setPower(0.7);
                         robot.intake2.setPower(-0.7);
-                        follower.followPath(score3);
+                        follower.followPath(score4);
                         setPathState(10);
                     }
                     break;

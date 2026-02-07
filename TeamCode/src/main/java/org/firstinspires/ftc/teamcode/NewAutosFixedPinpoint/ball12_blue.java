@@ -60,9 +60,9 @@ public class ball12_blue extends OpMode {
     PIDFController turretController = new PIDFController(p,i,d,f);
 
 
-    public static double kp = 11;
+    public static double kp = 14;
     public static double ki = 0;
-    public static double kd = 2;
+    public static double kd = 3;
     public static double kf = 1;
 
 
@@ -124,7 +124,6 @@ public class ball12_blue extends OpMode {
 
         public void autonomousPathUpdate(){
             switch (pathState){
-
                 case 0:
                     if (!follower.isBusy()){
                         follower.followPath(score1);
@@ -139,7 +138,7 @@ public class ball12_blue extends OpMode {
                     break;
 
                 case 100:
-                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.5){
+                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2){
                         robot.stopper.setPosition(0.47);
                         robot.intake.setPower(1);
                         robot.intake2.setPower(-1);
@@ -161,20 +160,22 @@ public class ball12_blue extends OpMode {
 
                 case 67:
                     if (!follower.isBusy()){
-                       follower.followPath(gate);
+                        follower.followPath(gate);
+                        robot.intake.setPower(0.4);
+                        robot.intake2.setPower(0);
                         setPathState(2);
                     }
                     break;
 
                 case 2:
-                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3){
+                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3.5){
                         follower.followPath(score2);
                         setPathState(101);
                     }
                     break;
 
                 case 101:
-                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3.5){
+                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.8){
                         robot.stopper.setPosition(0.47);
                         robot.intake.setPower(1);
                         robot.intake2.setPower(-1);
@@ -229,14 +230,14 @@ public class ball12_blue extends OpMode {
                         robot.stopper.setPosition(0.7);
                         robot.intake.setPower(0.7);
                         robot.intake2.setPower(-0.7);
-                        follower.followPath(score3);
+                        follower.followPath(score4);
                         setPathState(10);
                     }
                     break;
 
 
                 case 10:
-                    if (!follower.isBusy()  && pathTimer.getElapsedTimeSeconds() > 4){
+                    if (!follower.isBusy()  && pathTimer.getElapsedTimeSeconds() > 3.2){
                         robot.intake.setPower(1);
                         robot.intake2.setPower(-1);
                         robot.stopper.setPosition(0.47);
@@ -245,13 +246,14 @@ public class ball12_blue extends OpMode {
                     break;
 
                 case 41:
-                    if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5){
+                    if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds()> 0.5){
                         follower.followPath(move);
                         goodTrack = false;
                         robot.stopper.setPosition(0.7);
                         robot.intake2.setPower(0);
                         robot.intake.setPower(0);
                     }
+
 
             }
         }
