@@ -131,8 +131,8 @@ public class ball12_blue extends OpMode {
                         robot.stopper.setPosition(0.7);
                         robot.intake.setPower(0.3);
                         robot.intake2.setPower(-0.3);
-                        shootertarget = 1100;
-                        hoodAngle = 0;
+                        shootertarget = 1130;
+                        hoodAngle = 0.1;
                         goodTrack = true;
                         setPathState(100);
                     }

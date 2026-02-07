@@ -25,23 +25,26 @@ public class ball12_red extends OpMode {
     private int pathState;
     private Timer pathTimer, opmodeTimer;
 
-    private final Pose startPose = new Pose(112.57562554462842, 134.62490304417355, Math.toRadians(270));
+    private final Pose startPose = new Pose(128.39970426505243, 113.78557896057087, Math.toRadians(180));
 
     private final Pose scorePose1 = new Pose(89.44404332129963, 83.48014440433212, Math.toRadians(0));
 
-    private final Pose spike1 = new Pose(126.42960288808663, 83.48014440433212, Math.toRadians(0));
+    private final Pose scoreCurve = new Pose(101.78255490772712, 105.3263601344639);
+
+    private final Pose spike1 = new Pose(123.42960288808663, 83.48014440433212, Math.toRadians(0));
 
     private final Pose emptyGate = new Pose(128.75090252707582, 72.43321299638991, Math.toRadians(90));
 
-    private final Pose gateControl = new Pose(123.03068592057762, 77.78339350180505);
-    private final Pose spike2 = new Pose(125.81338360037701, 59.58152686145146, Math.toRadians(0));
+    private final Pose gateControl = new Pose(110.2350202859027, 77.56048328508678);
+
+    private final Pose spike2 = new Pose(129.81338360037701, 59.58152686145146, Math.toRadians(0));
 
     private final Pose spike2control = new Pose(82.89167293303436, 56.50161791375891);
 
 
-    private final Pose spike3 = new Pose(131.07462686567163, 34.652452025586356, Math.toRadians(0));
+    private final Pose spike3 = new Pose(130.07462686567163, 34.652452025586356, Math.toRadians(0));
 
-    private final Pose spike3control = new Pose(77.64313040265408, 28.97248158382918);
+    private final Pose spike3control = new Pose(77.64313040265408, 24.97248158382918);
 
     private final Pose park = new Pose(114.56289978678038, 83.33901918976545, Math.toRadians(0));
 
@@ -73,15 +76,15 @@ public class ball12_red extends OpMode {
     public static double shootertarget = 0;
 
 
-    public double goalX = 143;
-    public double goalY = 143;
+    public double goalX = 144;
+    public double goalY = 144;
 
     private Path score1, score2, spikemark2, score3, gate, score4,spikemark1, spikemark3, move;
 
     public void buildPaths(){
 
 
-        score1 = new Path(new BezierLine(startPose, scorePose1));
+        score1 = new Path(new BezierCurve(startPose, scoreCurve, scorePose1));
         score1.setLinearHeadingInterpolation(startPose.getHeading(), scorePose1.getHeading(), 0.5);
         score1.setBrakingStart(6);
         score1.setBrakingStrength(1.5);
@@ -131,15 +134,15 @@ public class ball12_red extends OpMode {
                         robot.stopper.setPosition(0.7);
                         robot.intake.setPower(0.3);
                         robot.intake2.setPower(-0.3);
-                        shootertarget = 1100;
-                        hoodAngle = 0;
+                        shootertarget = 1130;
+                        hoodAngle = 0.1;
                         goodTrack = true;
                         setPathState(100);
                     }
                     break;
 
                 case 100:
-                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1.5){
+                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2){
                         robot.stopper.setPosition(0.47);
                         robot.intake.setPower(1);
                         robot.intake2.setPower(-1);
@@ -162,6 +165,8 @@ public class ball12_red extends OpMode {
                 case 67:
                     if (!follower.isBusy()){
                        follower.followPath(gate);
+                       robot.intake.setPower(0.4);
+                       robot.intake2.setPower(0);
                         setPathState(2);
                     }
                     break;
@@ -174,7 +179,7 @@ public class ball12_red extends OpMode {
                     break;
 
                 case 101:
-                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3){
+                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.8){
                         robot.stopper.setPosition(0.47);
                         robot.intake.setPower(1);
                         robot.intake2.setPower(-1);
@@ -187,6 +192,7 @@ public class ball12_red extends OpMode {
 
                 case 3:
                     if (!follower.isBusy() & pathTimer.getElapsedTimeSeconds() > 0.5){
+                        robot.stopper.setPosition(0.7);
                         follower.followPath(spikemark2);
                         setPathState(4);
                     }
@@ -203,7 +209,7 @@ public class ball12_red extends OpMode {
                     break;
 
                 case 103:
-                    if (!follower.isBusy()  && pathTimer.getElapsedTimeSeconds() > 3){
+                    if (!follower.isBusy()  && pathTimer.getElapsedTimeSeconds() > 2.5){
                         robot.intake.setPower(1);
                         robot.intake2.setPower(-1);
                         robot.stopper.setPosition(0.47);
@@ -235,7 +241,7 @@ public class ball12_red extends OpMode {
 
 
                 case 10:
-                    if (!follower.isBusy()  && pathTimer.getElapsedTimeSeconds() > 3.5){
+                    if (!follower.isBusy()  && pathTimer.getElapsedTimeSeconds() > 3.2){
                         robot.intake.setPower(1);
                         robot.intake2.setPower(-1);
                         robot.stopper.setPosition(0.47);

@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.PedroPathing.Tuning.follower;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.pedropathing.geometry.Pose;
 import com.qualcomm.hardware.dfrobot.HuskyLens;
 import com.qualcomm.hardware.limelightvision.LLResult;
@@ -60,7 +61,7 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
 
     PIDFController shooterController = new PIDFController(kp, ki, kd, kf);
 
-    public static double hoodAngle = 0;
+    public static double shooterAngle = 0;
     public static double stopperPosition = .47;
     //position is 0.44 for stopping and 0.63 for neutral
 
@@ -313,11 +314,62 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
 
 //        distanceToGoal = robot.odometryDistance(robotX, robotY);
 
-            distanceToGoal = robot.limelight(ty, tx);
 
         if (gamepad1.b){
-            follower.setPose(new Pose(7.625, 9, Math.toRadians(0)));
+            follower.setPose(new Pose(9, 7.625, Math.toRadians(0)));
         }
+
+
+//        robot.shooter.setVelocity(motorPower);
+
+        double robXV = robot.pinpoint.getVelX(DistanceUnit.INCH) * xPrediction;
+        double robYV = robot.pinpoint.getVelY(DistanceUnit.INCH) * yPrediction;
+
+        if(gamepad1.right_bumper){
+            goalX += 1.5;
+        }
+        if(gamepad1.left_bumper){
+            goalX -= 1.5;
+        }
+
+        double dx = goalX - (robotX + robXV);
+        double dy = goalY - (robotY + robYV);
+
+        double predictedX = robotX + robXV;
+        double predictedY = robotY + robYV;
+
+        distanceToGoal = robot.odometryDistanceBlue(predictedX, predictedY);
+
+
+        double goalHeadingField = Math.atan2(-dy, -dx);
+
+        double goalHeadingFieldDegrees = Math.toDegrees(goalHeadingField);
+
+        double robotHeading = follower.getPose().getHeading();
+        double robotHeadingDegrees = Math.toDegrees(robotHeading);
+
+        double turretTargetAngle = goalHeadingFieldDegrees - robotHeadingDegrees;
+        double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
+
+//        else if (!gamepad1.left_bumper){
+//            angleWant = (robotHeading + turretAngle);
+//        }
+
+//        turretTargetAngle = Math.toDegrees(Math.atan2(144 - (robot.pinpoint.getPosY(DistanceUnit.INCH) + robot.pinpoint.getVelY(DistanceUnit.INCH)*1), 0 - (robot.pinpoint.getPosX(DistanceUnit.INCH) + robot.pinpoint.getVelX(DistanceUnit.INCH)*1))) - 180;
+
+//        double goalHeading = Math.toDegrees(Math.atan2(-(goalY - (robotY)) +  robYV, -(goalX - (robotX)) + robXV) * 1) - 180;
+
+        double target = normA(turretTargetAngle - robotHeading);
+
+        if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
+//        double error = target - turretAngle;
+//        double turretPower = clamp(error * slow, -1, 1);
+        double turretPower = (turretController.calculate(turretAngle, target));
+
+
+        robot.turret.setPower(turretPower);
+
+
 
 //        double distanceToGoal =  robot.limelight(robotX,robotY);
 
@@ -348,6 +400,7 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
         double output = shooterController.calculate(shooterVelocity, motorPower);
 
 
+
         if(gamepad1.a){
             robot.shooter.setVelocity(0);
         } else if (gamepad1.left_trigger <= 0.4){
@@ -356,51 +409,6 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
 
         }
 
-
-//        robot.shooter.setVelocity(motorPower);
-
-
-
-        double robXV = robot.pinpoint.getVelX(DistanceUnit.INCH) * xPrediction;
-        double robYV = robot.pinpoint.getVelY(DistanceUnit.INCH) * yPrediction;
-
-        if(gamepad1.right_bumper){
-            goalX += 1.5;
-        }
-        if(gamepad1.left_bumper){
-            goalX -= 1.5;
-        }
-
-        double dx = goalX - (robotX + robXV);
-        double dy = goalY - (robotY + robYV);
-
-        double goalHeadingField = Math.atan2(-dy, -dx);
-
-        double goalHeadingFieldDegrees = Math.toDegrees(goalHeadingField);
-
-        double robotHeading = follower.getPose().getHeading();
-        double robotHeadingDegrees = Math.toDegrees(robotHeading);
-
-        double turretTargetAngle = goalHeadingFieldDegrees - robotHeadingDegrees;
-        double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
-
-//        else if (!gamepad1.left_bumper){
-//            angleWant = (robotHeading + turretAngle);
-//        }
-
-//        turretTargetAngle = Math.toDegrees(Math.atan2(144 - (robot.pinpoint.getPosY(DistanceUnit.INCH) + robot.pinpoint.getVelY(DistanceUnit.INCH)*1), 0 - (robot.pinpoint.getPosX(DistanceUnit.INCH) + robot.pinpoint.getVelX(DistanceUnit.INCH)*1))) - 180;
-
-//        double goalHeading = Math.toDegrees(Math.atan2(-(goalY - (robotY)) +  robYV, -(goalX - (robotX)) + robXV) * 1) - 180;
-
-        double target = normA(turretTargetAngle - robotHeading);
-
-        if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
-//        double error = target - turretAngle;
-//        double turretPower = clamp(error * slow, -1, 1);
-        double turretPower = (turretController.calculate(turretAngle, target));
-
-
-        robot.turret.setPower(turretPower);
 
         robot.lights(robot.light1, robot.light2, robot.light3, robot.color0, robot.color1, robot.color2, robot.color3);
 
@@ -437,14 +445,14 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
 
         telemetry.update();
 
-//        TelemetryPacket packet = new TelemetryPacket();
-//
-//        packet.put("shooterVelocity", robot.shooter.getVelocity());
-//        packet.put("shooterRPM", (robot.shooter.getVelocity() / 28.0) * 60.0);
-//        packet.put("shootertarget", shootertarget);
-//        packet.put("turretTarget",  target);
-//
-//        dashboard.sendTelemetryPacket(packet);
+        TelemetryPacket packet = new TelemetryPacket();
+
+        packet.put("shooterVelocity", robot.shooter.getVelocity());
+        packet.put("shooterRPM", (robot.shooter.getVelocity() / 28.0) * 60.0);
+        packet.put("shootertarget", shootertarget);
+        packet.put("turretTarget",  target);
+
+        dashboard.sendTelemetryPacket(packet);
 
     }
 
