@@ -346,13 +346,13 @@ public class HackinHounds_Mechanum_Red_Testing extends OpMode {
 
         double shooterVelocity = robot.shooter.getVelocity();
 
-        double output = shooterController.calculate(shooterVelocity, motorPower);
+        double output = shooterController.calculate(shooterVelocity, shootertarget);
 
 
         if(gamepad1.a){
             robot.shooter.setVelocity(0);
         } else if (gamepad1.left_trigger <= 0.4){
-            robot.angleServo.setPosition(hoodAngle);
+            robot.angleServo.setPosition(shooterangle);
             robot.shooter.setVelocity(output);
 
         }

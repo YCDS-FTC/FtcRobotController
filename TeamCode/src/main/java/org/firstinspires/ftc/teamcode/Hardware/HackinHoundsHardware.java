@@ -234,7 +234,7 @@ public class HackinHoundsHardware extends Hardware {
 
 
         getHoodAngle.add(0,0);
-        getHoodAngle.add(57, 0.1);
+        getHoodAngle.add(57, 0.11);
         getHoodAngle.add(62, 0.1);
         getHoodAngle.add(67, 0.11);
         getHoodAngle.add(72, 0.13);
@@ -267,7 +267,7 @@ public class HackinHoundsHardware extends Hardware {
         getShootPower.add(42, 1100);
         getShootPower.add(47, 1080);
         getShootPower.add(52, 1080);
-        getShootPower.add(57, 1100);
+        getShootPower.add(57, 1120);
         getShootPower.add(62, 1140);
         getShootPower.add(67, 1160);
         getShootPower.add(72, 1220);

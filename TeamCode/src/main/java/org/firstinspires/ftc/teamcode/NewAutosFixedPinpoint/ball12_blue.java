@@ -25,23 +25,24 @@ public class ball12_blue extends OpMode {
     private int pathState;
     private Timer pathTimer, opmodeTimer;
 
-    private final Pose startPose = new Pose(32.234877285045336, 134.48049871204358, Math.toRadians(270));
+    private final Pose startPose = new Pose(15.73952124789363, 113.74984855724483, Math.toRadians(0));
 
-    private final Pose scorePose1 = new Pose(47.682310469314075, 84.51985559566788, Math.toRadians(180));
+    private final Pose scorePose1 = new Pose(49.682310469314075, 84.51985559566788, Math.toRadians(180));
 
     private final Pose spike1 = new Pose(17.39350180505415, 84.51985559566788, Math.toRadians(180));
 
     private final Pose emptyGate = new Pose(15.841155234657041, 73.37545126353788, Math.toRadians(90));
 
     private final Pose gateControl = new Pose(32.1985559566787, 78.42057761732852);
-    private final Pose spike2 = new Pose(15.801444043321297, 58.472924187725624, Math.toRadians(180));
 
-    private final Pose spike2control = new Pose(61.35920577617328, 56.861010830324915);
+    private final Pose spike2 = new Pose(9.801444043321297, 58.472924187725624, Math.toRadians(215));
+
+    private final Pose spike2control = new Pose(63.36539772663769, 51.74026779626918);
 
 
-    private final Pose spike3 = new Pose(12.866425992779789, 35.71480144404332, Math.toRadians(180));
+    private final Pose spike3 = new Pose(9.866425992779789, 35.71480144404332, Math.toRadians(180));
 
-    private final Pose spike3control = new Pose(72.15523465703971, 30.14620938628158);
+    private final Pose spike3control = new Pose(72.15523465703971, 25.14620938628158);
 
     private final Pose park = new Pose(27.956678700361007, 79.1696750902527, Math.toRadians(180));
 
@@ -73,8 +74,8 @@ public class ball12_blue extends OpMode {
     public static double shootertarget = 0;
 
 
-    public double goalX = 0;
-    public double goalY = 143;
+    public double goalX = -0.5;
+    public double goalY = 144;
 
     private Path score1, score2, spikemark2, score3, gate, score4,spikemark1, spikemark3, move;
 
@@ -100,10 +101,10 @@ public class ball12_blue extends OpMode {
 
 
         spikemark2 = new Path(new BezierCurve(scorePose1, spike2control, spike2));
-        spikemark2.setConstantHeadingInterpolation(spike2.getHeading());
+        spikemark2.setConstantHeadingInterpolation(scorePose1.getHeading());
 
         score3 = new Path(new BezierLine(spike2, scorePose1));
-        score3.setConstantHeadingInterpolation(spike2.getHeading());
+        score3.setLinearHeadingInterpolation(spike2.getHeading(), scorePose1.getHeading());
         score3.setBrakingStart(6);
         score3.setBrakingStrength(1.5);
 
@@ -130,8 +131,8 @@ public class ball12_blue extends OpMode {
                         robot.stopper.setPosition(0.7);
                         robot.intake.setPower(0.3);
                         robot.intake2.setPower(-0.3);
-                        shootertarget = 1130;
-                        hoodAngle = 0.1;
+                        shootertarget = 1120;
+                        hoodAngle = 0.11;
                         goodTrack = true;
                         setPathState(100);
                     }
@@ -220,6 +221,7 @@ public class ball12_blue extends OpMode {
                         robot.stopper.setPosition(0.7);
                         robot.intake.setPower(0.7);
                         robot.intake2.setPower(-0.7);
+                        follower.setMaxPower(0.7);
                         follower.followPath(spikemark3);
                         setPathState(9);
                     }
@@ -230,6 +232,7 @@ public class ball12_blue extends OpMode {
                         robot.stopper.setPosition(0.7);
                         robot.intake.setPower(0.7);
                         robot.intake2.setPower(-0.7);
+                        follower.setMaxPower(1);
                         follower.followPath(score4);
                         setPathState(10);
                     }

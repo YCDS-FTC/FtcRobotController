@@ -16,8 +16,8 @@ import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.RobotPose;
 
-@Autonomous(name="12 close red", group = "examples")
-public class ball12_red extends OpMode {
+@Autonomous(name="15 close red", group = "examples")
+public class ball15_red extends OpMode {
 
     /**CHECK START POSE **/
     private HackinHoundsHardware robot = new HackinHoundsHardware();
@@ -34,9 +34,13 @@ public class ball12_red extends OpMode {
 
     private final Pose spike1 = new Pose(123.42960288808663, 83.48014440433212, Math.toRadians(0));
 
-    private final Pose emptyGate = new Pose(128.75090252707582, 73.00615729347214, Math.toRadians(90));
+    private final Pose opengate = new Pose(130.104223714947, 60.03329570475349, Math.toRadians(30));
 
-    private final Pose gateControl = new Pose(105.76278141129379, 75.3006348811154);
+    private final Pose gateControl = new Pose(103.26632651920735, 46.38423064456641);
+
+    private final Pose pickgate = new Pose(129.10216718266255, 55.24767801857584, Math.toRadians(45));
+
+    private final Pose score3control = new Pose(103.98363156777057, 66.12242514334254);
 
     private final Pose spike2 = new Pose(131.35184513883854, 59.58152686145146, Math.toRadians(330));
 
@@ -46,6 +50,8 @@ public class ball12_red extends OpMode {
     private final Pose spike3 = new Pose(130.07462686567163, 34.652452025586356, Math.toRadians(0));
 
     private final Pose spike3control = new Pose(77.64313040265408, 24.97248158382918);
+
+    private final Pose scorePose2 = new Pose(85.52330028724391, 107.84825585944049, Math.toRadians(305));
 
     private final Pose park = new Pose(114.56289978678038, 83.33901918976545, Math.toRadians(0));
 
@@ -80,7 +86,7 @@ public class ball12_red extends OpMode {
     public double goalX = 144;
     public double goalY = 144;
 
-    private Path score1, score2, spikemark2, score3, score4, gate, spikemark1, spikemark3, move;
+    private Path score1, score2, spikemark2, score3, score4, gate, pickfromgate, spikemark1, spikemark3, move, score5;
 
     public void buildPaths(){
 
@@ -94,30 +100,41 @@ public class ball12_red extends OpMode {
         spikemark1.setConstantHeadingInterpolation(spike1.getHeading());
 
 
-        gate = new Path(new BezierCurve(spike1, gateControl, emptyGate));
-        gate.setLinearHeadingInterpolation(spike1.getHeading(), emptyGate.getHeading());
-
-        score2 = new Path(new BezierLine(emptyGate, scorePose1));
-        score2.setLinearHeadingInterpolation(emptyGate.getHeading(), scorePose1.getHeading());
+        score2 = new Path(new BezierLine(spike2, scorePose1));
         score2.setBrakingStart(6);
         score2.setBrakingStrength(1.5);
+        score2.setLinearHeadingInterpolation(spike2.getHeading(), scorePose1.getHeading());
+
+        gate = new Path(new BezierCurve(scorePose1, gateControl, opengate));
+        gate.setLinearHeadingInterpolation(spike1.getHeading(), opengate.getHeading());
+        gate.setBrakingStart(6);
+        gate.setBrakingStart(1.5);
+
+        pickfromgate = new Path(new BezierLine(opengate, pickgate));
+        pickfromgate.setLinearHeadingInterpolation(opengate.getHeading() , pickgate.getHeading());
+
+
+        score3 = new Path(new BezierCurve(pickgate, score3control, scorePose1));
+        score3.setLinearHeadingInterpolation(pickgate.getHeading(), scorePose1.getHeading());
+        score3.setBrakingStart(6);
+        score3.setBrakingStrength(1.5);
 
 
         spikemark2 = new Path(new BezierCurve(scorePose1, spike2control, spike2));
         spikemark2.setConstantHeadingInterpolation(scorePose1.getHeading());
 
-        score3 = new Path(new BezierLine(spike2, scorePose1));
-        score3.setLinearHeadingInterpolation(spike2.getHeading(), scorePose1.getHeading());
-        score3.setBrakingStart(6);
-        score3.setBrakingStrength(1.5);
+        score4 = new Path(new BezierLine(spike1, scorePose1));
+        score4.setLinearHeadingInterpolation(spike1.getHeading(), scorePose1.getHeading());
+        score4.setBrakingStart(6);
+        score4.setBrakingStrength(1.5);
 
         spikemark3 = new Path(new BezierCurve(scorePose1, spike3control, spike3));
         spikemark3.setConstantHeadingInterpolation(spike3.getHeading());
 
-        score4 = new Path(new BezierCurve(spike3, spike3control, scorePose1));
-        score4.setConstantHeadingInterpolation(scorePose1.getHeading());
-        score4.setBrakingStart(6);
-        score4.setBrakingStrength(1.5);
+        score5 = new Path(new BezierLine(spike3, scorePose2));
+        score5.setConstantHeadingInterpolation(scorePose2.getHeading());
+        score5.setBrakingStart(6);
+        score5.setBrakingStrength(1.5);
 
         move = new Path(new BezierLine(scorePose1, park));
         move.setConstantHeadingInterpolation(scorePose1.getHeading());
@@ -143,7 +160,7 @@ public class ball12_red extends OpMode {
                     break;
 
                 case 100:
-                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2){
+                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3){
                         robot.stopper.setPosition(0.47);
                         robot.intake.setPower(1);
                         robot.intake2.setPower(-1);
@@ -153,34 +170,67 @@ public class ball12_red extends OpMode {
 
                 case 1:
                     if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5){
-                        follower.followPath(spikemark1);
+                        follower.followPath(spikemark2);
                         robot.stopper.setPosition(0.7);
                         robot.intake.setPower(0.7);
                         robot.intake2.setPower(-0.7);
+                        setPathState(24);
+                    }
+                    break;
+
+                case 24:
+                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5){
+                        follower.followPath(score2);
+                        robot.stopper.setPosition(0.7);
+                        robot.intake.setPower(0.7);
+                        robot.intake2.setPower(-0.7);
+                        setPathState(26);
+                    }
+                    break;
+
+                case 26:
+                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.6){
+                        robot.stopper.setPosition(0.47);
+                        robot.intake.setPower(1);
+                        robot.intake2.setPower(-1);
                         setPathState(67);
                     }
                     break;
 
 
 
+
                 case 67:
-                    if (!follower.isBusy()){
+                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.4){
+                        robot.stopper.setPosition(0.7);
                        follower.followPath(gate);
-                       robot.intake.setPower(0.4);
-                       robot.intake2.setPower(0);
+                       robot.intake.setPower(0.7);
+                       robot.intake2.setPower(-0.4);
+                        setPathState(89);
+                    }
+                    break;
+
+
+                case 89:
+                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.9){
+                        follower.followPath(pickfromgate);
+                        robot.intake.setPower(0.7);
+                        robot.intake2.setPower(-0.6);
                         setPathState(2);
                     }
                     break;
 
+
+
                 case 2:
-                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3.5){
-                        follower.followPath(score2);
+                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.5){
+                        follower.followPath(score3);
                         setPathState(101);
                     }
                     break;
 
                 case 101:
-                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.8){
+                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3){
                         robot.stopper.setPosition(0.47);
                         robot.intake.setPower(1);
                         robot.intake2.setPower(-1);
@@ -194,7 +244,7 @@ public class ball12_red extends OpMode {
                 case 3:
                     if (!follower.isBusy() & pathTimer.getElapsedTimeSeconds() > 0.5){
                         robot.stopper.setPosition(0.7);
-                        follower.followPath(spikemark2);
+                        follower.followPath(spikemark1);
                         setPathState(4);
                     }
                     break;
@@ -204,13 +254,13 @@ public class ball12_red extends OpMode {
                         robot.stopper.setPosition(0.7);
                         robot.intake.setPower(0.7);
                         robot.intake2.setPower(-0.7);
-                        follower.followPath(score3);
+                        follower.followPath(score4);
                         setPathState(103);
                     }
                     break;
 
                 case 103:
-                    if (!follower.isBusy()  && pathTimer.getElapsedTimeSeconds() > 2.5){
+                    if (!follower.isBusy()  && pathTimer.getElapsedTimeSeconds() > 3){
                         robot.intake.setPower(1);
                         robot.intake2.setPower(-1);
                         robot.stopper.setPosition(0.47);
@@ -235,14 +285,15 @@ public class ball12_red extends OpMode {
                         robot.stopper.setPosition(0.7);
                         robot.intake.setPower(0.7);
                         robot.intake2.setPower(-0.7);
-                        follower.followPath(score4);
+                        follower.followPath(score5);
+                        shootertarget = 1120;
                         setPathState(10);
                     }
                     break;
 
 
                 case 10:
-                    if (!follower.isBusy()  && pathTimer.getElapsedTimeSeconds() > 3.7){
+                    if (!follower.isBusy()  && pathTimer.getElapsedTimeSeconds() > 3){
                         robot.intake.setPower(1);
                         robot.intake2.setPower(-1);
                         robot.stopper.setPosition(0.47);
@@ -250,14 +301,14 @@ public class ball12_red extends OpMode {
                     }
                     break;
 
-                case 41:
-                    if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds()> 0.5){
-                        follower.followPath(move);
-                        goodTrack = false;
-                        robot.stopper.setPosition(0.7);
-                        robot.intake2.setPower(0);
-                        robot.intake.setPower(0);
-                    }
+//                case 41:
+//                    if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds()> 0.5){
+//                        follower.followPath(move);
+//                        goodTrack = false;
+//                        robot.stopper.setPosition(0.7);
+//                        robot.intake2.setPower(0);
+//                        robot.intake.setPower(0);
+//                    }
 
             }
         }
