@@ -26,24 +26,24 @@ public class blue_far_wspikemark extends OpMode {
     private int pathState;
     private Timer pathTimer, opmodeTimer;
 
-    private final Pose startPose = new Pose(86.87364620938628, 7.949458483754507, Math.toRadians(0));
+    private final Pose startPose = new Pose(86.87364620938628, 7.949458483754507, Math.toRadians(180));
 
-    private final Pose scorePose1 = new Pose(51.56317689530685, 17.17689530685918, Math.toRadians(0));
+    private final Pose scorePose1 = new Pose(51.56317689530685, 17.17689530685918, Math.toRadians(180));
 
-    private final Pose loadingzone = new Pose(12.259927797833933, 10.830324909747317, Math.toRadians(0));
+    private final Pose loadingzone = new Pose(12.259927797833933, 10.830324909747317, Math.toRadians(180));
 
-    private final Pose back = new Pose(20.877256317689532, 11.776173285198558, Math.toRadians(0));
+    private final Pose back = new Pose(20.877256317689532, 11.776173285198558, Math.toRadians(180));
 
-    private final Pose loadingzone2 = new Pose(12.02527075812274, 8.17328519855597, Math.toRadians(0));
+    private final Pose loadingzone2 = new Pose(12.02527075812274, 8.17328519855597, Math.toRadians(180));
 
-    private final Pose spike3 = new Pose(15.646209386281608, 36.870036101083045, Math.toRadians(0));
+    private final Pose spike3 = new Pose(15.646209386281608, 36.870036101083045, Math.toRadians(180));
 
     private final Pose spike3control = new Pose(63.24909747292419, 38.81588447653429);
 
 
     private final Pose cycle = new Pose(12.259927797833933, 12.830324909747317);
 
-    private final Pose park = new Pose(101.52707581227436, 16.989169675090256, Math.toRadians(0));
+    private final Pose park = new Pose(101.52707581227436, 16.989169675090256, Math.toRadians(180));
 
     boolean goodTrack;
     public static Pose endAutoPose;
@@ -153,6 +153,7 @@ public class blue_far_wspikemark extends OpMode {
                         follower.followPath(score1);
                         shootertarget = 1500;
                         hoodAngle = .12;
+                        goodTrack = true;
 
                         setPathState(1);
 

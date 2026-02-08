@@ -153,6 +153,7 @@ public class red_far_wspikemark extends OpMode {
                         follower.followPath(score1);
                         shootertarget = 1500;
                         hoodAngle = .12;
+                        goodTrack = true;
 
                         setPathState(1);
 
