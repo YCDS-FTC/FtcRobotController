@@ -357,7 +357,8 @@ public class HackinHounds_Mechanum_Red_Testing extends OpMode {
         double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
 
 
-        double target = normA(turretTargetAngle - robotHeadingDegrees);
+
+        double target = normA(turretTargetAngle);
 
         if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
 //        double error = target - turretAngle;

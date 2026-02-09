@@ -20,6 +20,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
+import org.firstinspires.ftc.teamcode.RobotPose;
 
 
 @Config
@@ -93,7 +94,7 @@ public class HackinHounds_Mechanum_Red extends OpMode {
     private boolean isStopperTimedOpen = false;
     private boolean isSingleStopperTimedOpen = false;
 
-    private Pose startPose = new Pose(8.875,7.625, Math.toRadians(0));
+    private final Pose startPose = RobotPose.endPose;
 
     @Override
     public void init(){
@@ -281,8 +282,10 @@ public class HackinHounds_Mechanum_Red extends OpMode {
 
 
 
+        double robotX = follower.getPose().getX();
+        double robotY = follower.getPose().getY();
 
-        double distanceToGoal =  robot.limelight(ty, tx);
+        double distanceToGoal =  robot.odometryDistanceRed(robotX, robotY);
 
         if (Math.abs(filteredVar - distanceToGoal) > 50 && filterStart) {
             filterTick++;
