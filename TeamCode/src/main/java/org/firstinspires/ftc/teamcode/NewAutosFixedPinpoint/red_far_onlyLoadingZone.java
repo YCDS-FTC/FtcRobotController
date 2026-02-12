@@ -16,8 +16,8 @@ import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.RobotPose;
 
-@Autonomous(name="bluefar-w/spikemark", group = "examples")
-public class blue_far_wspikemark extends OpMode {
+@Autonomous(name="redfar-onlyLoadingZone", group = "examples")
+public class red_far_onlyLoadingZone extends OpMode {
 
     /**CHECK START POSE **/
     private HackinHoundsHardware robot = new HackinHoundsHardware();
@@ -26,23 +26,19 @@ public class blue_far_wspikemark extends OpMode {
     private int pathState;
     private Timer pathTimer, opmodeTimer;
 
-    private final Pose startPose = new Pose(57.46749226006192, 7.891640866873059, Math.toRadians(180));
+    private final Pose startPose = new Pose(86.87364620938628, 7.949458483754507, Math.toRadians(0));
 
-    private final Pose scorePose1 = new Pose(51.56317689530685, 17.17689530685918, Math.toRadians(180));
+    private final Pose scorePose1 = new Pose(89.85920577617328, 17.523465703971105, Math.toRadians(0));
 
-    private final Pose loadingzone = new Pose(15.259927797833933, 10.830324909747317, Math.toRadians(180));
+    private final Pose loadingzone = new Pose(132.83393501805054, 10.29602888086643, Math.toRadians(0));
 
-    private final Pose back = new Pose(20.877256317689532, 11.776173285198558, Math.toRadians(180));
+    private final Pose back = new Pose(121.1913357400722, 10.711191335740073, Math.toRadians(0));
 
-    private final Pose loadingzone2 = new Pose(14.02527075812274, 8.17328519855597, Math.toRadians(180));
+    private final Pose loadingzone2 = new Pose(133.48736462093862, 8.971119133574003, Math.toRadians(0));
 
-    private final Pose spike3 = new Pose(15.646209386281608, 36.870036101083045, Math.toRadians(180));
+    private final Pose cycle = new Pose(132.01772151898734, 10.577215189873423);
 
-    private final Pose spike3control = new Pose(63.24909747292419, 38.81588447653429);
-
-    private final Pose cycle = new Pose(12.259927797833933, 30.830324909747317, Math.toRadians(180));
-
-    private final Pose park = new Pose(40, 16.989169675090256, Math.toRadians(180));
+    private final Pose park = new Pose(101.52707581227436, 16.989169675090256, Math.toRadians(0));
 
     boolean goodTrack;
     public static Pose endAutoPose;
@@ -72,10 +68,10 @@ public class blue_far_wspikemark extends OpMode {
     public static double shootertarget = 0;
 
 
-    public double goalX = 0;
+    public double goalX = 144;
     public double goalY = 144;
 
-    private Path score1, loading, goback, actualpick, score2, spikemark3, score3, cycle1, cycle2, score4, score5, move;
+    private Path score1, loading, goback, actualpick, score2, score3, cycle1, cycle2, score4, score5, move;
 
     public void buildPaths(){
 
@@ -108,22 +104,12 @@ public class blue_far_wspikemark extends OpMode {
         score2.setBrakingStart(6);
         score2.setBrakingStrength(1.5);
 
-        spikemark3 = new Path(new BezierCurve(scorePose1, spike3control, spike3));
-        spikemark3.setConstantHeadingInterpolation(spike3.getHeading());
 
 
-        score3 = new Path(new BezierLine(spike3, scorePose1));
-        score3.setLinearHeadingInterpolation(spike3.getHeading(), scorePose1.getHeading());
-        score3.setBrakingStart(6);
-        score3.setBrakingStrength(1.5);
 
         cycle1 = new Path(new BezierLine(scorePose1, loadingzone2));
         cycle1.setLinearHeadingInterpolation(scorePose1.getHeading(), loadingzone2.getHeading());
 
-        score4 = new Path(new BezierLine(loadingzone2, scorePose1));
-        score4.setConstantHeadingInterpolation(scorePose1.getHeading());
-        score4.setBrakingStart(6);
-        score4.setBrakingStrength(1.5);
 
         cycle2 = new Path(new BezierLine(scorePose1, cycle));
         cycle2.setLinearHeadingInterpolation(scorePose1.getHeading(), cycle.getHeading());
@@ -177,7 +163,7 @@ public class blue_far_wspikemark extends OpMode {
                         robot.intake.setPower(0.7);
                         robot.intake2.setPower(-0.7);
                         robot.stopper.setPosition(0.7);
-                        setPathState(8);
+                        setPathState(9);
 
 
 
@@ -239,8 +225,7 @@ public class blue_far_wspikemark extends OpMode {
 
                 case 13:
                     if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5){
-                        follower.setMaxPower(0.7);
-                        follower.followPath(spikemark3, true);
+                        follower.setMaxPower(1);
                         robot.intake.setPower(0.7);
                         robot.intake2.setPower(-0.7);
                         robot.stopper.setPosition(0.7);
@@ -252,7 +237,6 @@ public class blue_far_wspikemark extends OpMode {
 
                 case 14:
                     if(!follower.isBusy()){
-                        follower.setMaxPower(1);
                         robot.intake.setPower(0.7);
                         robot.intake2.setPower(-0.7);
                         robot.stopper.setPosition(0.7);
@@ -263,7 +247,7 @@ public class blue_far_wspikemark extends OpMode {
                     break;
 
                 case 15:
-                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.6) {
+                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2) {
                         robot.intake.setPower(1);
                         robot.intake2.setPower(-1);
                         robot.stopper.setPosition(0.47);
@@ -280,6 +264,11 @@ public class blue_far_wspikemark extends OpMode {
                         follower.setMaxPower(0.8);
                         follower.followPath(cycle1);
 
+
+                        pathTimer.resetTimer();
+                        if (pathTimer.getElapsedTimeSeconds() > 2){
+                            setPathState(17);
+                        }
 
                         setPathState(17);
                     }

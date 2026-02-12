@@ -30,18 +30,18 @@ public class red_far_wspikemark extends OpMode {
 
     private final Pose scorePose1 = new Pose(89.85920577617328, 17.523465703971105, Math.toRadians(0));
 
-    private final Pose loadingzone = new Pose(132.83393501805054, 8.29602888086643, Math.toRadians(0));
+    private final Pose loadingzone = new Pose(129.83393501805054, 10.29602888086643, Math.toRadians(0));
 
-    private final Pose back = new Pose(121.1913357400722, 10.711191335740073, Math.toRadians(0));
+    private final Pose back = new Pose(116.1913357400722, 10.711191335740073, Math.toRadians(0));
 
-    private final Pose loadingzone2 = new Pose(133.48736462093862, 11.971119133574003, Math.toRadians(0));
+    private final Pose loadingzone2 = new Pose(130.08736462093862, 7.1119133574003, Math.toRadians(0));
 
     private final Pose spike3 = new Pose(131.028880866426, 35.28158844765341, Math.toRadians(0));
 
     private final Pose spike3control = new Pose(90.68953068592057, 41.09927797833933);
 
 
-    private final Pose cycle = new Pose(132.01772151898734, 10.577215189873423);
+    private final Pose cycle = new Pose(132.01772151898734, 30.577215189873423);
 
     private final Pose park = new Pose(101.52707581227436, 16.989169675090256, Math.toRadians(0));
 
@@ -121,7 +121,7 @@ public class red_far_wspikemark extends OpMode {
         cycle1 = new Path(new BezierLine(scorePose1, loadingzone2));
         cycle1.setLinearHeadingInterpolation(scorePose1.getHeading(), loadingzone2.getHeading());
 
-        score4 = new Path(new BezierCurve(spike3, spike3control, scorePose1));
+        score4 = new Path(new BezierLine(loadingzone2, scorePose1));
         score4.setConstantHeadingInterpolation(scorePose1.getHeading());
         score4.setBrakingStart(6);
         score4.setBrakingStrength(1.5);
@@ -216,7 +216,7 @@ public class red_far_wspikemark extends OpMode {
 
 
                 case 11:
-                    if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1){
+                    if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2){
                         robot.intake2.setPower(-1);
                         robot.intake.setPower(1);
                         follower.setMaxPower(1);
@@ -263,7 +263,7 @@ public class red_far_wspikemark extends OpMode {
                     break;
 
                 case 15:
-                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2) {
+                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 3.5) {
                         robot.intake.setPower(1);
                         robot.intake2.setPower(-1);
                         robot.stopper.setPosition(0.47);
@@ -323,7 +323,7 @@ public class red_far_wspikemark extends OpMode {
                     break;
 
                 case 20:
-                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.9) {
+                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5) {
                         robot.intake.setPower(0.4);
                         robot.intake2.setPower(-0.4);
                         robot.stopper.setPosition(0.7);

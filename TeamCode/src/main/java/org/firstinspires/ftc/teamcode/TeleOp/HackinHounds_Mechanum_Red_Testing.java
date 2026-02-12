@@ -99,8 +99,6 @@ public class HackinHounds_Mechanum_Red_Testing extends OpMode {
     private double ballMovementClose = 5;
 
 
-    private double distanceToGoal;
-
     @Override
     public void init(){
         robot.init(hardwareMap);
@@ -217,8 +215,8 @@ public class HackinHounds_Mechanum_Red_Testing extends OpMode {
         }
 
         if(gamepad2.a){
-            robot.intake2.setPower(-0.3);
-            robot.intake.setPower(0.3);
+            robot.intake2.setPower(-0.5);
+            robot.intake.setPower(0.5);
         }
 
         if(gamepad2.right_trigger > Math.abs(0.1)) {
@@ -342,7 +340,7 @@ public class HackinHounds_Mechanum_Red_Testing extends OpMode {
         double predictedX = robotX + robXV;
         double predictedY = robotY + robYV;
 
-        distanceToGoal = robot.odometryDistanceRed(predictedX, predictedY);
+        double distanceToGoal = robot.odometryDistanceRed(predictedX, predictedY);
 
         double dx = goalX - (robotX + robXV);
         double dy = goalY - (robotY + robYV);
@@ -403,9 +401,7 @@ public class HackinHounds_Mechanum_Red_Testing extends OpMode {
 
         robot.lights(robot.light1, robot.light2, robot.light3, robot.color0, robot.color1, robot.color2, robot.color3);
 
-        double thetaError = Math.abs(distanceToGoal * tx / 57.3);
-
-        if ( Math.abs(robot.angleServo.getPosition() - hoodAngle)  < 0.01 && Math.abs(robot.shooter.getVelocity() - motorPower) < 50  && Math.abs(thetaError) < 5){
+        if ( Math.abs(robot.angleServo.getPosition() - hoodAngle)  < 0.01 && Math.abs(robot.shooter.getVelocity() - motorPower) < 50  && turretTargetAngle - turretAngle < 5){
             robot.light4.setPosition(.611);
         } else{
             robot.light4.setPosition(0);
@@ -418,19 +414,16 @@ public class HackinHounds_Mechanum_Red_Testing extends OpMode {
         telemetry.addData("Y", follower.getPose().getY());
         telemetry.addData("dx", "%f", dx);
         telemetry.addData("dy","%f", dy);
-        telemetry.addData("Goalheadingfield","%f", goalHeadingFieldDegrees);
-        telemetry.addData("target","%f", target);
-        telemetry.addData("turretPos", "%f", turretAngle);
-        telemetry.addData("distance", distanceToGoal);
-
-        telemetry.addData("goalX", goalX);
-        telemetry.addData("tx", tx);
+//        telemetry.addData("Goalheadingfield","%f", goalHeadingFieldDegrees);
+//        telemetry.addData("target","%f", target);
+//        telemetry.addData("turretPos", "%f", turretAngle);
+//        telemetry.addData("distance", distanceToGoal);
 //        telemetry.addData("front:", "%f", robot.intake.getPower());
 //        telemetry.addData("back:", "%f", robot.intake2.getPower());
 //        telemetry.addData("turretPos", "%f", robot.turret.getCurrentPosition()/4.233);
 //        telemetry.addData("turretTarget", "%f", target);
 //        telemetry.addData("error", "%f", error);
-        telemetry.addData("turretPower", "%f", robot.turret.getVelocity());
+        telemetry.addData("shootertarget", motorPower);
         telemetry.addData("distancetogoal", distanceToGoal);
 //        telemetry.addData("targetShootPower", motorPower);
 

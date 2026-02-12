@@ -34,7 +34,7 @@ public class ball12_red extends OpMode {
 
     private final Pose spike1 = new Pose(123.42960288808663, 83.48014440433212, Math.toRadians(0));
 
-    private final Pose emptyGate = new Pose(128.75090252707582, 73.00615729347214, Math.toRadians(90));
+    private final Pose emptyGate = new Pose(128.75090252707582, 73.70615729347214, Math.toRadians(90));
 
     private final Pose gateControl = new Pose(105.76278141129379, 75.3006348811154);
 
@@ -49,6 +49,7 @@ public class ball12_red extends OpMode {
 
     private final Pose park = new Pose(114.56289978678038, 83.33901918976545, Math.toRadians(0));
 
+    boolean wantZero = false;
     boolean goodTrack;
     public static Pose endAutoPose;
 
@@ -63,6 +64,7 @@ public class ball12_red extends OpMode {
 
     PIDFController turretController = new PIDFController(p,i,d,f);
 
+    double Turrettarget = -134;
 
     public static double kp = 14;
     public static double ki = 0;

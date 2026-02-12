@@ -27,6 +27,8 @@ public class ball15_blue extends OpMode {
 
     private final Pose startPose = new Pose(15.73952124789363, 113.74984855724483, Math.toRadians(0));
 
+    private final Pose scoreposecurve = new Pose(40.39822236015184, 101.58067250989289);
+
     private final Pose scorePose1 = new Pose(49.682310469314075, 84.51985559566788, Math.toRadians(180));
 
     private final Pose spike1 = new Pose(17.39350180505415, 84.51985559566788, Math.toRadians(180));
@@ -89,7 +91,7 @@ public class ball15_blue extends OpMode {
     public void buildPaths(){
 
 
-        score1 = new Path(new BezierLine(startPose, scorePose1));
+        score1 = new Path(new BezierCurve(startPose, scoreposecurve, scorePose1));
         score1.setLinearHeadingInterpolation(startPose.getHeading(), scorePose1.getHeading(), 0.5);
         score1.setBrakingStart(6);
         score1.setBrakingStrength(1.5);

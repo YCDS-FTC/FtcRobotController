@@ -29,9 +29,11 @@ public class ball12_blue extends OpMode {
 
     private final Pose scorePose1 = new Pose(49.682310469314075, 84.51985559566788, Math.toRadians(180));
 
+    private final Pose scoreposecurve = new Pose(40.39822236015184, 101.58067250989289);
+
     private final Pose spike1 = new Pose(17.39350180505415, 84.51985559566788, Math.toRadians(180));
 
-    private final Pose emptyGate = new Pose(15.841155234657041, 73.37545126353788, Math.toRadians(90));
+    private final Pose emptyGate = new Pose(15.841155234657041, 74.37545126353788, Math.toRadians(90));
 
     private final Pose gateControl = new Pose(32.1985559566787, 78.42057761732852);
 
@@ -82,7 +84,7 @@ public class ball12_blue extends OpMode {
     public void buildPaths(){
 
 
-        score1 = new Path(new BezierLine(startPose, scorePose1));
+        score1 = new Path(new BezierCurve(startPose, scoreposecurve, scorePose1));
         score1.setLinearHeadingInterpolation(startPose.getHeading(), scorePose1.getHeading(), 0.5);
         score1.setBrakingStart(6);
         score1.setBrakingStrength(1.5);
@@ -131,7 +133,7 @@ public class ball12_blue extends OpMode {
                         robot.stopper.setPosition(0.7);
                         robot.intake.setPower(0.3);
                         robot.intake2.setPower(-0.3);
-                        shootertarget = 1120;
+                        shootertarget = 1100;
                         hoodAngle = 0.11;
                         goodTrack = true;
                         setPathState(100);

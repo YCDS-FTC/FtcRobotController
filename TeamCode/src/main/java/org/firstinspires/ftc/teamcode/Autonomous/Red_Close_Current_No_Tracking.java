@@ -344,7 +344,7 @@ public class Red_Close_Current_No_Tracking extends OpMode {
 
 
 
-        double robotHeading = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) + 127.408625;
+        double robotHeading = robot.imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES) + 180;
         //double robotHeading = robot.pinpoint.getHeading(AngleUnit.DEGREES);
         //if (gamepad1.right_trigger > 0.1) {angleWant = robotHeading;}
         double turretAngle = robot.turret.getCurrentPosition()/ticksPerDegree;

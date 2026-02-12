@@ -259,8 +259,9 @@ public class HackinHoundsHardware extends Hardware {
 
 
 
-//add 18.5 inches away for offset
-        getShootPower.add(0,1000);
+//add 18.5 inches away for offset/
+        getShootPower.add(-20, 1000);
+        getShootPower.add(1,1000);
         getShootPower.add(27, 1100);
         getShootPower.add(32, 1080);
         getShootPower.add(37, 1080);
@@ -277,15 +278,15 @@ public class HackinHoundsHardware extends Hardware {
         getShootPower.add(92, 1310);
         getShootPower.add(95,1420);
         getShootPower.add(100,1440);
-        getShootPower.add(105,1460);
-        getShootPower.add(110,1400);
-        getShootPower.add(115,1360);
-        getShootPower.add(120,1420);
+        getShootPower.add(105,1440);
+        getShootPower.add(110,1460);
+        getShootPower.add(115,1500);
+        getShootPower.add(120,1520);
         getShootPower.add(125,1520);
         getShootPower.add(130,1560);
         getShootPower.add(135,1580);
         getShootPower.add(148, 1580);
-        getShootPower.add(190, 1600);
+        getShootPower.add(250, 1600);
 
 
 
@@ -350,13 +351,9 @@ public class HackinHoundsHardware extends Hardware {
     public double getshooterPower(double distanceToGoal) {
         getShootPower.createLUT();
 
-        if(distanceToGoal > 190){
-            shooterPower = 0;
-        } else if (distanceToGoal < 27){
-            shooterPower = 0;
-        } else{
+
             shooterPower = getShootPower.get(distanceToGoal);
-        }
+
 
         return shooterPower;
     }

@@ -217,8 +217,8 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
         }
 
         if(gamepad2.a){
-            robot.intake2.setPower(-0.3);
-            robot.intake.setPower(0.3);
+            robot.intake2.setPower(-0.5);
+            robot.intake.setPower(0.5);
         }
 
         if(gamepad2.right_trigger > Math.abs(0.1)) {
@@ -337,7 +337,7 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
 
 
         if (gamepad1.b){
-            follower.setPose(new Pose(9, 7.625, Math.toRadians(0)));
+            follower.setPose(new Pose(135, 7.625, Math.toRadians(180)));
         }
 
 
@@ -347,11 +347,11 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
         double robYV = robot.pinpoint.getVelY(DistanceUnit.INCH) * yPrediction;
 
         if(gamepad2.dpad_right){
-            goalX += 3;
+            goalX += 2;
         }
 
         if(gamepad2.dpad_left){
-            goalX -= 3;
+            goalX -= 2;
         }
 
         double dx = goalX - (robotX + robXV);
@@ -373,15 +373,8 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
         double turretTargetAngle = goalHeadingFieldDegrees - robotHeadingDegrees;
         double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
 
-//        else if (!gamepad1.left_bumper){
-//            angleWant = (robotHeading + turretAngle);
-//        }
 
-//        turretTargetAngle = Math.toDegrees(Math.atan2(144 - (robot.pinpoint.getPosY(DistanceUnit.INCH) + robot.pinpoint.getVelY(DistanceUnit.INCH)*1), 0 - (robot.pinpoint.getPosX(DistanceUnit.INCH) + robot.pinpoint.getVelX(DistanceUnit.INCH)*1))) - 180;
-
-//        double goalHeading = Math.toDegrees(Math.atan2(-(goalY - (robotY)) +  robYV, -(goalX - (robotX)) + robXV) * 1) - 180;
-
-        double target = normA(turretTargetAngle - robotHeadingDegrees);
+        double target = normA(turretTargetAngle);
 
         if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
 //        double error = target - turretAngle;
@@ -415,9 +408,7 @@ public class HackinHounds_Mechanum_Blue_Testing extends OpMode {
 
         robot.lights(robot.light1, robot.light2, robot.light3, robot.color0, robot.color1, robot.color2, robot.color3);
 
-        double thetaError = Math.abs(distanceToGoal * tx / 57.3);
-
-        if ( Math.abs(robot.angleServo.getPosition() - hoodAngle)  < 0.01 && Math.abs(robot.shooter.getVelocity() - motorPower) < 50  && Math.abs(thetaError) < 5){
+        if ( Math.abs(robot.angleServo.getPosition() - hoodAngle)  < 0.01 && Math.abs(robot.shooter.getVelocity() - motorPower) < 50  && turretTargetAngle - turretAngle < 2){
             robot.light4.setPosition(.611);
         } else{
             robot.light4.setPosition(0);
