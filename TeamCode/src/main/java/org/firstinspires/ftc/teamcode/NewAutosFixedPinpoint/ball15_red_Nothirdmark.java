@@ -13,13 +13,12 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
 import org.firstinspires.ftc.teamcode.RobotPose;
 
-@Autonomous(name="15 close red", group = "examples")
-public class ball15_red extends OpMode {
+@Autonomous(name="15 close red-without third spike mark", group = "examples")
+public class ball15_red_Nothirdmark extends OpMode {
 
     /**CHECK START POSE **/
     private HackinHoundsHardware robot = new HackinHoundsHardware();
@@ -34,7 +33,7 @@ public class ball15_red extends OpMode {
 
     private final Pose scoreCurve = new Pose(101.78255490772712, 105.3263601344639);
 
-    private final Pose spike1 = new Pose(123.42960288808663, 83.48014440433212, Math.toRadians(0));
+    private final Pose spike1 = new Pose(126.77325613886062, 83.48014440433212, Math.toRadians(0));
 
     private final Pose opengate = new Pose(131.69586458182005, 60.88747527131697, Math.toRadians(30));
 
@@ -53,7 +52,7 @@ public class ball15_red extends OpMode {
 
     private final Pose spike3control = new Pose(77.64313040265408, 24.97248158382918);
 
-    private final Pose scorePose2 = new Pose(85.52330028724391, 107.84825585944049, Math.toRadians(305));
+    private final Pose scorePose2 = new Pose(85.52330028724391, 107.84825585944049, Math.toRadians(330));
 
     private final Pose park = new Pose(114.56289978678038, 83.33901918976545, Math.toRadians(0));
 
@@ -128,16 +127,17 @@ public class ball15_red extends OpMode {
         spikemark2 = new Path(new BezierCurve(scorePose1, spike2control, spike2));
         spikemark2.setConstantHeadingInterpolation(scorePose1.getHeading());
 
-        score4 = new Path(new BezierLine(spike1, scorePose1));
-        score4.setLinearHeadingInterpolation(spike1.getHeading(), scorePose1.getHeading());
+        score4 = new Path(new BezierCurve(pickgate, score3control, scorePose1));
+        score4.setLinearHeadingInterpolation(pickgate.getHeading(), scorePose1.getHeading());
         score4.setBrakingStart(6);
         score4.setBrakingStrength(1.5);
+
 
         spikemark3 = new Path(new BezierCurve(scorePose1, spike3control, spike3));
         spikemark3.setConstantHeadingInterpolation(spike3.getHeading());
 
-        score5 = new Path(new BezierLine(spike3, scorePose2));
-        score5.setConstantHeadingInterpolation(scorePose2.getHeading());
+        score5 = new Path(new BezierLine(spike1, scorePose2));
+        score5.setLinearHeadingInterpolation(spike1.getHeading(), scorePose2.getHeading(), 0.8);
         score5.setBrakingStart(6);
         score5.setBrakingStrength(1.5);
 
@@ -264,13 +264,22 @@ public class ball15_red extends OpMode {
                     if (!follower.isBusy() & pathTimer.getElapsedTimeSeconds() > 0.5){
                         goodTrack = true;
                         robot.stopper.setPosition(0.7);
-                        follower.followPath(spikemark1);
+                        follower.followPath(gate);
+                        setPathState(80);
+                    }
+                    break;
+
+                case 80:
+                    if (!follower.isBusy() & pathTimer.getElapsedTimeSeconds() > 1){
+                        goodTrack = true;
+                        robot.stopper.setPosition(0.7);
+                        follower.followPath(pickfromgate);
                         setPathState(4);
                     }
                     break;
 
                 case 4:
-                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5){
+                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 1){
                         robot.stopper.setPosition(0.7);
                         robot.intake.setPower(0.7);
                         robot.intake2.setPower(-0.7);
@@ -299,7 +308,7 @@ public class ball15_red extends OpMode {
                         robot.stopper.setPosition(0.7);
                         robot.intake.setPower(0.7);
                         robot.intake2.setPower(-0.7);
-                        follower.followPath(spikemark3);
+                        follower.followPath(spikemark1);
                         setPathState(9);
                     }
                     break;

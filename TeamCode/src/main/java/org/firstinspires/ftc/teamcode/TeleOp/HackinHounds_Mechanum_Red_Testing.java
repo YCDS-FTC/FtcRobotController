@@ -205,8 +205,8 @@ public class HackinHounds_Mechanum_Red_Testing extends OpMode {
 
 
         if(gamepad2.b){
-            robot.intake.setPower(0.7);
             robot.intake2.setPower(-0.7);
+            robot.intake.setPower(0.7);
         }
 
         if(gamepad2.y){
@@ -255,7 +255,7 @@ public class HackinHounds_Mechanum_Red_Testing extends OpMode {
             }
         }
 
-        if(isSingleStopperTimedOpen && timer.seconds() > 1.5){
+        if(isSingleStopperTimedOpen && timer.seconds() > 1){
             robot.stopper.setPosition(0.7);
             isBlockerClosed = true;
             isSingleStopperTimedOpen = false;
@@ -324,10 +324,10 @@ public class HackinHounds_Mechanum_Red_Testing extends OpMode {
 
 
         if(gamepad2.dpad_right){
-            goalX += 3;
+            goalX += 2;
         }
         if(gamepad2.dpad_left){
-            goalX -= 3;
+            goalX -= 2;
         }
 
 
@@ -414,9 +414,12 @@ public class HackinHounds_Mechanum_Red_Testing extends OpMode {
         telemetry.addData("Y", follower.getPose().getY());
         telemetry.addData("dx", "%f", dx);
         telemetry.addData("dy","%f", dy);
-//        telemetry.addData("Goalheadingfield","%f", goalHeadingFieldDegrees);
+        telemetry.addData("robotXV", robXV);
+        telemetry.addData("robotYV", robYV);
+        telemetry.addData("Goalheadingfield","%f", goalHeadingFieldDegrees);
+        telemetry.addData("turretPos", "%f", turretAngle);
+
 //        telemetry.addData("target","%f", target);
-//        telemetry.addData("turretPos", "%f", turretAngle);
 //        telemetry.addData("distance", distanceToGoal);
 //        telemetry.addData("front:", "%f", robot.intake.getPower());
 //        telemetry.addData("back:", "%f", robot.intake2.getPower());

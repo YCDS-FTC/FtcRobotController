@@ -171,7 +171,6 @@ public class HackinHoundsHardware extends Hardware {
         shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         turret = robotMap.get(DcMotorEx.class, "turret");
-        //turret.setMode(DcMotorEx.RunMode.STOP_AND_RESET_ENCODER);
         turret.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
 
         stopper = robotMap.get(Servo.class,"stopper");
@@ -260,7 +259,7 @@ public class HackinHoundsHardware extends Hardware {
 
 
 //add 18.5 inches away for offset/
-        getShootPower.add(-20, 1000);
+        getShootPower.add(-200, 1000);
         getShootPower.add(1,1000);
         getShootPower.add(27, 1100);
         getShootPower.add(32, 1080);
@@ -280,8 +279,8 @@ public class HackinHoundsHardware extends Hardware {
         getShootPower.add(100,1440);
         getShootPower.add(105,1440);
         getShootPower.add(110,1460);
-        getShootPower.add(115,1500);
-        getShootPower.add(120,1520);
+        getShootPower.add(115,1480);
+        getShootPower.add(120,1500);
         getShootPower.add(125,1520);
         getShootPower.add(130,1560);
         getShootPower.add(135,1580);

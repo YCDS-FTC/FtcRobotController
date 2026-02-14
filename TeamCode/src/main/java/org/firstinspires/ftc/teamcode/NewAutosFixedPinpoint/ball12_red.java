@@ -7,10 +7,12 @@ import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.geometry.Pose;
 import com.pedropathing.paths.Path;
 import com.pedropathing.util.Timer;
+import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.seattlesolvers.solverslib.controller.PIDFController;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Hardware.HackinHoundsHardware;
 import org.firstinspires.ftc.teamcode.PedroPathing.Constants;
@@ -79,9 +81,6 @@ public class ball12_red extends OpMode {
     public static double shootertarget = 0;
 
 
-    public double goalX = 144;
-    public double goalY = 144;
-
     private Path score1, score2, spikemark2, score3, score4, gate, spikemark1, spikemark3, move;
 
     public void buildPaths(){
@@ -145,16 +144,21 @@ public class ball12_red extends OpMode {
                     break;
 
                 case 100:
-                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2){
-                        robot.stopper.setPosition(0.47);
-                        robot.intake.setPower(1);
-                        robot.intake2.setPower(-1);
-                        setPathState(1);
+                    if (!follower.isBusy() ){
+                        goodTrack = false;
+                        if(pathTimer.getElapsedTimeSeconds() > 2){
+                            robot.stopper.setPosition(0.47);
+                            robot.intake.setPower(1);
+                            robot.intake2.setPower(-1);
+                            setPathState(1);
+                        }
+
                     }
                     break;
 
                 case 1:
                     if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5){
+                        goodTrack = true;
                         follower.followPath(spikemark1);
                         robot.stopper.setPosition(0.7);
                         robot.intake.setPower(0.7);
@@ -182,11 +186,14 @@ public class ball12_red extends OpMode {
                     break;
 
                 case 101:
-                    if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 2.8){
-                        robot.stopper.setPosition(0.47);
-                        robot.intake.setPower(1);
-                        robot.intake2.setPower(-1);
-                        setPathState(3);
+                    if (!follower.isBusy()){
+                        goodTrack = false;
+                        if(pathTimer.getElapsedTimeSeconds() > 2.8){
+                            robot.stopper.setPosition(0.47);
+                            robot.intake.setPower(1);
+                            robot.intake2.setPower(-1);
+                            setPathState(3);
+                        }
                     }
                     break;
 
@@ -195,6 +202,7 @@ public class ball12_red extends OpMode {
 
                 case 3:
                     if (!follower.isBusy() & pathTimer.getElapsedTimeSeconds() > 0.5){
+                        goodTrack = true;
                         robot.stopper.setPosition(0.7);
                         follower.followPath(spikemark2);
                         setPathState(4);
@@ -212,11 +220,14 @@ public class ball12_red extends OpMode {
                     break;
 
                 case 103:
-                    if (!follower.isBusy()  && pathTimer.getElapsedTimeSeconds() > 2.5){
-                        robot.intake.setPower(1);
-                        robot.intake2.setPower(-1);
-                        robot.stopper.setPosition(0.47);
-                        setPathState(7);
+                    if (!follower.isBusy()){
+                        goodTrack = false;
+                        if(pathTimer.getElapsedTimeSeconds() > 2.5){
+                            robot.intake.setPower(1);
+                            robot.intake2.setPower(-1);
+                            robot.stopper.setPosition(0.47);
+                            setPathState(7);
+                        }
                     }
                     break;
 
@@ -224,6 +235,7 @@ public class ball12_red extends OpMode {
 
                 case 7:
                     if (!follower.isBusy() && pathTimer.getElapsedTimeSeconds() > 0.5){
+                        goodTrack = true;
                         robot.stopper.setPosition(0.7);
                         robot.intake.setPower(0.7);
                         robot.intake2.setPower(-0.7);
@@ -244,18 +256,21 @@ public class ball12_red extends OpMode {
 
 
                 case 10:
-                    if (!follower.isBusy()  && pathTimer.getElapsedTimeSeconds() > 3.7){
-                        robot.intake.setPower(1);
-                        robot.intake2.setPower(-1);
-                        robot.stopper.setPosition(0.47);
-                        setPathState(41);
+                    if (!follower.isBusy()){
+                        goodTrack = false;
+                        if(pathTimer.getElapsedTimeSeconds() > 3.7){
+                            robot.intake.setPower(1);
+                            robot.intake2.setPower(-1);
+                            robot.stopper.setPosition(0.47);
+                            setPathState(41);
+                        }
                     }
                     break;
 
                 case 41:
                     if(!follower.isBusy() && pathTimer.getElapsedTimeSeconds()> 0.5){
                         follower.followPath(move);
-                        goodTrack = false;
+                        goodTrack = true;
                         robot.stopper.setPosition(0.7);
                         robot.intake2.setPower(0);
                         robot.intake.setPower(0);
@@ -277,39 +292,29 @@ public class ball12_red extends OpMode {
         follower.update();
         autonomousPathUpdate();
 
+        LLResult result = robot.limelight.getLatestResult();
+        double tx = 0;
+
+        if (result != null && result.isValid()) {
+            tx = result.getTx();
+        }
+
         double shooterVelocity = robot.shooter.getVelocity();
         double output = shooterController.calculate(shooterVelocity, shootertarget);
         robot.shooter.setVelocity(output);
         robot.angleServo.setPosition(hoodAngle);
 
-        double robotX = follower.getPose().getX();
-        double robotY = follower.getPose().getY();
+        if(result.isValid() && !goodTrack){
+            double target = normA(Turrettarget - result.getTx() -1);
+            double turretPosition = robot.turret.getCurrentPosition()/4.233;
+            if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
 
-        double robXV = robot.pinpoint.getVelX(DistanceUnit.INCH) * 0.3;
-        double robYV = robot.pinpoint.getVelY(DistanceUnit.INCH) * 0.3;
-
-        double dx = goalX - (robotX + robXV);
-        double dy = goalY - (robotY + robYV);
-
-        double goalHeadingField = Math.atan2(-dy, -dx);
-        double goalHeadingFieldDegrees = Math.toDegrees(goalHeadingField);
-
-        double robotHeading = follower.getPose().getHeading();
-        double robotHeadingDegrees = Math.toDegrees(robotHeading);
-
-        double turretTargetAngle = goalHeadingFieldDegrees - robotHeadingDegrees;
-        double turretAngle = robot.turret.getCurrentPosition()/turret_tPERd;
-
-        double target = normA(turretTargetAngle);
-        if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
-
-        if(goodTrack){
-            double turretPower = (turretController.calculate(turretAngle, target));
-            robot.turret.setPower(turretPower);
+            robot.turret.setVelocity(turretController.calculate(turretPosition, target)* 1450 - robot.imu.getRobotAngularVelocity(AngleUnit.DEGREES).zRotationRate * turret_tPERd);
         } else{
-            target = normA(0);
-            double turretPower = (turretController.calculate(turretAngle, target));
-            robot.turret.setPower(turretPower);
+            double target = normA(Turrettarget);
+            if (target > 150) {target = 150;} else if (target < -150) {target = -150;}
+            double turretPosition = robot.turret.getCurrentPosition()/4.233;
+            robot.turret.setVelocity(turretController.calculate(turretPosition, target) * 1440);
         }
 
 
@@ -328,6 +333,7 @@ public class ball12_red extends OpMode {
 
         robot.init(hardwareMap);
 
+        robot.limelight.pipelineSwitch(1);
 
 
 
@@ -346,7 +352,7 @@ public class ball12_red extends OpMode {
 
     @Override
     public void start(){
-
+        robot.limelight.start();
     }
 
     @Override
@@ -357,6 +363,7 @@ public class ball12_red extends OpMode {
         RobotPose.endPose = endAutoPose;
 
 
+        robot.limelight.stop();
     }
 
     public double normA(double angle) {angle %= 360; if (angle < -180) angle += 360; else if (angle > 180) angle -= 360;return angle;}
